@@ -1,4 +1,4 @@
-package com.foodielog.server.user;
+package com.foodielog.server.types;
 
 public enum Role {
     USER,
