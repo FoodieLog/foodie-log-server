@@ -42,11 +42,3 @@ jobs:
       # Gradle test를 실행
       - name: Test with Gradle
         run: ./gradlew --info test
-  
-      # 테스트 후 Test Report 보기
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: ${{ always() }}  
-        with:
-            files: build/test-results/**/*.xml
-            github_token: ${{ secrets.ACTIONSTOKEN }}
