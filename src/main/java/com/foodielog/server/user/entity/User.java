@@ -1,17 +1,29 @@
-package com.foodielog.server.user;
+package com.foodielog.server.user.entity;
 
-import com.foodielog.server.types.Flag;
-import com.foodielog.server.types.ProviderType;
-import com.foodielog.server.types.Role;
-import com.foodielog.server.types.UserStatus;
-import lombok.*;
+import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
-import java.sql.Timestamp;
+import com.foodielog.server.types.Flag;
+import com.foodielog.server.types.ProviderType;
+import com.foodielog.server.types.Role;
+import com.foodielog.server.types.UserStatus;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
