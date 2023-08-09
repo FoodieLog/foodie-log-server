@@ -1,14 +1,27 @@
 package com.foodielog.server.user;
 
-import com.foodielog.server.types.BlockReason;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
-import javax.persistence.*;
-import java.sql.Timestamp;
+import com.foodielog.server.user.type.BlockReason;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -16,23 +29,23 @@ import java.sql.Timestamp;
 @Table(name = "blockUser_tb")
 @Entity
 public class BlockUser {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
 
-    @Enumerated(EnumType.STRING)
-    private BlockReason reason;
+	@Enumerated(EnumType.STRING)
+	private BlockReason reason;
 
-    @Column(name = "feed_count")
-    private Long feedCount;
+	@Column(name = "feed_count")
+	private Long feedCount;
 
-    @Column(name = "reply_count")
-    private Long replyCount;
+	@Column(name = "reply_count")
+	private Long replyCount;
 
-    @CreationTimestamp
-    private Timestamp createdAt;
+	@CreationTimestamp
+	private Timestamp createdAt;
 }
