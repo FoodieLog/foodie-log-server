@@ -16,10 +16,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.foodielog.server.types.Flag;
-import com.foodielog.server.types.ProviderType;
-import com.foodielog.server.types.Role;
-import com.foodielog.server.types.UserStatus;
+import com.foodielog.server.user.type.Flag;
+import com.foodielog.server.user.type.ProviderType;
+import com.foodielog.server.user.type.Role;
+import com.foodielog.server.user.type.UserStatus;
 
 import lombok.AccessLevel;
 import lombok.Getter;

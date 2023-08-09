@@ -16,9 +16,10 @@ import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.foodielog.server.types.ManagementStatus;
-import com.foodielog.server.types.ReportReason;
-import com.foodielog.server.types.ReportType;
+import com.foodielog.server.admin.type.ProcessedStatus;
+import com.foodielog.server.report.type.ReportReason;
+import com.foodielog.server.report.type.ReportType;
+import com.foodielog.server.user.entity.User;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -53,7 +54,7 @@ public class Report {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private ManagementStatus status;
+	private ProcessedStatus status;
 
 	@CreationTimestamp
 	private Timestamp createdAt;

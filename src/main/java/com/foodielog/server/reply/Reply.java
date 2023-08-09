@@ -18,7 +18,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.foodielog.server.feed.Feed;
-import com.foodielog.server.types.ContentStatus;
+import com.foodielog.server.feed.type.ContentStatus;
+import com.foodielog.server.user.entity.User;
 
 import lombok.AccessLevel;
 import lombok.Getter;

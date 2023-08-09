@@ -12,6 +12,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.foodielog.server.restaurant.entity.Restaurant;
+import com.foodielog.server.user.entity.User;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

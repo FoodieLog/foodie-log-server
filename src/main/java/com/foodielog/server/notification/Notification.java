@@ -16,9 +16,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.foodielog.server.types.Flag;
-import com.foodielog.server.types.NotificationType;
+import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.user.entity.User;
+import com.foodielog.server.user.type.Flag;
 
 import lombok.AccessLevel;
 import lombok.Getter;
