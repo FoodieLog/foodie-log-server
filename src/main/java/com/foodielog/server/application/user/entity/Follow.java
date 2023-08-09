@@ -9,7 +9,7 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.foodielog.server.application.notification.Notification;
+import com.foodielog.server.application.notification.entity.Notification;
 
 public class Follow {
 	@Id

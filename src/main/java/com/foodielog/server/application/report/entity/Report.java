@@ -1,4 +1,4 @@
-package com.foodielog.server.application.reply;
+package com.foodielog.server.application.report.entity;
 
 import java.sql.Timestamp;
 
@@ -6,7 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,9 +16,10 @@ import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.foodielog.server.application.feed.type.ContentStatus;
-import com.foodielog.server.application.feed.Feed;
+import com.foodielog.server.application.report.type.ReportReason;
+import com.foodielog.server.application.report.type.ReportType;
 import com.foodielog.server.application.user.entity.User;
+import com.foodielog.server.management.admin.type.ProcessedStatus;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,26 +27,34 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "reply_tb")
+@Table(name = "report_tb")
 @Entity
-public class Reply {
+public class Report {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
+	@ManyToOne
+	@JoinColumn(name = "reporter_id")
+	private User reporterId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "feed_id")
-	private Feed feed;
+	@ManyToOne
+	@JoinColumn(name = "reported_id")
+	private User reportedId;
 
-	@Column(length = 150, nullable = false)
-	private String content;
+	@Column(nullable = false)
+	private ReportType type;
 
+	@Column(nullable = false)
+	private Long contentId;
+
+	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private ContentStatus status;
+	private ReportReason reportReason;
+
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private ProcessedStatus status;
 
 	@CreationTimestamp
 	private Timestamp createdAt;

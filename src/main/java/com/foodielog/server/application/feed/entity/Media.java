@@ -1,7 +1,8 @@
-package com.foodielog.server.application.restaurant;
+package com.foodielog.server.application.feed.entity;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,28 +13,25 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.foodielog.server.application.user.entity.User;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "restaurant_like_tb")
+@Table(name = "media_tb")
 @Entity
-public class RestaurantLike {
+public class Media {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "restaurant_id")
-	private Restaurant restaurant;
+	@JoinColumn(name = "feed_id")
+	private Feed feed;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	@Column(name = "image_url", length = 80)
+	private String imageUrl;
 
 	@CreationTimestamp
 	private Timestamp createdAt;

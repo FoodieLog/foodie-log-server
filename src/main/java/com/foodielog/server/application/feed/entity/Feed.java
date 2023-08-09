@@ -1,4 +1,4 @@
-package com.foodielog.server.application.feed;
+package com.foodielog.server.application.feed.entity;
 
 import java.sql.Timestamp;
 
@@ -19,7 +19,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.foodielog.server.application.feed.type.ContentStatus;
-import com.foodielog.server.application.restaurant.Restaurant;
+import com.foodielog.server.application.restaurant.entity.Restaurant;
 import com.foodielog.server.application.user.entity.User;
 
 import lombok.AccessLevel;
