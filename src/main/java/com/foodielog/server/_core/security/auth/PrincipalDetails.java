@@ -7,8 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.foodielog.server.types.UserStatus;
 import com.foodielog.server.user.entity.User;
+import com.foodielog.server.user.type.UserStatus;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
