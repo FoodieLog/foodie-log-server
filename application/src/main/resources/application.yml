@@ -32,6 +32,20 @@ spring:
     defer-datasource-initialization: true
     open-in-view: true
 
+kakao:
+  api:
+    url: https://dapi.kakao.com/v2/local/search/keyword
+
+# S3
+cloud:
+  aws:
+    s3:
+      bucket: inyoungbucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
 #  sql:
 #    init:
 #      mode: always
