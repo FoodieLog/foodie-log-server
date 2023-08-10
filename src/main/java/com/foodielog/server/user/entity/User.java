@@ -47,6 +47,7 @@ public class User {
 
 	@Column(nullable = false, length = 10)
 	@Enumerated(EnumType.STRING)
+	@ColumnDefault("'USER'")
 	private Role role;
 
 	@Column(nullable = false, length = 50, unique = true)
@@ -70,6 +71,7 @@ public class User {
 
 	@Column(nullable = false, length = 10)
 	@Enumerated(EnumType.STRING)
+	@ColumnDefault("'NORMAL'")
 	private UserStatus status;
 
 	@CreationTimestamp
