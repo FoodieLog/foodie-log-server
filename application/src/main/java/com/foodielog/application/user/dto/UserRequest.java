@@ -1,4 +1,4 @@
-package com.foodielog.server.user.dto;
+package com.foodielog.application.user.dto;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;

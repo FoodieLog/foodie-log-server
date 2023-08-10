@@ -1,13 +1,13 @@
-package com.foodielog.server.user.service;
+package com.foodielog.application.user.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.foodielog.application.user.dto.UserResponse;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
-import com.foodielog.server.user.dto.UserRequest;
-import com.foodielog.server.user.dto.UserResponse;
+import com.foodielog.application.user.dto.UserRequest;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 

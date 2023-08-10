@@ -1,4 +1,4 @@
-package com.foodielog.server.user.controller;
+package com.foodielog.application.user.controller;
 
 import javax.validation.Valid;
 
@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.foodielog.application.user.dto.UserRequest;
+import com.foodielog.application.user.dto.UserResponse;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server._core.util.ApiUtils;
-import com.foodielog.server.user.dto.UserRequest;
-import com.foodielog.server.user.dto.UserResponse;
-import com.foodielog.server.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.foodielog.application.user.service.UserService;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/auth")

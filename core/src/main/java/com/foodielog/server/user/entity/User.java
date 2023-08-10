@@ -35,7 +35,7 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, length = 255)
+	@Column(nullable = false, length = 255, unique = true)
 	private String email;
 
 	@Column(nullable = false, length = 60)
@@ -47,9 +47,10 @@ public class User {
 
 	@Column(nullable = false, length = 10)
 	@Enumerated(EnumType.STRING)
+	@ColumnDefault("'USER'")
 	private Role role;
 
-	@Column(nullable = false, length = 50)
+	@Column(nullable = false, length = 50, unique = true)
 	private String nickName;
 
 	@Column(length = 255)
@@ -68,7 +69,9 @@ public class User {
 	@ColumnDefault("'N'")
 	private Flag badgeFlag;
 
-	@Column(nullable = false, length = 5)
+	@Column(nullable = false, length = 10)
+	@Enumerated(EnumType.STRING)
+	@ColumnDefault("'NORMAL'")
 	private UserStatus status;
 
 	@CreationTimestamp

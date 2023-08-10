@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
+		if (request.getHeader(HttpHeaders.AUTHORIZATION) == null) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		String token = jwtTokenProvider.resolveToken(request);
 
 		if (jwtTokenProvider.isTokenValid(token)) {

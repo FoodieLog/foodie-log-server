@@ -1,4 +1,4 @@
-package com.foodielog.server.user.dto;
+package com.foodielog.application.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.foodielog.server.user.entity.User;
