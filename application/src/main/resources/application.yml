@@ -7,7 +7,7 @@ server:
 
 spring:
   config:
-    import: classpath:env.yml
+    import: env.yml
   datasource:
     url: jdbc:h2:mem:test;MODE=MySQL
     driver-class-name: org.h2.Driver
