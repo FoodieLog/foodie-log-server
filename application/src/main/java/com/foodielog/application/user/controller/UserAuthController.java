@@ -34,6 +34,7 @@ public class UserAuthController {
 
 		HttpHeaders headers = new HttpHeaders();
 		ResponseCookie cookie = getRefreshTokenCookie(response.getRefreshToken());
+		log.info("쿠키 생성 완료: "+cookie.toString());
 		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
 
 		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);

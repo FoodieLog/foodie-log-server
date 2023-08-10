@@ -12,7 +12,9 @@ import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -30,6 +32,9 @@ public class UserService {
 
 		String accessToken = jwtTokenProvider.createAccessToken(user);
 		String refreshToken = jwtTokenProvider.createRefreshToken(user);
+
+		log.info("엑세스 토큰 생성 완료: "+accessToken);
+		log.info("리프레시 토큰 생성 완료: "+refreshToken);
 
 		return new UserResponse.LoginDTO(user, accessToken, refreshToken);
 	}
