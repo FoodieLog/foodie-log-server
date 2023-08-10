@@ -72,9 +72,9 @@ public class SecurityConfig {
 		// 11. 인증, 권한 필터 설정
 		http.authorizeRequests(
 			// '/api' 로 시작 하는 url 은 로그인 필요
-			authorize -> authorize.antMatchers("/auth").permitAll()    // 누구나 접근 가능
+			authorize -> authorize.antMatchers("/auth/**").permitAll()    // 누구나 접근 가능
 				.antMatchers("/api/**").hasAnyRole("USER", "ADMIN")
-				.antMatchers("/admin").hasRole("ADMIN")
+				.antMatchers("/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 		);
 
