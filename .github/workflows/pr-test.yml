@@ -35,8 +35,8 @@ jobs:
       - name: Copy Secret To application module
         env:
           OCCUPY_SECRET: ${{ secrets.OCCUPY_SECRET }}
-          OCCUPY_SECRET_DIR: application/src/main/resources
-          OCCUPY_SECRET_TEST_DIR: application/src/test/resources
+          OCCUPY_SECRET_DIR: ./application/src/main/resources
+          OCCUPY_SECRET_TEST_DIR: ./application/src/test/resources
           OCCUPY_SECRET_DIR_FILE_NAME: env.yml
         run: echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME && 
              echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_TEST_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
@@ -44,8 +44,8 @@ jobs:
       - name: Copy Secret To management module
         env:
             OCCUPY_SECRET: ${{ secrets.OCCUPY_SECRET }}
-            OCCUPY_SECRET_DIR: management/src/main/resources
-            OCCUPY_SECRET_TEST_DIR: management/src/test/resources
+            OCCUPY_SECRET_DIR: ./management/src/main/resources
+            OCCUPY_SECRET_TEST_DIR: ./management/src/test/resources
             OCCUPY_SECRET_DIR_FILE_NAME: env.yml
         run: echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME && 
              echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_TEST_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
