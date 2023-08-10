@@ -24,6 +24,15 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
   
+      # 환경 변수 설정
+      - name: set JWT_Key application module
+        run: echo "jwt.key=${{secrets.JWT_KEY}}" >> env.yml
+        working-directory: ./application/src/main/resources
+        
+      - name: set JWT_Key management module
+        run: echo "jwt.key=${{secrets.JWT_KEY}}" >> env.yml
+        working-directory: .management/src/main/resources
+        
       # Gradle dependency 캐싱 설정(테스트 속도 향상)
       - name: Cache Gradle packages
         uses: actions/cache@v2
