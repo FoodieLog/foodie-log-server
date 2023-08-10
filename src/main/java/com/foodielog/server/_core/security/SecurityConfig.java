@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -43,16 +45,17 @@ public class SecurityConfig {
 		http.cors().configurationSource(configurationSource());
 
 		// 4. jSessionId 사용 거부
+		// STATELESS -> 응답이 끝나기 전 까지는 세션에 저장 된다. 응답이 끝나면 삭제
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		// 5. form 로그인 해제 (UsernamePasswordAuthenticationFilter 비활성화)
 		http.formLogin().disable();
 
-		// 6. 로그인 인증창이 뜨지 않게 비활성화
+		// 6. username, password 헤더 로그인 방식 해제 (BasicAuthenticationFilter 비활성화)
 		http.httpBasic().disable();
 
-		// 7. 커스텀 필터 적용 (시큐리티 필터 교환)
-		http.apply(new CustomSecurityFilterManager());
+		// 7. JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 넣는다
+		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		// 8. 인증 실패 처리
 		http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
@@ -86,7 +89,6 @@ public class SecurityConfig {
 		config.addAllowedOriginPattern("*"); // 모든 IP 주소 허용 (프론트앤드 IP만 허용 하도록 변경 필요)
 		config.setAllowCredentials(true); // 클라이언트에서 쿠키 요청 허용
 		config.addExposedHeader("Authorization");
-		config.addExposedHeader("refreshToken");
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", config); // 모든 url에 대해서 설정을 적용한다
 		return source;
@@ -96,14 +98,5 @@ public class SecurityConfig {
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws
 		Exception {
 		return authenticationConfiguration.getAuthenticationManager();
-	}
-
-	public class CustomSecurityFilterManager extends AbstractHttpConfigurer<CustomSecurityFilterManager, HttpSecurity> {
-		@Override
-		public void configure(HttpSecurity builder) throws Exception {
-			AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-			builder.addFilter(new JwtAuthenticationFilter(authenticationManager));
-			super.configure(builder);
-		}
 	}
 }
