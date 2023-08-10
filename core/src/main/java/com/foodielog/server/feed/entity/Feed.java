@@ -59,4 +59,14 @@ public class Feed {
 
 	@UpdateTimestamp
 	private Timestamp updatedAt;
+
+	public static Feed createFeed(Restaurant restaurant, User user, String content, String thumbnailUrl) {
+		Feed feed = new Feed();
+		feed.restaurant = restaurant;
+		feed.user = user;
+		feed.content = content;
+		feed.status = ContentStatus.NORMAL;
+		feed.thumbnailUrl = thumbnailUrl;
+		return feed;
+	}
 }

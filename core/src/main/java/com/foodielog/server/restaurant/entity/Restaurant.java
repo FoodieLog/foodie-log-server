@@ -33,14 +33,27 @@ public class Restaurant {
 	private String link;
 
 	@Column(nullable = false)
-	private int mapX;
+	private String mapX;
 
 	@Column(nullable = false)
-	private int mapY;
+	private String mapY;
 
 	@Column(nullable = false)
 	private String address;
 
 	@Column(nullable = false)
 	private String roadAddress;
+
+	public static Restaurant createRestaurant(String name, String category, String link, String mapX, String mapY
+			, String address, String roadAddress) {
+		Restaurant restaurant = new Restaurant();
+		restaurant.name = name;
+		restaurant.category = category;
+		restaurant.link = link;
+		restaurant.mapX = mapX;
+		restaurant.mapY = mapY;
+		restaurant.address = address;
+		restaurant.roadAddress = roadAddress;
+		return restaurant;
+	}
 }
