@@ -52,7 +52,7 @@ public class JwtTokenProvider {
 			.claim("role", String.valueOf(user.getRole()))
 			.signWith(JWT_KEY, SignatureAlgorithm.HS256)
 			.compact();
-		return TOKEN_PREFIX + jwt;
+		return jwt;
 	}
 
 	public String createRefreshToken(User user) {
@@ -63,7 +63,7 @@ public class JwtTokenProvider {
 			.claim("role", String.valueOf(user.getRole()))
 			.signWith(JWT_KEY, SignatureAlgorithm.HS256)
 			.compact();
-		return TOKEN_PREFIX + jwt;
+		return jwt;
 	}
 
 	// Request Header에서 token 값 추출
