@@ -35,4 +35,11 @@ public class Media {
 
 	@CreationTimestamp
 	private Timestamp createdAt;
+
+	public static Media createMedia(Feed feed, String imageUrl) {
+		Media media = new Media();
+		media.feed = feed;
+		media.imageUrl = imageUrl;
+		return media;
+	}
 }

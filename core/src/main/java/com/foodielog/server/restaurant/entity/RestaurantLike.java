@@ -37,4 +37,11 @@ public class RestaurantLike {
 
 	@CreationTimestamp
 	private Timestamp createdAt;
+
+	public static RestaurantLike createRestaurantLike(Restaurant restaurant, User user) {
+		RestaurantLike restaurantLike = new RestaurantLike();
+		restaurantLike.restaurant = restaurant;
+		restaurantLike.user = user;
+		return restaurantLike;
+	}
 }
