@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.foodielog.application.user.dto.UserRequest;
 import com.foodielog.application.user.dto.UserResponse;
-import com.foodielog.server._core.security.jwt.JwtTokenProvider;
+import com.foodielog.application.user.service.OauthUserService;
 import com.foodielog.server._core.util.ApiUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import com.foodielog.server._core.util.CookieUtil;
 @RestController
 public class UserAuthController {
 	private final UserService userService;
+	private final OauthUserService oauthUserService;
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginDTO loginDTO, Errors errors) {
@@ -42,13 +44,25 @@ public class UserAuthController {
 		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);
 	}
 
-	private static ResponseCookie getRefreshTokenCookie(String refreshToken) {
-		return ResponseCookie.from("refreshToken", refreshToken)
-			.maxAge(JwtTokenProvider.EXP_REFRESH)
-			.path("/")
-			.secure(true) // https 환경에서만 쿠키가 발동
-			.sameSite("None") // 크로스 사이트에도 전송 가능
-			.httpOnly(true) // 브라우저에서 접근 불가
-			.build();
+	@GetMapping("/kakao/callback")
+	public ResponseEntity<?> kakaoCalllback(String code) {
+		log.info("kakao 인가 code : " + code);
+
+		if (code == null || code.isEmpty()) {
+			return new ResponseEntity<>(ApiUtils.error("카카오 로그인에 실패했습니다.", HttpStatus.BAD_REQUEST),
+				HttpStatus.BAD_REQUEST);
+		}
+
+		UserResponse.LoginDTO response = oauthUserService.kakaoLogin(code);
+
+		HttpHeaders headers = new HttpHeaders();
+		ResponseCookie cookie = CookieUtil.getRefreshTokenCookie(response.getRefreshToken());
+		log.info("쿠키 생성 완료: " + cookie.toString());
+		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+
+		// @Todo 리다이렉트 url 설정(프론트 서버로 리다이렉트?)
+		//headers.add(HttpHeaders.LOCATION, "https://localhost:8080/api/hi");
+
+		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.FOUND);
 	}
 }
