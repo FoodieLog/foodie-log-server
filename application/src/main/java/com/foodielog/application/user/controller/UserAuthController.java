@@ -41,8 +41,8 @@ public class UserAuthController {
 		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);
 	}
 
-	@GetMapping("/kakao/callback")
-	public ResponseEntity<?> kakaoCalllback(String code) {
+	@GetMapping("/login/kakao")
+	public ResponseEntity<?> kakaoLogin(String code) {
 		log.info("kakao 인가 code : " + code);
 
 		if (code == null || code.isEmpty()) {
