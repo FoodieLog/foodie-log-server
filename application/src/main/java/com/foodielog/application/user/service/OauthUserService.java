@@ -118,8 +118,6 @@ public class OauthUserService {
 			throw new Exception500(userInfoResponse.getBody());
 		}
 
-		log.info(userInfoResponse.getBody());
-
 		ObjectMapper om = new ObjectMapper();
 		om.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
 		try {
