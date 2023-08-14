@@ -1,4 +1,4 @@
-package com.foodielog.server._core.util;
+package com.foodielog.server._core.ExternalAPIUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

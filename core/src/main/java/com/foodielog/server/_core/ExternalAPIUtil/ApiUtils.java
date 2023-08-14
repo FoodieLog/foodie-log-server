@@ -1,4 +1,4 @@
-package com.foodielog.server._core.util;
+package com.foodielog.server._core.ExternalAPIUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +24,9 @@ public class ApiUtils {
         private final ApiError error;
     }
 
-    @Getter @Setter @AllArgsConstructor
+    @Getter
+    @Setter
+    @AllArgsConstructor
     public static class ApiError {
         private final String message;
         private final int status;

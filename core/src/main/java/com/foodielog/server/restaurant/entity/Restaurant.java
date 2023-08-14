@@ -23,8 +23,8 @@ public class Restaurant {
 	@Column(nullable = false)
 	private String name;
 
-//	@Column(nullable = false)
-//	private String description;
+	@Column(nullable = false)
+	private String phone;
 
 	@Column(nullable = false)
 	private String category;
@@ -44,10 +44,11 @@ public class Restaurant {
 	@Column(nullable = false)
 	private String roadAddress;
 
-	public static Restaurant createRestaurant(String name, String category, String link, String mapX, String mapY
+	public static Restaurant createRestaurant(String name, String phone, String category, String link, String mapX, String mapY
 			, String address, String roadAddress) {
 		Restaurant restaurant = new Restaurant();
 		restaurant.name = name;
+		restaurant.phone = phone;
 		restaurant.category = category;
 		restaurant.link = link;
 		restaurant.mapX = mapX;

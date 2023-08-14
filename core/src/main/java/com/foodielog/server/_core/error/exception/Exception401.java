@@ -1,9 +1,9 @@
 package com.foodielog.server._core.error.exception;
 
 
+import com.foodielog.server._core.ExternalAPIUtil.ApiUtils;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import com.foodielog.server._core.util.ApiUtils;
 
 
 // 인증 안됨
@@ -13,11 +13,11 @@ public class Exception401 extends RuntimeException {
         super(message);
     }
 
-    public ApiUtils.ApiResult<?> body(){
+    public ApiUtils.ApiResult<?> body() {
         return ApiUtils.error(getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
-    public HttpStatus status(){
+    public HttpStatus status() {
         return HttpStatus.UNAUTHORIZED;
     }
 }

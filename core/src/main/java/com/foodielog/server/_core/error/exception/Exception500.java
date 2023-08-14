@@ -1,8 +1,8 @@
 package com.foodielog.server._core.error.exception;
 
+import com.foodielog.server._core.ExternalAPIUtil.ApiUtils;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import com.foodielog.server._core.util.ApiUtils;
 
 
 @Getter
@@ -16,7 +16,7 @@ public class Exception500 extends RuntimeException {
         return ApiUtils.error(getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public HttpStatus status(){
+    public HttpStatus status() {
         return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
