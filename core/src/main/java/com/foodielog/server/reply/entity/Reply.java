@@ -53,4 +53,13 @@ public class Reply {
 
 	@UpdateTimestamp
 	private Timestamp updatedAt;
+
+	public static Reply createReply(User user, Feed feed, String content) {
+		Reply reply = new Reply();
+		reply.user = user;
+		reply.feed = feed;
+		reply.content = content;
+		reply.status = ContentStatus.NORMAL;
+		return reply;
+	}
 }
