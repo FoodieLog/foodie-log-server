@@ -1,18 +1,17 @@
 package com.foodielog.server._core.kakaoApi;
 
-import com.foodielog.server._core.error.exception.ApiException;
-
+import com.foodielog.server._core.ExternalAPIUtil.Fetch;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
+@Slf4j
 @Service
-public class KakaoApiService implements KakaoAPI{
+public class KakaoApiService {
 
     @Value("${kakao.api.key}")
     private String kakaoApiKey;
@@ -20,23 +19,20 @@ public class KakaoApiService implements KakaoAPI{
     @Value("${kakao.api.url}")
     private String apiUrl;
 
-    public KakaoApiResponse searchRestaurantsByKeyword(KakaoApiRequest kakaoApiRequest) throws ApiException {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoApiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON); // json 형태로 전송
+    @Transactional(readOnly = true)
+    public KakaoApiResponse getKakaoSearchApi(String keyword) {
+        KakaoApiRequest kakaoApiRequest = KakaoApiRequest.createKakaoApiRequest(keyword);
+        ResponseEntity<KakaoApiResponse> kakaoApiResponse = Fetch.searchRestaurantsByKeyword(kakaoApiRequest, kakaoApiKey, apiUrl);
 
-        RestTemplate restTemplate = new RestTemplate(); // 외부 api 호출에 요청, 응답하기 위해 사용
-        HttpEntity<String> httpEntity = new HttpEntity<>(headers); // HttpEntity : HTTP 요청의 본문 내용과 헤더를 함께 담아주는 역할, get이니까 헤더만
-        URI targetUrl = UriComponentsBuilder // 요청 uri 생성
-                .fromUriString(apiUrl)
-                .queryParams(kakaoApiRequest.toMultiValueMap()) // 쿼리 넣어주기
-                .build()
-                .encode(StandardCharsets.UTF_8) // 인코딩
-                .toUri();
+        log.info("kakao search api 검색 시작");
 
-        ResponseEntity<KakaoApiResponse> responseEntity = restTemplate.exchange(
-                targetUrl, HttpMethod.GET, httpEntity, KakaoApiResponse.class); // exchange() 메서드로 실제로 요청 날리고, 응답 받기.
+        if (kakaoApiResponse == null || kakaoApiResponse.getBody().getDocuments() == null) {
+            // TODO : 검색 결과가 없을 경우 반환값 합의 필요.
+            return new KakaoApiResponse(new KakaoApiResponse.Meta(), Collections.emptyList());
+        }
 
-        return responseEntity.getBody(); // 응답 바디 내용 반환
+        log.info("kakao search api 검색 완료");
+
+        return kakaoApiResponse.getBody();
     }
 }

@@ -23,11 +23,16 @@ public class S3Uploader {
     public String saveFile(MultipartFile multipartFile) throws IOException {
         String originalFilename = multipartFile.getOriginalFilename();
 
+        log.info("File upload started: " + originalFilename);
+
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
 
         amazonS3.putObject(bucket, originalFilename, multipartFile.getInputStream(), metadata);
+
+        log.info("File upload completed: " + originalFilename);
+
         return amazonS3.getUrl(bucket, originalFilename).toString();
     }
 }
