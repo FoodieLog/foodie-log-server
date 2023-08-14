@@ -79,4 +79,13 @@ public class User {
 
 	@UpdateTimestamp
 	private Timestamp updatedAt;
+
+	public static User createSocialUser(Long id, String email, String password, ProviderType provider) {
+		User user = new User();
+		user.email = email;
+		user.password = password;
+		user.provider = provider;
+		user.nickName = provider+id.toString();
+		return user;
+	}
 }
