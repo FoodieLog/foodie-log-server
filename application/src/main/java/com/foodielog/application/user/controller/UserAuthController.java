@@ -60,9 +60,7 @@ public class UserAuthController {
 		log.info("쿠키 생성 완료: " + cookie.toString());
 		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
 
-		// @Todo 리다이렉트 url 설정(프론트 서버로 리다이렉트?)
-		//headers.add(HttpHeaders.LOCATION, "https://localhost:8080/api/hi");
 
-		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.FOUND);
+		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);
 	}
 }
