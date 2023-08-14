@@ -17,6 +17,8 @@ import org.springframework.util.MultiValueMap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.foodielog.server._core.error.ErrorMessage;
+import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception401;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.application.user.dto.KakaoDTO;
@@ -63,19 +65,17 @@ public class OauthUserService {
 			throw new Exception401("로그인 불가: 카카오 계정에 연결된 이메일이 유효하지 않습니다.");
 		}
 
-		Optional<User> userOptional = userRepository.findByEmail(kakaoAccount.getEmail());
-
-		User loginUser;
 		// 회원 정보가 없으면 회원가입
-		if(userOptional.isEmpty()){
+		if(!userRepository.existsByEmail(kakaoAccount.getEmail())){
 			String encodedRandomPassword = passwordEncoder.encode(UUID.randomUUID().toString());
 			User user = User.createSocialUser(kakaoUserInfo.getId(),kakaoAccount.getEmail(), encodedRandomPassword,
 				ProviderType.KAKAO);
 
-			loginUser=userRepository.save(user);
-		}else{
-			loginUser=userOptional.get();
+			userRepository.save(user);
 		}
+
+		User loginUser = userRepository.findByEmail(kakaoAccount.getEmail())
+			.orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
 		String accessToken = jwtTokenProvider.createAccessToken(loginUser);
 		String refreshToken = jwtTokenProvider.createRefreshToken(loginUser);
