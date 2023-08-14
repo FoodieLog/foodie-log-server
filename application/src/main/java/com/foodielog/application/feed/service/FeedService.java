@@ -67,13 +67,12 @@ public class FeedService {
         }
 
         Feed feed = Feed.createFeed(restaurant, user, saveDTO.getContent(), storedFileNames.get(0));
+        feedRepository.save(feed);
 
         for (String storedFileName : storedFileNames) {
             Media media = Media.createMedia(feed, storedFileName);
             mediaRepository.save(media);
         }
-
-        feedRepository.save(feed);
     }
 
     private Restaurant dtoToRestaurant(KakaoApiResponse.SearchPlace searchPlace) {

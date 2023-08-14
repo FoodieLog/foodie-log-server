@@ -31,8 +31,8 @@ public class FeedController {
 
     @PostMapping("/save")
     public ResponseEntity<?> feedSave(
-            @RequestBody @Valid FeedRequest.SaveDTO saveDTO,
-            @RequestParam(value = "files", required = false) List<MultipartFile> files
+            @RequestPart("feedRequest") @Valid FeedRequest.SaveDTO saveDTO,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
             , @AuthenticationPrincipal PrincipalDetails userDetails) throws IOException {
         User user = userDetails.getUser();
         feedService.save(saveDTO, files, user);
