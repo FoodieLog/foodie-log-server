@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.foodielog.application.user.service.UserService;
+import com.foodielog.server._core.util.CookieUtil;
+
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -33,8 +35,8 @@ public class UserAuthController {
 		UserResponse.LoginDTO response = userService.login(loginDTO);
 
 		HttpHeaders headers = new HttpHeaders();
-		ResponseCookie cookie = getRefreshTokenCookie(response.getRefreshToken());
-		log.info("쿠키 생성 완료: "+cookie.toString());
+		ResponseCookie cookie = CookieUtil.getRefreshTokenCookie(response.getRefreshToken());
+		log.info("쿠키 생성 완료: " + cookie.toString());
 		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
 
 		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);
