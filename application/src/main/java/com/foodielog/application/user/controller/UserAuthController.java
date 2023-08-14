@@ -36,10 +36,7 @@ public class UserAuthController {
 	public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginDTO loginDTO, Errors errors) {
 		UserResponse.LoginDTO response = userService.login(loginDTO);
 
-		HttpHeaders headers = new HttpHeaders();
-		ResponseCookie cookie = CookieUtil.getRefreshTokenCookie(response.getRefreshToken());
-		log.info("쿠키 생성 완료: " + cookie.toString());
-		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+		HttpHeaders headers = getCookieHeaders(response);
 
 		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);
 	}
@@ -55,12 +52,16 @@ public class UserAuthController {
 
 		UserResponse.LoginDTO response = oauthUserService.kakaoLogin(code);
 
+		HttpHeaders headers = getCookieHeaders(response);
+
+		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);
+	}
+
+	private static HttpHeaders getCookieHeaders(UserResponse.LoginDTO response) {
 		HttpHeaders headers = new HttpHeaders();
 		ResponseCookie cookie = CookieUtil.getRefreshTokenCookie(response.getRefreshToken());
 		log.info("쿠키 생성 완료: " + cookie.toString());
 		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
-
-
-		return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);
+		return headers;
 	}
 }
