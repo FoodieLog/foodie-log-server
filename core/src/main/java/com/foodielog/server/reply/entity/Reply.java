@@ -62,4 +62,8 @@ public class Reply {
 		reply.status = ContentStatus.NORMAL;
 		return reply;
 	}
+
+	public void deleteReply() {
+		status = ContentStatus.DELETED;
+	}
 }
