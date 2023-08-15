@@ -2,13 +2,13 @@ package com.foodielog.application.feed.controller;
 
 import com.foodielog.application.feed.dto.FeedRequest;
 import com.foodielog.application.feed.service.FeedService;
-import com.foodielog.server._core.ExternalAPIUtil.ApiUtils;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception500;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
 import com.foodielog.server._core.kakaoApi.KakaoApiService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
+import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

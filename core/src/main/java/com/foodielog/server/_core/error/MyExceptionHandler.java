@@ -1,7 +1,7 @@
 package com.foodielog.server._core.error;
 
-import com.foodielog.server._core.ExternalAPIUtil.ApiUtils;
 import com.foodielog.server._core.error.exception.*;
+import com.foodielog.server._core.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

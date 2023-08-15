@@ -1,6 +1,6 @@
 package com.foodielog.server._core.kakaoApi;
 
-import com.foodielog.server._core.ExternalAPIUtil.Fetch;
+import com.foodielog.server._core.util.ExternalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class KakaoApiService {
     @Transactional(readOnly = true)
     public KakaoApiResponse getKakaoSearchApi(String keyword) {
         KakaoApiRequest kakaoApiRequest = KakaoApiRequest.createKakaoApiRequest(keyword);
-        ResponseEntity<KakaoApiResponse> kakaoApiResponse = Fetch.searchRestaurantsByKeyword(kakaoApiRequest, kakaoApiKey, apiUrl);
+        ResponseEntity<KakaoApiResponse> kakaoApiResponse = ExternalUtil.searchRestaurantsByKeyword(kakaoApiRequest, kakaoApiKey, apiUrl);
 
         log.info("kakao search api 검색 시작");
 

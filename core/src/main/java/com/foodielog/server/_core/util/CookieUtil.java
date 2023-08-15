@@ -1,4 +1,4 @@
-package com.foodielog.server._core.ExternalAPIUtil;
+package com.foodielog.server._core.util;
 
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import org.springframework.http.ResponseCookie;
