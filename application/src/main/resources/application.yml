@@ -7,7 +7,8 @@ server:
 
 spring:
   config:
-    import: env.yml, application-api.yml
+    profiles: application-api
+    import: env.yml
   datasource:
     url: jdbc:h2:mem:test;MODE=MySQL
     driver-class-name: org.h2.Driver
@@ -31,20 +32,6 @@ spring:
         show_sql: true
     defer-datasource-initialization: true
     open-in-view: true
-
-kakao:
-  api:
-    url: https://dapi.kakao.com/v2/local/search/keyword
-
-# S3
-cloud:
-  aws:
-    s3:
-      bucket: inyoungbucket
-    region:
-      static: ap-northeast-2
-    stack:
-      auto: false
 
 #  sql:
 #    init:
