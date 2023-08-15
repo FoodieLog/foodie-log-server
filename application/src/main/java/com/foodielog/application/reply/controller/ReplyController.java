@@ -6,6 +6,8 @@ import com.foodielog.application.reply.service.ReplyService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,17 +26,24 @@ public class ReplyController {
     @PostMapping("/{feedId}")
     public ResponseEntity<?> saveReply(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                        @PathVariable Long feedId,
-                                       @Valid @RequestBody ReplyRequest.createDTO createDTO,
+                                       @Valid @RequestBody ReplyRequest.CreateDTO createDTO,
                                        Errors errors) {
-        ReplyResponse.createDTO response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
+        ReplyResponse.CreateDTO response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
         return new ResponseEntity<>(ApiUtils.success(response), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{replyId}")
-    public ResponseEntity<?> Reply(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                   @PathVariable Long replyId) {
+    public ResponseEntity<?> deleteReply(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                         @PathVariable Long replyId) {
         replyService.deleteReply(principalDetails.getUser(), replyId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/{feedId}")
+    public ResponseEntity<?> getReplyList(@PathVariable Long feedId,
+                                          @RequestParam Long replyId,
+                                          @PageableDefault Pageable pageable) {
+        ReplyResponse.ListDTO response = replyService.getListReply(feedId, replyId, pageable);
+        return new ResponseEntity<>(ApiUtils.success(response), HttpStatus.OK);
+    }
 }
