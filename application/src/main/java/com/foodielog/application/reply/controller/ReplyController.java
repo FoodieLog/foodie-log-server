@@ -29,7 +29,7 @@ public class ReplyController {
                                        @Valid @RequestBody ReplyRequest.CreateDTO createDTO,
                                        Errors errors) {
         ReplyResponse.CreateDTO response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
-        return new ResponseEntity<>(ApiUtils.success(response), HttpStatus.CREATED);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{replyId}")
@@ -44,6 +44,6 @@ public class ReplyController {
                                           @RequestParam Long replyId,
                                           @PageableDefault Pageable pageable) {
         ReplyResponse.ListDTO response = replyService.getListReply(feedId, replyId, pageable);
-        return new ResponseEntity<>(ApiUtils.success(response), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
