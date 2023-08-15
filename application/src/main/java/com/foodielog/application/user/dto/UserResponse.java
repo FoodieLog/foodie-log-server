@@ -1,28 +1,45 @@
 package com.foodielog.application.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.user.entity.User;
-
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserResponse {
-	@Getter
-	public static class LoginDTO {
-		private String nickName;
-		private String profileImageUrl;
-		private String accessToken;
+    @Getter
+    public static class ExistsEmailDTO {
+        private final String email;
 
-		@JsonIgnore
-		private String refreshToken;
+        public ExistsEmailDTO(String email) {
+            this.email = email;
+        }
+    }
 
-		public LoginDTO(User user, String accessToken, String refreshToken) {
-			this.nickName = user.getNickName();
-			this.profileImageUrl = user.getProfileImageUrl();
-			this.accessToken = accessToken;
-			this.refreshToken = refreshToken;
-		}
-	}
+    @Getter
+    public static class ExistsNickNameDTO {
+        private final String nickName;
+
+        public ExistsNickNameDTO(String nickName) {
+            this.nickName = nickName;
+        }
+    }
+
+    @Getter
+    public static class LoginDTO {
+        private final String nickName;
+        private final String profileImageUrl;
+        private final String accessToken;
+
+        @JsonIgnore
+        private final String refreshToken;
+
+        public LoginDTO(User user, String accessToken, String refreshToken) {
+            this.nickName = user.getNickName();
+            this.profileImageUrl = user.getProfileImageUrl();
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+        }
+    }
 }
