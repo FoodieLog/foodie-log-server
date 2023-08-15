@@ -31,7 +31,7 @@ public class UserAuthController {
 
         HttpHeaders headers = getCookieHeaders(response);
 
-        return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), headers, HttpStatus.OK);
     }
 
     @GetMapping("/login/kakao")
@@ -47,7 +47,7 @@ public class UserAuthController {
 
         HttpHeaders headers = getCookieHeaders(response);
 
-        return new ResponseEntity<>(ApiUtils.success(response), headers, HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), headers, HttpStatus.OK);
     }
 
     private static HttpHeaders getCookieHeaders(UserResponse.LoginDTO response) {

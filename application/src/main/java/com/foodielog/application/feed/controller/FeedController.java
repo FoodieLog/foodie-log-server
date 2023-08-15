@@ -41,7 +41,7 @@ public class FeedController {
         }
 
         KakaoApiResponse kakaoApiResponse = kakaoApiService.getKakaoSearchApi(keyword);
-        return ResponseEntity.ok(ApiUtils.success(kakaoApiResponse));
+        return new ResponseEntity<>(ApiUtils.success(kakaoApiResponse, HttpStatus.OK), HttpStatus.OK);
     }
 
     @PostMapping("/feed")
@@ -56,7 +56,7 @@ public class FeedController {
             User user = principalDetails.getUser();
             feedService.save(saveDTO, files, user);
 
-            return ResponseEntity.ok(ApiUtils.success(null));
+            return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
         } catch (IOException e) {
             throw new Exception500(ErrorMessage.FAIL_UPLOAD);
         }
