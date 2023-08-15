@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,6 +40,13 @@ public class MyExceptionHandler {
     @ExceptionHandler(Exception500.class)
     public ResponseEntity<?> serverError(Exception500 e) {
         return new ResponseEntity<>(e.body(), e.status());
+    }
+
+    // @Validated 예외 처리
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> inValid(ConstraintViolationException e) {
+        ApiUtils.ApiResult<?> apiResult = ApiUtils.error(e.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiResult, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
