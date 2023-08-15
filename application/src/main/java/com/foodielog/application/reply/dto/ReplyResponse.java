@@ -1,30 +1,62 @@
 package com.foodielog.application.reply.dto;
 
+import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.reply.entity.Reply;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class ReplyResponse {
 
-    @Builder
     @Getter
-    public static class createDTO {
-        private Long id;
-        private String nickName;
-        private String content;
-        private String profileImageUrl;
-        private Timestamp createdAt;
+    public static class CreateDTO {
+        private final Long id;
+        private final String nickName;
+        private final String content;
+        private final String profileImageUrl;
+        private final Timestamp createdAt;
 
-        public static createDTO from(Reply reply) {
-            return createDTO.builder()
-                    .id(reply.getId())
-                    .nickName(reply.getUser().getNickName())
-                    .content(reply.getContent())
-                    .profileImageUrl(reply.getUser().getProfileImageUrl())
-                    .createdAt(reply.getCreatedAt())
-                    .build();
+        public CreateDTO(Reply reply) {
+            this.id = reply.getId();
+            this.nickName = reply.getUser().getNickName();
+            this.content = reply.getContent();
+            this.profileImageUrl = reply.getUser().getProfileImageUrl();
+            this.createdAt = reply.getCreatedAt();
+        }
+    }
+
+    @Getter
+    public static class ListDTO {
+        private final String nickName;
+        private final String profileImageUrl;
+        private final String content;
+        private final Timestamp createdAt;
+        private final List<ReplyDTO> replyList;
+
+        public ListDTO(Feed feed, List<ReplyDTO> replyListDTO) {
+            this.nickName = feed.getUser().getNickName();
+            this.profileImageUrl = feed.getUser().getProfileImageUrl();
+            this.content = feed.getContent();
+            this.createdAt = feed.getCreatedAt();
+            this.replyList = replyListDTO;
+        }
+    }
+
+    @Getter
+    public static class ReplyDTO {
+        private final Long id;
+        private final String nickName;
+        private final String profileImageUrl;
+        private final String content;
+        private final Timestamp createdAt;
+
+        public ReplyDTO(Reply reply) {
+            this.id = reply.getId();
+            this.nickName = reply.getUser().getNickName();
+            this.profileImageUrl = reply.getUser().getProfileImageUrl();
+            this.content = reply.getContent();
+            this.createdAt = reply.getCreatedAt();
         }
     }
 }
