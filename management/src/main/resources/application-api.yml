@@ -1,0 +1,22 @@
+# KaKao
+kakao:
+  login:
+    redirect-uri: "http://localhost:8080/auth/kakao/callback"
+    grant-type: "authorization_code"
+    authorization-uri: "https://kauth.kakao.com/oauth/authorize"
+    token-uri: "https://kauth.kakao.com/oauth/token"
+    user-info-uri: "https://kapi.kakao.com/v2/user/me"
+    user-name-attribute: "id"
+
+  api:
+    url: https://dapi.kakao.com/v2/local/search/keyword
+
+# S3
+cloud:
+  aws:
+    s3:
+      bucket: inyoungbucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
