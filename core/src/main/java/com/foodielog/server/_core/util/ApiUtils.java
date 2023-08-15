@@ -1,4 +1,4 @@
-package com.foodielog.server._core.ExternalAPIUtil;
+package com.foodielog.server._core.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

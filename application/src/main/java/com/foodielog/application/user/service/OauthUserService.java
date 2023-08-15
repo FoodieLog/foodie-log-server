@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.foodielog.application.user.dto.KakaoDTO;
 import com.foodielog.application.user.dto.UserResponse;
-import com.foodielog.server._core.ExternalAPIUtil.Fetch;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception401;
 import com.foodielog.server._core.error.exception.Exception500;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
+import com.foodielog.server._core.util.ExternalUtil;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.ProviderType;
@@ -89,7 +89,7 @@ public class OauthUserService {
         body.add("redirect_uri", KAKAO_REDIRECT_URI);
         body.add("code", code);
 
-        ResponseEntity<String> tokenResponse = Fetch.kakaoTokenRequest(KAKAO_TOKEN_URI, HttpMethod.POST, body);
+        ResponseEntity<String> tokenResponse = ExternalUtil.kakaoTokenRequest(KAKAO_TOKEN_URI, HttpMethod.POST, body);
 
         if (!tokenResponse.getStatusCode().equals(HttpStatus.OK)) {
             throw new Exception500(tokenResponse.getBody());
@@ -108,7 +108,7 @@ public class OauthUserService {
     }
 
     public KakaoDTO.UserInfo getKakaoUserInfo(String token) {
-        ResponseEntity<String> userInfoResponse = Fetch.kakaoUserInfoRequest(KAKAO_USER_INFO_URI, HttpMethod.POST, token);
+        ResponseEntity<String> userInfoResponse = ExternalUtil.kakaoUserInfoRequest(KAKAO_USER_INFO_URI, HttpMethod.POST, token);
 
         if (!userInfoResponse.getStatusCode().equals(HttpStatus.OK)) {
             throw new Exception500(userInfoResponse.getBody());

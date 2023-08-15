@@ -1,9 +1,9 @@
 package com.foodielog.server._core.security;
 
-import com.foodielog.server._core.ExternalAPIUtil.FilterResponseUtils;
 import com.foodielog.server._core.error.exception.Exception401;
 import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.security.jwt.JwtAuthenticationFilter;
+import com.foodielog.server._core.util.FilterResponseUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;

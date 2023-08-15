@@ -1,4 +1,4 @@
-package com.foodielog.server._core.ExternalAPIUtil;
+package com.foodielog.server._core.util;
 
 import com.foodielog.server._core.kakaoApi.KakaoApiRequest;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
@@ -10,7 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-public class Fetch {
+public class ExternalUtil {
     public static ResponseEntity<String> kakaoTokenRequest(String url, HttpMethod method, MultiValueMap<String, String> body) {
         RestTemplate rt = new RestTemplate();
 

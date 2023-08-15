@@ -1,4 +1,4 @@
-package com.foodielog.server._core.ExternalAPIUtil;
+package com.foodielog.server._core.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foodielog.server._core.error.exception.Exception401;
