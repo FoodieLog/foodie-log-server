@@ -4,8 +4,8 @@ import com.foodielog.application.user.dto.UserRequest;
 import com.foodielog.application.user.dto.UserResponse;
 import com.foodielog.application.user.dto.response.SendCodeDTO;
 import com.foodielog.application.user.dto.response.VerifiedCodeDTO;
-import com.foodielog.application.user.service.OauthUserService;
 import com.foodielog.application.user.service.UserAuthService;
+import com.foodielog.application.user.service.UserOauthService;
 import com.foodielog.server._core.customValid.valid.ValidNickName;
 import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server._core.util.CookieUtil;
@@ -30,7 +30,7 @@ import javax.validation.constraints.Size;
 @RestController
 public class UserAuthController {
     private final UserAuthService userAuthService;
-    private final OauthUserService oauthUserService;
+    private final UserOauthService oauthUserService;
 
     @GetMapping("/exists/email")
     public ResponseEntity<?> checkExistsEmail(@RequestParam @Email String input) {
@@ -58,8 +58,9 @@ public class UserAuthController {
     }
 
     @GetMapping("/email/verification")
-    public ResponseEntity<?> verificationCode(@RequestParam @Email String email,
-                                              @RequestParam @Size(min = 4, max = 4) String code
+    public ResponseEntity<?> verificationCode(
+            @RequestParam @Email String email,
+            @RequestParam @Size(min = 4, max = 4) String code
     ) {
         VerifiedCodeDTO.Response response = userAuthService.verifiedCode(email, code);
         HttpStatus httpStatus = response.getIsVerified() ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
