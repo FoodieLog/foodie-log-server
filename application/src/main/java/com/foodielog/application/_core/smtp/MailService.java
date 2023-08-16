@@ -7,11 +7,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class MailService {
     private final JavaMailSender emailSender;
