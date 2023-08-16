@@ -1,5 +1,7 @@
 package com.foodielog.application.user.service;
 
+import com.foodielog.application.user.dto.response.UserProfileDTO;
+import com.foodielog.application.user.dto.response.UserThumbnailDTO;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.repository.FeedRepository;
@@ -51,7 +53,7 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public UserResponse.ProfileDTO getProfile(Long userId) {
+	public UserProfileDTO.Response getProfile(Long userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new Exception404("에러"));
 
@@ -59,22 +61,24 @@ public class UserService {
 		Long follower = followRepository.countByFollowedId(user);
 		Long following = followRepository.countByFollowingId(user);
 
-		return new UserResponse.ProfileDTO(user, feedCount, follower, following);
+		return new UserProfileDTO.Response(user, feedCount, follower, following);
 	}
 
 	@Transactional(readOnly = true)
-	public UserResponse.ThumbnailListDTO getThumbnail(Long userId, Long feedId, Pageable pageable) {
+	public UserThumbnailDTO.Response getThumbnail(Long userId, Long feedId, Pageable pageable) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new Exception404("에러"));
-		Feed feed = feedRepository.findById(feedId)
-				.orElseThrow(() -> new Exception404("에러"));
 
-		List<Feed> thumbnail = feedRepository.getThumbnail(user, feed.getId(), pageable);
+		List<Feed> thumbnail = feedRepository.getThumbnail(user, feedId, pageable);
 
-		List<UserResponse.ThumbnailDTO> thumbnailDTO = thumbnail.stream()
-				.map(UserResponse.ThumbnailDTO::new)
+		List<UserThumbnailDTO.ThumbnailDTO> thumbnailDTO = thumbnail.stream()
+				.map(UserThumbnailDTO.ThumbnailDTO::new)
 				.collect(Collectors.toList());
 
-		return new UserResponse.ThumbnailListDTO(thumbnailDTO);
+		return new UserThumbnailDTO.Response(thumbnailDTO);
+	}
+
+	public void getFeeds(String userId, Long feedId) {
+
 	}
 }
