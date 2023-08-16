@@ -31,7 +31,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class OauthUserService {
+public class UserOauthService {
     @Value("${kakao.api.key}")
     private String KAKAO_API_KEY;
 
