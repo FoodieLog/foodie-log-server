@@ -1,6 +1,7 @@
 package com.foodielog.application.user.controller;
 
-import com.foodielog.application.user.dto.UserResponse;
+import com.foodielog.application.user.dto.response.UserProfileDTO;
+import com.foodielog.application.user.dto.response.UserThumbnailDTO;
 import com.foodielog.application.user.service.UserService;
 import com.foodielog.server._core.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +20,22 @@ public class UserController {
 
     @GetMapping("/{userId}/profile")
     public ResponseEntity<?> getProfile(@PathVariable Long userId) {
-        UserResponse.ProfileDTO response = userService.getProfile(userId);
+        UserProfileDTO.Response response = userService.getProfile(userId);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}/feed")
+    @GetMapping("/{userId}/feed/thumbnail")
     public ResponseEntity<?> getThumbnail(@PathVariable Long userId,
-                                          @RequestParam Long feedId,
+                                          @RequestParam(name = "id") Long feedId,
                                           @PageableDefault Pageable pageable) {
-        UserResponse.ThumbnailListDTO response = userService.getThumbnail(userId, feedId, pageable);
+        UserThumbnailDTO.Response response = userService.getThumbnail(userId, feedId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/{userId}/feed/list")
+    public ResponseEntity<?> getFeeds(@PathVariable String userId,
+                                      @RequestParam Long feedId) {
+        userService.getFeeds(userId, feedId);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 }
