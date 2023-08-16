@@ -2,6 +2,8 @@ package com.foodielog.application.user.controller;
 
 import com.foodielog.application.user.dto.UserRequest;
 import com.foodielog.application.user.dto.UserResponse;
+import com.foodielog.application.user.dto.response.SendCodeDTO;
+import com.foodielog.application.user.dto.response.VerifiedCodeDTO;
 import com.foodielog.application.user.service.OauthUserService;
 import com.foodielog.application.user.service.UserService;
 import com.foodielog.server._core.customValid.valid.ValidNickName;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,6 +47,23 @@ public class UserAuthController {
         UserResponse.ExistsNickNameDTO response = new UserResponse.ExistsNickNameDTO(input);
 
         HttpStatus httpStatus = isExists ? HttpStatus.CONFLICT : HttpStatus.OK;
+        return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
+    }
+
+    @GetMapping("/email/code-requests/signup")
+    public ResponseEntity<?> sendCode(@RequestParam @Email String email) {
+        SendCodeDTO.Response response = userService.sendCodeForSignUp(email);
+
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/email/verification")
+    public ResponseEntity<?> verificationCode(@RequestParam @Email String email,
+                                              @RequestParam @Size(min = 4, max = 4) String code
+    ) {
+        VerifiedCodeDTO.Response response = userService.verifiedCode(email, code);
+        HttpStatus httpStatus = response.getIsVerified() ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
+
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
 
