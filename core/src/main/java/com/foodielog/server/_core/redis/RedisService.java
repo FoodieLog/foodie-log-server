@@ -1,6 +1,6 @@
 package com.foodielog.server._core.redis;
 
-import com.foodielog.server._core.error.exception.Exception500;
+import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.util.JsonConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +24,7 @@ public class RedisService {
         String jsonString = vop.get(key);
 
         if (jsonString == null || jsonString.isEmpty()) {
-            log.debug("redis get 오류");
-            throw new Exception500("서버 오류! #R");
+            throw new Exception400("key", "만료 됐거나 유효 하지 않은 키 입니다.");
         }
 
         T object = jsonConverter.jsonToObject(jsonString, clazz);
