@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface FollowRepository extends JpaRepository<Follow, FollowPK> {
 	Long countByFollowedId(User followedId);
 	Long countByFollowingId(User followingId);
+	boolean existsByFollowedId(User user);
 }

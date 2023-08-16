@@ -1,5 +1,6 @@
 package com.foodielog.server.reply.repository;
 
+import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.user.entity.User;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 			"JOIN FETCH r.user " +
 			"WHERE r.feed.id = :feedId and r.id > :id")
 	List<Reply> getReplyList(@Param("feedId") Long feedId, @Param("id") Long id, Pageable pageable);
+
+	Long countByFeed(Feed feed);
 }
