@@ -1,5 +1,6 @@
 package com.foodielog.application.user.controller;
 
+import com.foodielog.application.user.dto.response.UserFeedListDTO;
 import com.foodielog.application.user.dto.response.UserProfileDTO;
 import com.foodielog.application.user.dto.response.UserThumbnailDTO;
 import com.foodielog.application.user.service.UserService;
@@ -26,16 +27,17 @@ public class UserController {
 
     @GetMapping("/{userId}/feed/thumbnail")
     public ResponseEntity<?> getThumbnail(@PathVariable Long userId,
-                                          @RequestParam(name = "id") Long feedId,
-                                          @PageableDefault Pageable pageable) {
+                                          @RequestParam(name = "feed") Long feedId,
+                                          @PageableDefault(size = 15) Pageable pageable) {
         UserThumbnailDTO.Response response = userService.getThumbnail(userId, feedId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/feed/list")
-    public ResponseEntity<?> getFeeds(@PathVariable String userId,
-                                      @RequestParam Long feedId) {
-        userService.getFeeds(userId, feedId);
-        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+    public ResponseEntity<?> getFeeds(@PathVariable Long userId,
+                                      @RequestParam(name = "feed") Long feedId,
+                                      @PageableDefault(size = 15) Pageable pageable) {
+        UserFeedListDTO.Response response = userService.getFeeds(userId, feedId, pageable);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }

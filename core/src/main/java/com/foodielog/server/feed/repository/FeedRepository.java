@@ -14,5 +14,5 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     @Query("SELECT f FROM Feed f " +
             "WHERE f.user = :user AND f.id > :feedId")
-    List<Feed> getThumbnail(@Param("user") User user, @Param("feedId") Long feedId, Pageable pageable);
+    List<Feed> getFeeds(@Param("user") User user, @Param("feedId") Long feedId, Pageable pageable);
 }
