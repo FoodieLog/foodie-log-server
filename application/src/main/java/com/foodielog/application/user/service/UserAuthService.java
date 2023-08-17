@@ -1,6 +1,7 @@
 package com.foodielog.application.user.service;
 
 import com.foodielog.application._core.smtp.MailService;
+import com.foodielog.application.user.dto.SignUpDTO;
 import com.foodielog.application.user.dto.UserRequest;
 import com.foodielog.application.user.dto.UserResponse;
 import com.foodielog.application.user.dto.response.SendCodeDTO;
@@ -9,6 +10,7 @@ import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception500;
 import com.foodielog.server._core.redis.RedisService;
+import com.foodielog.server._core.s3.S3Uploader;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -33,6 +36,7 @@ public class UserAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MailService mailService;
     private final RedisService redisService;
+    private final S3Uploader s3Uploader;
 
     private final UserRepository userRepository;
 
@@ -40,6 +44,25 @@ public class UserAuthService {
     @Transactional(readOnly = true)
     public Boolean checkExistsEmail(String input) {
         return userRepository.existsByEmail(input);
+    }
+
+    @Transactional
+    public SignUpDTO.Response signUp(SignUpDTO.Request request, MultipartFile file) {
+        if (this.checkExistsEmail(request.getEmail())) {
+            throw new Exception400("email", "이미 가입된 이메일 입니다");
+        }
+
+        if (this.checkExistsNickName(request.getNickName())) {
+            throw new Exception400("nickName", "이미 사용 중인 닉네임 입니다");
+        }
+
+        String storedFileUrl = s3Uploader.saveFile(file);
+        User user = User.createUser(request.getEmail(), request.getPassword(), request.getNickName(),
+                storedFileUrl, request.getAboutMe());
+
+        userRepository.save(user);
+
+        return new SignUpDTO.Response(user.getEmail(), user.getNickName(), user.getProfileImageUrl());
     }
 
 
