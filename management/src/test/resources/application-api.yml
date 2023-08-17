@@ -15,7 +15,7 @@ kakao:
 cloud:
   aws:
     s3:
-      bucket: inyoungbucket
+      bucket: foodielog-bucket
     region:
       static: ap-northeast-2
     stack:
