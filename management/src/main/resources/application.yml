@@ -32,6 +32,10 @@ spring:
     ansi:
       enabled: always
 
+  servlet:
+    multipart:
+      max-file-size: 3MB
+
 #  sql:
 #    init:
 #      mode: always
