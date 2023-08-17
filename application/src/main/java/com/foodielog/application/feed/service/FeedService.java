@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,14 +29,7 @@ public class FeedService {
     private final S3Uploader s3Uploader;
 
     @Transactional
-    public void save(FeedRequest.SaveDTO saveDTO, List<MultipartFile> files, User user) throws IOException {
-        List<String> storedFileNames = new ArrayList<>();
-
-        for (MultipartFile file : files) {
-            String storedFileName = s3Uploader.saveFile(file);
-            storedFileNames.add(storedFileName);
-        }
-
+    public void save(FeedRequest.SaveDTO saveDTO, List<MultipartFile> files, User user) {
         Restaurant restaurant = dtoToRestaurant(saveDTO.getSelectedSearchPlace());
         restaurantRepository.save(restaurant);
 
@@ -47,11 +38,13 @@ public class FeedService {
             restaurantLikeRepository.save(restaurantLike);
         }
 
-        Feed feed = Feed.createFeed(restaurant, user, saveDTO.getContent(), storedFileNames.get(0));
+        List<String> filesUrl = s3Uploader.saveFiles(files);
+
+        Feed feed = Feed.createFeed(restaurant, user, saveDTO.getContent(), filesUrl.get(0));
         feedRepository.save(feed);
 
-        for (String storedFileName : storedFileNames) {
-            Media media = Media.createMedia(feed, storedFileName);
+        for (String fileUrl : filesUrl) {
+            Media media = Media.createMedia(feed, fileUrl);
             mediaRepository.save(media);
         }
     }
