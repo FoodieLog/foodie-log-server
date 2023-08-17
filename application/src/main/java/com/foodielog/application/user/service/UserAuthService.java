@@ -1,11 +1,7 @@
 package com.foodielog.application.user.service;
 
 import com.foodielog.application._core.smtp.MailService;
-import com.foodielog.application.user.dto.SignUpDTO;
-import com.foodielog.application.user.dto.UserRequest;
-import com.foodielog.application.user.dto.UserResponse;
-import com.foodielog.application.user.dto.response.SendCodeDTO;
-import com.foodielog.application.user.dto.response.VerifiedCodeDTO;
+import com.foodielog.application.user.dto.*;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception500;
@@ -42,17 +38,18 @@ public class UserAuthService {
 
     /* 회원 가입 */
     @Transactional(readOnly = true)
-    public Boolean checkExistsEmail(String input) {
-        return userRepository.existsByEmail(input);
+    public ExistsEmailDTO.Response checkExistsEmail(String email) {
+        Boolean isExists = userRepository.existsByEmail(email);
+        return new ExistsEmailDTO.Response(email, isExists);
     }
 
     @Transactional
     public SignUpDTO.Response signUp(SignUpDTO.Request request, MultipartFile file) {
-        if (this.checkExistsEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new Exception400("email", "이미 가입된 이메일 입니다");
         }
 
-        if (this.checkExistsNickName(request.getNickName())) {
+        if (userRepository.existsByNickName(request.getNickName())) {
             throw new Exception400("nickName", "이미 사용 중인 닉네임 입니다");
         }
 
@@ -69,7 +66,7 @@ public class UserAuthService {
     /* 이메일 인증 */
     @Transactional
     public SendCodeDTO.Response sendCodeForSignUp(String email) {
-        if (this.checkExistsEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new Exception400("email", "이미 가입된 이메일 입니다");
         }
 
@@ -94,7 +91,7 @@ public class UserAuthService {
 
     /* 로그인 */
     @Transactional(readOnly = true)
-    public UserResponse.LoginDTO login(UserRequest.LoginDTO loginDTO) {
+    public LoginDTO.Response login(LoginDTO.Request loginDTO) {
         User user = userRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
@@ -108,13 +105,14 @@ public class UserAuthService {
         log.info("엑세스 토큰 생성 완료: " + accessToken);
         log.info("리프레시 토큰 생성 완료: " + refreshToken);
 
-        return new UserResponse.LoginDTO(user, accessToken, refreshToken);
+        return new LoginDTO.Response(user, accessToken, refreshToken);
     }
 
     /* 프로필 설정 */
     @Transactional(readOnly = true)
-    public Boolean checkExistsNickName(String input) {
-        return userRepository.existsByNickName(input);
+    public ExistsNickNameDTO.Response checkExistsNickName(String nickName) {
+        Boolean isExists = userRepository.existsByNickName(nickName);
+        return new ExistsNickNameDTO.Response(nickName, isExists);
     }
 
     private String createCode() {

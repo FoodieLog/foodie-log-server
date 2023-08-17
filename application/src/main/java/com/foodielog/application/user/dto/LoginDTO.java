@@ -1,33 +1,27 @@
 package com.foodielog.application.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.foodielog.server._core.customValid.valid.ValidPassWord;
 import com.foodielog.server.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserResponse {
+public class LoginDTO {
     @Getter
-    public static class ExistsEmailDTO {
-        private final String email;
+    public static class Request {
+        @Email
+        private String email;
 
-        public ExistsEmailDTO(String email) {
-            this.email = email;
-        }
+        @ValidPassWord
+        private String password;
     }
 
     @Getter
-    public static class ExistsNickNameDTO {
-        private final String nickName;
-
-        public ExistsNickNameDTO(String nickName) {
-            this.nickName = nickName;
-        }
-    }
-
-    @Getter
-    public static class LoginDTO {
+    public static class Response {
         private final String nickName;
         private final String profileImageUrl;
         private final String accessToken;
@@ -35,7 +29,7 @@ public class UserResponse {
         @JsonIgnore
         private final String refreshToken;
 
-        public LoginDTO(User user, String accessToken, String refreshToken) {
+        public Response(User user, String accessToken, String refreshToken) {
             this.nickName = user.getNickName();
             this.profileImageUrl = user.getProfileImageUrl();
             this.accessToken = accessToken;
