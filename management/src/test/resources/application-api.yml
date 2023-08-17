@@ -1,0 +1,46 @@
+# KaKao
+kakao:
+  login:
+    redirect-uri: "http://localhost:8080/auth/kakao/callback"
+    grant-type: "authorization_code"
+    authorization-uri: "https://kauth.kakao.com/oauth/authorize"
+    token-uri: "https://kauth.kakao.com/oauth/token"
+    user-info-uri: "https://kapi.kakao.com/v2/user/me"
+    user-name-attribute: "id"
+
+  api:
+    url: https://dapi.kakao.com/v2/local/search/keyword
+
+# S3
+cloud:
+  aws:
+    s3:
+      bucket: inyoungbucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+spring:
+  config:
+    import: env.yml
+  redis:
+    host: ${elasticache.redis.end-point}
+    port: 6379
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: foodielog25@gmail.com
+    password: ${gmail.app.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 180000  # 인증 코드 만료 시간 3 * 60 * 1000 == 3분

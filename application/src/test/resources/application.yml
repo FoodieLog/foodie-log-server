@@ -1,0 +1,38 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  config:
+    import: env.yml, application-api.yml
+  datasource:
+    url: jdbc:h2:mem:test;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: root
+    password:
+
+  h2:
+    console:
+      enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    defer-datasource-initialization: true
+    open-in-view: true
+
+  output:
+    ansi:
+      enabled: always
+
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: classpath:test/data.sql
