@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
   servlet:
     encoding:
       charset: UTF-8
@@ -31,6 +31,10 @@ spring:
   output:
     ansi:
       enabled: always
+
+  servlet:
+    multipart:
+      max-file-size: 3MB
 
 #  sql:
 #    init:
