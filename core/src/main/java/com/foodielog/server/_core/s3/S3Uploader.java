@@ -2,6 +2,7 @@ package com.foodielog.server._core.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.foodielog.server._core.error.exception.Exception500;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +21,7 @@ public class S3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String saveFile(MultipartFile multipartFile) throws IOException {
+    public String saveFile(MultipartFile multipartFile) {
         String originalFilename = multipartFile.getOriginalFilename();
 
         log.info("File upload started: " + originalFilename);
@@ -29,7 +30,11 @@ public class S3Uploader {
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
 
-        amazonS3.putObject(bucket, originalFilename, multipartFile.getInputStream(), metadata);
+        try {
+            amazonS3.putObject(bucket, originalFilename, multipartFile.getInputStream(), metadata);
+        } catch (IOException e) {
+            throw new Exception500("서버 오류 #F");
+        }
 
         log.info("File upload completed: " + originalFilename);
 
