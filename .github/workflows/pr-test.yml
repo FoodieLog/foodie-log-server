@@ -25,13 +25,6 @@ jobs:
           java-version: '11'
   
       # 환경 변수 설정
-#       - name: set JWT_Key application module
-#         run: echo "jwt.key=${{secrets.JWT_KEY}}" >> env.yml
-#         working-directory: ./application/src/main/resources
-        
-#       - name: set JWT_Key management module
-#         run: echo "jwt.key=${{secrets.JWT_KEY}}" >> env.yml
-#         working-directory: ./management/src/main/resources
       - name: Copy Secret To application module
         env:
           OCCUPY_SECRET: ${{ secrets.OCCUPY_SECRET }}
@@ -64,7 +57,7 @@ jobs:
       # Gradle wrapper 파일 실행 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-          
-      # Gradle test를 실행
-      - name: Test with Gradle
-        run: ./gradlew --info test
+        
+      # Gradle build를 실행
+      - name: Build with Gradle
+        run: ./gradlew build
