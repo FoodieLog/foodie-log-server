@@ -21,7 +21,13 @@ cloud:
     stack:
       auto: false
 
-Spring:
+spring:
+  config:
+    import: env.yml
+  redis:
+    host: ${elasticache.redis.end-point}
+    port: 6379
+
   mail:
     host: smtp.gmail.com
     port: 587

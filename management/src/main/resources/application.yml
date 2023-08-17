@@ -18,10 +18,6 @@ spring:
     console:
       enabled: true
 
-  output:
-    ansi:
-      enabled: always
-
   jpa:
     hibernate:
       ddl-auto: create
@@ -31,6 +27,10 @@ spring:
         show_sql: true
     defer-datasource-initialization: true
     open-in-view: true
+
+  output:
+    ansi:
+      enabled: always
 
 #  sql:
 #    init:

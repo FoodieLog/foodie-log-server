@@ -18,10 +18,6 @@ spring:
     console:
       enabled: true
 
-  redis:
-    host: ${elasticache.redis.end-point}
-    port: 6379
-
   jpa:
     hibernate:
       ddl-auto: create
