@@ -75,14 +75,14 @@ public class UserFeedListDTO {
         private final String name;
         private final String category;
         private final String link;
-        private final String readAddress;
+        private final String roadAddress;
 
         public UserRestaurantDTO(Restaurant restaurant) {
             this.id = restaurant.getId();
             this.name = restaurant.getName();
             this.category = restaurant.getCategory();
             this.link = restaurant.getLink();
-            this.readAddress = restaurant.getRoadAddress();
+            this.roadAddress = restaurant.getRoadAddress();
         }
     }
 }
