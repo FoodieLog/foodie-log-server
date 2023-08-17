@@ -1,4 +1,4 @@
-package com.foodielog.application.user.dto.response;
+package com.foodielog.application.user.dto;
 
 import com.foodielog.server.user.entity.User;
 import lombok.Getter;

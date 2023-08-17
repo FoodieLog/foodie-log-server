@@ -1,8 +1,8 @@
 package com.foodielog.application.user.controller;
 
-import com.foodielog.application.user.dto.response.UserFeedListDTO;
-import com.foodielog.application.user.dto.response.UserProfileDTO;
-import com.foodielog.application.user.dto.response.UserThumbnailDTO;
+import com.foodielog.application.user.dto.UserFeedListDTO;
+import com.foodielog.application.user.dto.UserProfileDTO;
+import com.foodielog.application.user.dto.UserThumbnailDTO;
 import com.foodielog.application.user.service.UserService;
 import com.foodielog.server._core.util.ApiUtils;
 import lombok.RequiredArgsConstructor;

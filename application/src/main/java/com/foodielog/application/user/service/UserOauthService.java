@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.foodielog.application.user.dto.KakaoDTO;
-import com.foodielog.application.user.dto.UserResponse;
+import com.foodielog.application.user.dto.LoginDTO;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception401;
@@ -52,7 +52,7 @@ public class UserOauthService {
     private final UserRepository userRepository;
 
     @Transactional
-    public UserResponse.LoginDTO kakaoLogin(String code) {
+    public LoginDTO.Response kakaoLogin(String code) {
         KakaoDTO.Token kakaoAccessToken = getKakaoAccessToken(code);
         KakaoDTO.UserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken.getAccessToken());
         KakaoDTO.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
@@ -79,7 +79,7 @@ public class UserOauthService {
         log.info("kakao 엑세스 토큰 생성 완료: " + accessToken);
         log.info("kakao 리프레시 토큰 생성 완료: " + refreshToken);
 
-        return new UserResponse.LoginDTO(loginUser, accessToken, refreshToken);
+        return new LoginDTO.Response(loginUser, accessToken, refreshToken);
     }
 
     public KakaoDTO.Token getKakaoAccessToken(String code) {
