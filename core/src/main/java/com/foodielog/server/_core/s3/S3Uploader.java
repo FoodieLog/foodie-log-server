@@ -33,13 +33,8 @@ public class S3Uploader {
 
     public List<String> saveFiles(List<MultipartFile> multipartFiles) {
         List<String> uploadedUrls = new ArrayList<>();
-        long maxSize = parseMaxSize(maxSizeString);
 
         for (MultipartFile multipartFile : multipartFiles) {
-            if (multipartFile.getSize() > maxSize) {
-                throw new Exception400("file : ", ErrorMessage.EXCEED_IMAGE_SIZE);
-            }
-
             String uploadedUrl = saveFile(multipartFile);
             uploadedUrls.add(uploadedUrl);
         }
@@ -78,21 +73,31 @@ public class S3Uploader {
         return Long.parseLong(numericValue) * 1024 * 1024;
     }
 
-    private String saveFile(MultipartFile multipartFile) {
-        if (isDuplicate(multipartFile)) {
+    private void checkFileSize(MultipartFile multipartFile) {
+        long maxSize = parseMaxSize(maxSizeString);
+
+        if (multipartFile.getSize() > maxSize) {
+            throw new Exception400("file : ", ErrorMessage.EXCEED_IMAGE_SIZE);
+        }
+    }
+
+    public String saveFile(MultipartFile file) {
+        checkFileSize(file);
+
+        if (isDuplicate(file)) {
             throw new Exception400("file", ErrorMessage.DUPLICATE_IMAGE);
         }
 
-        String randomFilename = generateRandomFilename(multipartFile);
+        String randomFilename = generateRandomFilename(file);
 
         log.info("File upload started: " + randomFilename);
 
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(multipartFile.getSize());
-        metadata.setContentType(multipartFile.getContentType());
+        metadata.setContentLength(file.getSize());
+        metadata.setContentType(file.getContentType());
 
         try {
-            amazonS3.putObject(bucket, randomFilename, multipartFile.getInputStream(), metadata);
+            amazonS3.putObject(bucket, randomFilename, file.getInputStream(), metadata);
         } catch (AmazonS3Exception e) {
             log.error("Amazon S3 error while uploading file: " + e.getMessage());
             throw new Exception500(ErrorMessage.FAIL_UPLOAD);
