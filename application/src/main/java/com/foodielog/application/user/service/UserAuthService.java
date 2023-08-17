@@ -36,16 +36,40 @@ public class UserAuthService {
 
     private final UserRepository userRepository;
 
+    /* 회원 가입 */
     @Transactional(readOnly = true)
     public Boolean checkExistsEmail(String input) {
         return userRepository.existsByEmail(input);
     }
 
-    @Transactional(readOnly = true)
-    public Boolean checkExistsNickName(String input) {
-        return userRepository.existsByNickName(input);
+
+    /* 이메일 인증 */
+    @Transactional
+    public SendCodeDTO.Response sendCodeForSignUp(String email) {
+        if (this.checkExistsEmail(email)) {
+            throw new Exception400("email", "이미 가입된 이메일 입니다");
+        }
+
+        // 이메일 전송
+        String title = "FoodieLog 회원 가입 이메일 인증 번호";
+        String authCode = this.createCode();
+        mailService.sendEmail(email, title, authCode);
+
+        // 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
+        redisService.setObjectByKey(EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
+
+        return new SendCodeDTO.Response(email);
     }
 
+    @Transactional(readOnly = true)
+    public VerifiedCodeDTO.Response verifiedCode(String email, String code) {
+        String redisAuthCode = redisService.getObjectByKey(EMAIL_AUTH_CODE_PREFIX + email, String.class);
+        Boolean isVerified = redisAuthCode.equals(code);
+
+        return new VerifiedCodeDTO.Response(email, code, isVerified);
+    }
+
+    /* 로그인 */
     @Transactional(readOnly = true)
     public UserResponse.LoginDTO login(UserRequest.LoginDTO loginDTO) {
         User user = userRepository.findByEmail(loginDTO.getEmail())
@@ -64,21 +88,10 @@ public class UserAuthService {
         return new UserResponse.LoginDTO(user, accessToken, refreshToken);
     }
 
-    @Transactional
-    public SendCodeDTO.Response sendCodeForSignUp(String email) {
-        if (this.checkExistsEmail(email)) {
-            throw new Exception400("email", "이미 가입된 이메일 입니다");
-        }
-
-        // 이메일 전송
-        String title = "FoodieLog 회원 가입 이메일 인증 번호";
-        String authCode = this.createCode();
-        mailService.sendEmail(email, title, authCode);
-
-        // 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
-        redisService.setObjectByKey(EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
-
-        return new SendCodeDTO.Response(email);
+    /* 프로필 설정 */
+    @Transactional(readOnly = true)
+    public Boolean checkExistsNickName(String input) {
+        return userRepository.existsByNickName(input);
     }
 
     private String createCode() {
@@ -91,13 +104,5 @@ public class UserAuthService {
             log.debug("이메일 인증 코드 생성 오류");
             throw new Exception500("서버 에러 #E1");
         }
-    }
-
-    @Transactional(readOnly = true)
-    public VerifiedCodeDTO.Response verifiedCode(String email, String code) {
-        String redisAuthCode = redisService.getObjectByKey(EMAIL_AUTH_CODE_PREFIX + email, String.class);
-        Boolean isVerified = redisAuthCode.equals(code);
-
-        return new VerifiedCodeDTO.Response(email, code, isVerified);
     }
 }

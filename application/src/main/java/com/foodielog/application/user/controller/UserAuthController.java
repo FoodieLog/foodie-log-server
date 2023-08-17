@@ -32,6 +32,7 @@ public class UserAuthController {
     private final UserAuthService userAuthService;
     private final UserOauthService oauthUserService;
 
+    /* 회원 가입 */
     @GetMapping("/exists/email")
     public ResponseEntity<?> checkExistsEmail(@RequestParam @Email String input) {
         Boolean isExists = userAuthService.checkExistsEmail(input);
@@ -41,15 +42,7 @@ public class UserAuthController {
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
 
-    @GetMapping("/exists/nickname")
-    public ResponseEntity<?> checkExistsNickName(@RequestParam @ValidNickName String input) {
-        Boolean isExists = userAuthService.checkExistsNickName(input);
-        UserResponse.ExistsNickNameDTO response = new UserResponse.ExistsNickNameDTO(input);
-
-        HttpStatus httpStatus = isExists ? HttpStatus.CONFLICT : HttpStatus.OK;
-        return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
-    }
-
+    /* 이메일 인증 */
     @GetMapping("/email/code-requests/signup")
     public ResponseEntity<?> sendCode(@RequestParam @Email String email) {
         SendCodeDTO.Response response = userAuthService.sendCodeForSignUp(email);
@@ -68,6 +61,7 @@ public class UserAuthController {
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
 
+    /* 로그인 */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginDTO loginDTO, Errors errors) {
         UserResponse.LoginDTO response = userAuthService.login(loginDTO);
@@ -86,6 +80,16 @@ public class UserAuthController {
         HttpHeaders headers = getCookieHeaders(response);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), headers, HttpStatus.OK);
+    }
+
+    /* 프로필 설정 */
+    @GetMapping("/exists/nickname")
+    public ResponseEntity<?> checkExistsNickName(@RequestParam @ValidNickName String input) {
+        Boolean isExists = userAuthService.checkExistsNickName(input);
+        UserResponse.ExistsNickNameDTO response = new UserResponse.ExistsNickNameDTO(input);
+
+        HttpStatus httpStatus = isExists ? HttpStatus.CONFLICT : HttpStatus.OK;
+        return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
 
     private static HttpHeaders getCookieHeaders(UserResponse.LoginDTO response) {
