@@ -1,5 +1,6 @@
 package com.foodielog.application.user.controller;
 
+import com.foodielog.application.user.dto.SignUpDTO;
 import com.foodielog.application.user.dto.UserRequest;
 import com.foodielog.application.user.dto.UserResponse;
 import com.foodielog.application.user.dto.response.SendCodeDTO;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -40,6 +42,17 @@ public class UserAuthController {
 
         HttpStatus httpStatus = isExists ? HttpStatus.CONFLICT : HttpStatus.OK;
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signUp(
+            @RequestPart(value = "content") @Valid SignUpDTO.Request request,
+            @RequestPart(value = "file") MultipartFile file,
+            Errors errors
+    ) {
+        SignUpDTO.Response response = userAuthService.signUp(request, file);
+
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     /* 이메일 인증 */
