@@ -1,8 +1,8 @@
 package com.foodielog.application.user.service;
 
-import com.foodielog.application.user.dto.response.UserFeedListDTO;
-import com.foodielog.application.user.dto.response.UserProfileDTO;
-import com.foodielog.application.user.dto.response.UserThumbnailDTO;
+import com.foodielog.application.user.dto.UserFeedListDTO;
+import com.foodielog.application.user.dto.UserProfileDTO;
+import com.foodielog.application.user.dto.UserThumbnailDTO;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;

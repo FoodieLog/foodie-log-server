@@ -1,10 +1,6 @@
 package com.foodielog.application.user.controller;
 
-import com.foodielog.application.user.dto.SignUpDTO;
-import com.foodielog.application.user.dto.UserRequest;
-import com.foodielog.application.user.dto.UserResponse;
-import com.foodielog.application.user.dto.response.SendCodeDTO;
-import com.foodielog.application.user.dto.response.VerifiedCodeDTO;
+import com.foodielog.application.user.dto.*;
 import com.foodielog.application.user.service.UserAuthService;
 import com.foodielog.application.user.service.UserOauthService;
 import com.foodielog.server._core.customValid.valid.ValidNickName;
@@ -37,10 +33,9 @@ public class UserAuthController {
     /* 회원 가입 */
     @GetMapping("/exists/email")
     public ResponseEntity<?> checkExistsEmail(@RequestParam @Email String input) {
-        Boolean isExists = userAuthService.checkExistsEmail(input);
-        UserResponse.ExistsEmailDTO response = new UserResponse.ExistsEmailDTO(input);
+        ExistsEmailDTO.Response response = userAuthService.checkExistsEmail(input);
 
-        HttpStatus httpStatus = isExists ? HttpStatus.CONFLICT : HttpStatus.OK;
+        HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
 
@@ -76,8 +71,8 @@ public class UserAuthController {
 
     /* 로그인 */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginDTO loginDTO, Errors errors) {
-        UserResponse.LoginDTO response = userAuthService.login(loginDTO);
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO.Request loginDTO, Errors errors) {
+        LoginDTO.Response response = userAuthService.login(loginDTO);
 
         HttpHeaders headers = getCookieHeaders(response);
 
@@ -88,7 +83,7 @@ public class UserAuthController {
     public ResponseEntity<?> kakaoLogin(@RequestParam String code) {
         log.info("kakao 인가 code : " + code);
 
-        UserResponse.LoginDTO response = oauthUserService.kakaoLogin(code);
+        LoginDTO.Response response = oauthUserService.kakaoLogin(code);
 
         HttpHeaders headers = getCookieHeaders(response);
 
@@ -98,14 +93,13 @@ public class UserAuthController {
     /* 프로필 설정 */
     @GetMapping("/exists/nickname")
     public ResponseEntity<?> checkExistsNickName(@RequestParam @ValidNickName String input) {
-        Boolean isExists = userAuthService.checkExistsNickName(input);
-        UserResponse.ExistsNickNameDTO response = new UserResponse.ExistsNickNameDTO(input);
+        ExistsNickNameDTO.Response response = userAuthService.checkExistsNickName(input);
 
-        HttpStatus httpStatus = isExists ? HttpStatus.CONFLICT : HttpStatus.OK;
+        HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
 
-    private static HttpHeaders getCookieHeaders(UserResponse.LoginDTO response) {
+    private static HttpHeaders getCookieHeaders(LoginDTO.Response response) {
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie cookie = CookieUtil.getRefreshTokenCookie(response.getRefreshToken());
         log.info("쿠키 생성 완료: " + cookie.toString());
