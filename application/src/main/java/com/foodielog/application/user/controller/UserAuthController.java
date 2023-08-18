@@ -52,8 +52,15 @@ public class UserAuthController {
 
     /* 이메일 인증 */
     @GetMapping("/email/code-requests/signup")
-    public ResponseEntity<?> sendCode(@RequestParam @Email String email) {
-        SendCodeDTO.Response response = userAuthService.sendCodeForSignUp(email);
+    public ResponseEntity<?> sendCodeForSignUp(@RequestParam @Email String email) {
+        SendCodeDTO.ForSignUpDTO.Response response = userAuthService.sendCodeForSignUp(email);
+
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/email/code-requests/password")
+    public ResponseEntity<?> sendCodeForPassword(@RequestParam @Email String email) {
+        SendCodeDTO.ForPassWordDTO.Response response = userAuthService.sendCodeForPassword(email);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
