@@ -1,7 +1,7 @@
 package com.foodielog.application.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.foodielog.server._core.customValid.valid.ValidPassWord;
+import com.foodielog.server._core.customValid.valid.ValidPassword;
 import com.foodielog.server.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class LoginDTO {
         @Email
         private String email;
 
-        @ValidPassWord
+        @ValidPassword
         private String password;
     }
 

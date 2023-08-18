@@ -1,7 +1,7 @@
 package com.foodielog.application.user.dto;
 
 import com.foodielog.server._core.customValid.valid.ValidNickName;
-import com.foodielog.server._core.customValid.valid.ValidPassWord;
+import com.foodielog.server._core.customValid.valid.ValidPassword;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ public class SignUpDTO {
         @Email
         private String email;
 
-        @ValidPassWord
+        @ValidPassword
         private String password;
 
         @ValidNickName
