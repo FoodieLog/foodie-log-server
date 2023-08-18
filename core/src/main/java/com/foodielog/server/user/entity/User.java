@@ -93,4 +93,14 @@ public class User {
     public void resetPassword(String password) {
         this.password = password;
     }
+
+    public void changeProfile(String nickName, String profileImageUrl, String aboutMe) {
+        this.nickName = nickName;
+
+        if (!profileImageUrl.isEmpty()) {
+            this.profileImageUrl = profileImageUrl;
+        }
+
+        this.aboutMe = aboutMe;
+    }
 }

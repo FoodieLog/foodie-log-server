@@ -1,6 +1,7 @@
 package com.foodielog.application.user.controller;
 
 import com.foodielog.application.user.dto.ChangePasswordDTO;
+import com.foodielog.application.user.dto.ChangeProfileDTO;
 import com.foodielog.application.user.service.UserSettingService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
@@ -9,10 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -30,6 +30,19 @@ public class UserSettingController {
     ) {
         User user = principalDetails.getUser();
         ChangePasswordDTO.Response response = userSettingService.changePassword(user, request);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<?> ChangeProfile(
+            @RequestPart(value = "content") @Valid ChangeProfileDTO.Request request,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            Errors errors
+    ) {
+        User user = principalDetails.getUser();
+        ChangeProfileDTO.Response response = userSettingService.ChangeProfile(user, request, file);
+
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
