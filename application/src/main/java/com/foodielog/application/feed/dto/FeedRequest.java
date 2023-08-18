@@ -12,6 +12,10 @@ public class FeedRequest {
     public static class SaveDTO {
         private KakaoApiResponse.SearchPlace selectedSearchPlace;
         private String content;
-        private boolean isLiked;
+        private Boolean isLiked;
+
+        public boolean isLiked() {
+            return isLiked;
+        }
     }
 }
