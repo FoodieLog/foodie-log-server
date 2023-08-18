@@ -113,4 +113,12 @@ public class UserAuthController {
         HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
+
+    /* 비밀번호 찾기*/
+    @PutMapping("/password/reset")
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordDTO.Request request, Errors errors) {
+        ResetPasswordDTO.Response response = userAuthService.resetPassword(request);
+
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
 }

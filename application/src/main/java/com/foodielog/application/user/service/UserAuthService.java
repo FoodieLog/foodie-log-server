@@ -144,15 +144,14 @@ public class UserAuthService {
         return new ExistsNickNameDTO.Response(nickName, isExists);
     }
 
-    private String createCode() {
-        try {
-            Random random = SecureRandom.getInstanceStrong();
-            int randomNumber = random.nextInt(9000) + 1000;
+    /* 비밀번호 변경 */
+    @Transactional
+    public ResetPasswordDTO.Response resetPassword(ResetPasswordDTO.Request request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
-            return Integer.toString(randomNumber);
-        } catch (NoSuchAlgorithmException e) {
-            log.debug("이메일 인증 코드 생성 오류");
-            throw new Exception500("서버 에러 #E1");
-        }
+        user.resetPassword(request.getPassword());
+
+        return new ResetPasswordDTO.Response(request.getEmail());
     }
 }
