@@ -45,7 +45,7 @@ public class S3Uploader {
 
     public void deleteFile(String fileUrl) {
         String[] urlParts = fileUrl.split("/");
-        String fileBucket = urlParts[2].replace(".s3.amazonaws.com", "");
+        String fileBucket = urlParts[2].split("\\.")[0];
 
         if (!fileBucket.equals(bucket)) {
             throw new Exception400("fileUrl", ErrorMessage.NO_IMAGE_EXIST);
@@ -66,6 +66,8 @@ public class S3Uploader {
             log.error("AWS SDK client error : " + e.getMessage());
             throw new Exception500(ErrorMessage.FAIL_DELETE);
         }
+
+        log.info("File delete complete: " + objectKey);
     }
 
     private long parseMaxSize(String maxSizeString) {
