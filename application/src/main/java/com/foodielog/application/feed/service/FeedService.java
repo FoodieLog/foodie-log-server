@@ -35,11 +35,7 @@ public class FeedService {
         if (!isDuplicate(restaurant)) {
             restaurantRepository.save(restaurant);
         }
-
-        if (saveDTO.isLiked()) {
-            RestaurantLike restaurantLike = RestaurantLike.createRestaurantLike(restaurant, user);
-            restaurantLikeRepository.save(restaurantLike);
-        }
+        checkIsLiked(user, restaurant, saveDTO);
 
         List<String> filesUrl = s3Uploader.saveFiles(files);
 
@@ -52,6 +48,19 @@ public class FeedService {
         }
     }
 
+    private void checkIsLiked(User user, Restaurant restaurant, FeedRequest.SaveDTO saveDTO) {
+        if (restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant)) {
+            return;
+        }
+
+        if (!saveDTO.getIsLiked()) {
+            return;
+        }
+
+        RestaurantLike restaurantLike = RestaurantLike.createRestaurantLike(restaurant, user);
+        restaurantLikeRepository.save(restaurantLike);
+    }
+
     private boolean isDuplicate(Restaurant restaurant) {
         return restaurantRepository.findByKakaoPlaceId(restaurant.getKakaoPlaceId()).isPresent();
     }
@@ -59,7 +68,7 @@ public class FeedService {
     private Restaurant dtoToRestaurant(KakaoApiResponse.SearchPlace searchPlace) {
         return Restaurant.createRestaurant(
                 searchPlace.getPlace_name(),
-                searchPlace.getKakao_place_id(),
+                searchPlace.getId(),
                 searchPlace.getPhone(),
                 searchPlace.getCategory_name(),
                 searchPlace.getPlace_url(),

@@ -1,5 +1,6 @@
 package com.foodielog.server.restaurant.repository;
 
+import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.restaurant.entity.RestaurantLike;
 import com.foodielog.server.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,4 +9,6 @@ public interface RestaurantLikeRepository extends JpaRepository<RestaurantLike, 
     boolean existsByUser(User user);
 
     RestaurantLike findByUserIdAndRestaurantId(Long userId, Long restaurantId);
+
+    boolean existsByUserAndRestaurant(User user, Restaurant restaurant);
 }
