@@ -32,7 +32,7 @@ public class FeedService {
     @Transactional
     public void save(FeedRequest.SaveDTO saveDTO, List<MultipartFile> files, User user) {
         Restaurant restaurant = dtoToRestaurant(saveDTO.getSelectedSearchPlace());
-        Restaurant savedRestaurant = isDuplicate(restaurant);
+        Restaurant savedRestaurant = saveRestaurant(restaurant);
 
         checkIsLiked(user, savedRestaurant, saveDTO);
 
@@ -60,7 +60,7 @@ public class FeedService {
         restaurantLikeRepository.save(restaurantLike);
     }
 
-    private Restaurant isDuplicate(Restaurant restaurant) {
+    private Restaurant saveRestaurant(Restaurant restaurant) {
         Optional<Restaurant> existingRestaurant =
                 restaurantRepository.findByKakaoPlaceId(restaurant.getKakaoPlaceId());
 
