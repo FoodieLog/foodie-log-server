@@ -40,9 +40,13 @@ public class UserSettingService {
             throw new Exception400("nickName", "이미 사용 중인 닉네임 입니다");
         }
 
-        String storedFileUrl = "";
+        String storedFileUrl = null;
         if (!file.isEmpty()) {
             storedFileUrl = s3Uploader.saveFile(file);
+
+            if (user.getProfileImageUrl() != null) {
+                s3Uploader.deleteFile(user.getProfileImageUrl());
+            }
         }
 
         user.changeProfile(request.getNickName(), storedFileUrl, request.getAboutMe());

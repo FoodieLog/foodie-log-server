@@ -97,7 +97,7 @@ public class User {
     public void changeProfile(String nickName, String profileImageUrl, String aboutMe) {
         this.nickName = nickName;
 
-        if (!profileImageUrl.isEmpty()) {
+        if (profileImageUrl != null) {
             this.profileImageUrl = profileImageUrl;
         }
 
