@@ -23,6 +23,7 @@ public class KakaoApiResponse {
 
     @Getter
     public static class SearchPlace {
+        private String kakao_place_id;
         private String place_name;
         private String place_url;
         private String category_name;
