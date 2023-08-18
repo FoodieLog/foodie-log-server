@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,15 +32,13 @@ public class FeedService {
     @Transactional
     public void save(FeedRequest.SaveDTO saveDTO, List<MultipartFile> files, User user) {
         Restaurant restaurant = dtoToRestaurant(saveDTO.getSelectedSearchPlace());
+        Restaurant savedRestaurant = isDuplicate(restaurant);
 
-        if (!isDuplicate(restaurant)) {
-            restaurantRepository.save(restaurant);
-        }
-        checkIsLiked(user, restaurant, saveDTO);
+        checkIsLiked(user, savedRestaurant, saveDTO);
 
         List<String> filesUrl = s3Uploader.saveFiles(files);
 
-        Feed feed = Feed.createFeed(restaurant, user, saveDTO.getContent(), filesUrl.get(0));
+        Feed feed = Feed.createFeed(savedRestaurant, user, saveDTO.getContent(), filesUrl.get(0));
         feedRepository.save(feed);
 
         for (String fileUrl : filesUrl) {
@@ -61,8 +60,11 @@ public class FeedService {
         restaurantLikeRepository.save(restaurantLike);
     }
 
-    private boolean isDuplicate(Restaurant restaurant) {
-        return restaurantRepository.findByKakaoPlaceId(restaurant.getKakaoPlaceId()).isPresent();
+    private Restaurant isDuplicate(Restaurant restaurant) {
+        Optional<Restaurant> existingRestaurant =
+                restaurantRepository.findByKakaoPlaceId(restaurant.getKakaoPlaceId());
+
+        return existingRestaurant.orElseGet(() -> restaurantRepository.save(restaurant));
     }
 
     private Restaurant dtoToRestaurant(KakaoApiResponse.SearchPlace searchPlace) {
