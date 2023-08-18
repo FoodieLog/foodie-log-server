@@ -13,9 +13,5 @@ public class FeedRequest {
         private KakaoApiResponse.SearchPlace selectedSearchPlace;
         private String content;
         private Boolean isLiked;
-
-        public boolean isLiked() {
-            return isLiked;
-        }
     }
 }
