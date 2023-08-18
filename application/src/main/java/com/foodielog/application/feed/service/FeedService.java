@@ -31,7 +31,10 @@ public class FeedService {
     @Transactional
     public void save(FeedRequest.SaveDTO saveDTO, List<MultipartFile> files, User user) {
         Restaurant restaurant = dtoToRestaurant(saveDTO.getSelectedSearchPlace());
-        restaurantRepository.save(restaurant);
+
+        if (!isDuplicate(restaurant)) {
+            restaurantRepository.save(restaurant);
+        }
 
         if (saveDTO.isLiked()) {
             RestaurantLike restaurantLike = RestaurantLike.createRestaurantLike(restaurant, user);
@@ -49,11 +52,16 @@ public class FeedService {
         }
     }
 
+    private boolean isDuplicate(Restaurant restaurant) {
+        return restaurantRepository.findByKakaoPlaceId(restaurant.getKakaoPlaceId()).isPresent();
+    }
+
     private Restaurant dtoToRestaurant(KakaoApiResponse.SearchPlace searchPlace) {
         return Restaurant.createRestaurant(
                 searchPlace.getPlace_name(),
-                searchPlace.getCategory_name(),
+                searchPlace.getKakao_place_id(),
                 searchPlace.getPhone(),
+                searchPlace.getCategory_name(),
                 searchPlace.getPlace_url(),
                 searchPlace.getX(),
                 searchPlace.getY(),
