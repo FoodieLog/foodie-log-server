@@ -13,11 +13,11 @@ public class RestaurantFeedListDTO {
 
     @Getter
     public static class Response {
-        private final RestaurantInfoDTO restaurantInfoDTO;
+        private final RestaurantInfoDTO restaurantInfo;
         private final List<RestaurantFeedsDTO> content;
 
-        public Response(RestaurantInfoDTO restaurantInfoDTO, List<RestaurantFeedsDTO> content) {
-            this.restaurantInfoDTO = restaurantInfoDTO;
+        public Response(RestaurantInfoDTO restaurantInfo, List<RestaurantFeedsDTO> content) {
+            this.restaurantInfo = restaurantInfo;
             this.content = content;
         }
     }
