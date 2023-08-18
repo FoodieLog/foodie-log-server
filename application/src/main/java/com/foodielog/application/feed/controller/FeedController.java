@@ -31,7 +31,9 @@ public class FeedController {
     private final KakaoApiService kakaoApiService;
 
     @GetMapping("/search")
-    public ResponseEntity<?> useKakaoSearchApi(@RequestParam String keyword) {
+    public ResponseEntity<?> useKakaoSearchApi(
+            @RequestParam String keyword
+    ) {
         log.info("kakao search keyword" + keyword);
 
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -43,9 +45,11 @@ public class FeedController {
     }
 
     @PostMapping("/feed")
-    public ResponseEntity<?> feedSave(@RequestPart(value = "content") @Valid FeedRequest.SaveDTO saveDTO,
-                                      @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                                      @AuthenticationPrincipal PrincipalDetails principalDetails, Errors errors) {
+    public ResponseEntity<?> feedSave(
+            @RequestPart(value = "content") @Valid FeedRequest.SaveDTO saveDTO,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal PrincipalDetails principalDetails, Errors errors
+    ) {
         if (files == null || files.isEmpty()) {
             throw new Exception400("files", ErrorMessage.NO_SELECTED_IMAGE);
         }
