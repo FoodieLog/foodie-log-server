@@ -89,4 +89,8 @@ public class User {
         user.nickName = provider + providerId.toString();
         return user;
     }
+
+    public void resetPassword(String password) {
+        this.password = password;
+    }
 }
