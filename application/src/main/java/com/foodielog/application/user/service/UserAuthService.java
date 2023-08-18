@@ -65,20 +65,37 @@ public class UserAuthService {
 
     /* 이메일 인증 */
     @Transactional
-    public SendCodeDTO.Response sendCodeForSignUp(String email) {
+    public SendCodeDTO.ForSignUpDTO.Response sendCodeForSignUp(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new Exception400("email", "이미 가입된 이메일 입니다");
         }
 
         // 이메일 전송
-        String title = "FoodieLog 회원 가입 이메일 인증 번호";
+        String title = "[FoodieLog] 회원 가입 이메일 인증 번호";
         String authCode = this.createCode();
         mailService.sendEmail(email, title, authCode);
 
         // 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
         redisService.setObjectByKey(EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
 
-        return new SendCodeDTO.Response(email);
+        return new SendCodeDTO.ForSignUpDTO.Response(email);
+    }
+
+    @Transactional
+    public SendCodeDTO.ForPassWordDTO.Response sendCodeForPassword(String email) {
+        if (!userRepository.existsByEmail(email)) {
+            throw new Exception400("email", "해당 이메일 주소가 없습니다.");
+        }
+
+        // 이메일 전송
+        String title = "[FoodieLog] 비밀번호 찾기 이메일 인증 번호";
+        String authCode = this.createCode();
+        mailService.sendEmail(email, title, authCode);
+
+        // 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
+        redisService.setObjectByKey(EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
+
+        return new SendCodeDTO.ForPassWordDTO.Response(email);
     }
 
     @Transactional(readOnly = true)
@@ -87,6 +104,18 @@ public class UserAuthService {
         Boolean isVerified = redisAuthCode.equals(code);
 
         return new VerifiedCodeDTO.Response(email, code, isVerified);
+    }
+
+    private String createCode() {
+        try {
+            Random random = SecureRandom.getInstanceStrong();
+            int randomNumber = random.nextInt(9000) + 1000;
+
+            return Integer.toString(randomNumber);
+        } catch (NoSuchAlgorithmException e) {
+            log.debug("이메일 인증 코드 생성 오류");
+            throw new Exception500("서버 에러 #E1");
+        }
     }
 
     /* 로그인 */
