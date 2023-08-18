@@ -36,7 +36,10 @@ public class UserSettingService {
     }
 
     public ChangeProfileDTO.Response ChangeProfile(User user, ChangeProfileDTO.Request request, MultipartFile file) {
-        if (userRepository.existsByNickName(request.getNickName())) {
+        // 기존 닉네임과 일치 하지 않은데 중복이라면 중복! (기존 닉네임과 동일 하다면 닉네임을 변경 하는게 아님)
+        if (!user.getNickName().equals(request.getNickName())
+                && userRepository.existsByNickName(request.getNickName())
+        ) {
             throw new Exception400("nickName", "이미 사용 중인 닉네임 입니다");
         }
 
