@@ -150,7 +150,7 @@ public class UserAuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
-        user.resetPassword(request.getPassword());
+        user.resetPassword(passwordEncoder.encode(request.getPassword()));
 
         return new ResetPasswordDTO.Response(request.getEmail());
     }
