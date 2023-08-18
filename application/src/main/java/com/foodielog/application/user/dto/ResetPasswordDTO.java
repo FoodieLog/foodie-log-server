@@ -1,6 +1,6 @@
 package com.foodielog.application.user.dto;
 
-import com.foodielog.server._core.customValid.valid.ValidPassWord;
+import com.foodielog.server._core.customValid.valid.ValidPassword;
 import lombok.Getter;
 
 import javax.validation.constraints.Email;
@@ -11,7 +11,7 @@ public class ResetPasswordDTO {
         @Email
         private String email;
 
-        @ValidPassWord
+        @ValidPassword
         private String password;
     }
 

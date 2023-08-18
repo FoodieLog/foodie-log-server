@@ -1,11 +1,11 @@
 package com.foodielog.server._core.customValid.validator;
 
-import com.foodielog.server._core.customValid.valid.ValidPassWord;
+import com.foodielog.server._core.customValid.valid.ValidPassword;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class PassWordValidator implements ConstraintValidator<ValidPassWord, String> {
+public class PasswordValidator implements ConstraintValidator<ValidPassword, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         return value != null && isValidString(value);
