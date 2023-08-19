@@ -26,6 +26,7 @@ public class Notification {
     private User user;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private NotificationType type;
 
     @Column(nullable = false)
