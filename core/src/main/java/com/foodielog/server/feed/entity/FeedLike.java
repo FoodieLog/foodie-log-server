@@ -27,5 +27,5 @@ public class FeedLike {
     private User user;
 
     @CreationTimestamp
-    private Timestamp createAt;
+    private Timestamp createdAt;
 }
