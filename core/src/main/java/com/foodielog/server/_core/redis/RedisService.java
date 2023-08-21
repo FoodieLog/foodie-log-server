@@ -14,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class RedisService {
+    public static final String EMAIL_AUTH_CODE_PREFIX = "AuthCode ";
+    public static final String REFRESH_TOKEN_PREFIX = "RT ";
+
     private final RedisTemplate<String, String> redisTemplate;
     private final JsonConverter jsonConverter;
 
