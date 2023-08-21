@@ -26,8 +26,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class UserAuthService {
-    private static final String EMAIL_AUTH_CODE_PREFIX = "AuthCode ";
-
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final MailService mailService;
@@ -76,7 +74,7 @@ public class UserAuthService {
         mailService.sendEmail(email, title, authCode);
 
         // 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
-        redisService.setObjectByKey(EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
+        redisService.setObjectByKey(RedisService.EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
 
         return new SendCodeDTO.ForSignUpDTO.Response(email);
     }
@@ -93,14 +91,14 @@ public class UserAuthService {
         mailService.sendEmail(email, title, authCode);
 
         // 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
-        redisService.setObjectByKey(EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
+        redisService.setObjectByKey(RedisService.EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
 
         return new SendCodeDTO.ForPassWordDTO.Response(email);
     }
 
     @Transactional(readOnly = true)
     public VerifiedCodeDTO.Response verifiedCode(String email, String code) {
-        String redisAuthCode = redisService.getObjectByKey(EMAIL_AUTH_CODE_PREFIX + email, String.class);
+        String redisAuthCode = redisService.getObjectByKey(RedisService.EMAIL_AUTH_CODE_PREFIX + email, String.class);
         Boolean isVerified = redisAuthCode.equals(code);
 
         return new VerifiedCodeDTO.Response(email, code, isVerified);
@@ -133,6 +131,10 @@ public class UserAuthService {
 
         log.info("엑세스 토큰 생성 완료: " + accessToken);
         log.info("리프레시 토큰 생성 완료: " + refreshToken);
+
+        // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
+        redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), refreshToken,
+                JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
         return new LoginDTO.Response(user, accessToken, refreshToken);
     }

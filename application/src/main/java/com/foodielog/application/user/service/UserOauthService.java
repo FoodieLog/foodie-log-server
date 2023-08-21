@@ -9,6 +9,7 @@ import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception401;
 import com.foodielog.server._core.error.exception.Exception500;
+import com.foodielog.server._core.redis.RedisService;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server._core.util.ExternalUtil;
 import com.foodielog.server.user.entity.User;
@@ -27,6 +28,7 @@ import org.springframework.util.MultiValueMap;
 
 import javax.transaction.Transactional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -49,6 +51,7 @@ public class UserOauthService {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
     private final UserRepository userRepository;
 
     @Transactional
@@ -78,6 +81,10 @@ public class UserOauthService {
 
         log.info("kakao 엑세스 토큰 생성 완료: " + accessToken);
         log.info("kakao 리프레시 토큰 생성 완료: " + refreshToken);
+
+        // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
+        redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + loginUser.getEmail(), refreshToken,
+                JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
         return new LoginDTO.Response(loginUser, accessToken, refreshToken);
     }
