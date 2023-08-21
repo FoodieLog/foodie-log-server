@@ -1,6 +1,9 @@
 package com.foodielog.application.user.controller;
 
-import com.foodielog.application.user.dto.*;
+import com.foodielog.application.user.dto.UserFeedListDTO;
+import com.foodielog.application.user.dto.UserProfileDTO;
+import com.foodielog.application.user.dto.UserRestaurantListDTO;
+import com.foodielog.application.user.dto.UserThumbnailDTO;
 import com.foodielog.application.user.service.UserService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
@@ -55,16 +58,6 @@ public class UserController {
     ) {
         User user = principalDetails.getUser();
         UserRestaurantListDTO.Response response = userService.getRestaurantList(userId, user);
-        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
-    }
-
-    @GetMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<?> getRestaurantDetail(
-            @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @PathVariable Long restaurantId
-    ) {
-        User user = principalDetails.getUser();
-        RestaurantFeedListDTO.Response response = userService.getRestaurantDetail(user, restaurantId);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
