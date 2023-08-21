@@ -1,9 +1,6 @@
 package com.foodielog.application.user.service;
 
-import com.foodielog.application.user.dto.ChangeNotificationDTO;
-import com.foodielog.application.user.dto.ChangePasswordDTO;
-import com.foodielog.application.user.dto.ChangeProfileDTO;
-import com.foodielog.application.user.dto.CheckBadgeApplyDTO;
+import com.foodielog.application.user.dto.*;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.s3.S3Uploader;
@@ -44,6 +41,14 @@ public class UserSettingService {
                 .orElseGet(() -> null);
 
         return new CheckBadgeApplyDTO.Response(user, createdAt);
+    }
+
+    @Transactional
+    public CreateBadgeApplyDTO.Response creatBadgeApply(User user) {
+        BadgeApply badgeApply = BadgeApply.createBadgeApply(user);
+        badgeApplyRepository.save(badgeApply);
+
+        return new CreateBadgeApplyDTO.Response(user, badgeApply);
     }
 
     @Transactional
