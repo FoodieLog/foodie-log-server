@@ -30,7 +30,7 @@ public class FeedController {
     private final FeedService feedService;
     private final KakaoApiService kakaoApiService;
 
-    @GetMapping("/search")
+    @GetMapping("/search/restaurant")
     public ResponseEntity<?> useKakaoSearchApi(
             @RequestParam String keyword
     ) {
