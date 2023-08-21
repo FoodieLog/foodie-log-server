@@ -39,7 +39,6 @@ public class UserService {
     private final FeedLikeRepository feedLikeRepository;
     private final RestaurantLikeRepository restaurantLikeRepository;
     private final ReplyRepository replyRepository;
-    private final RestaurantRepository restaurantRepository;
 
     @Transactional(readOnly = true)
     public UserProfileDTO.Response getProfile(Long userId) {
