@@ -19,11 +19,11 @@ public class UserRestaurantListDTO {
         @Getter
         public static class RestaurantListDTO {
             private final RestaurantDTO restaurant;
-            private final IsLikedDTO isLikedDTO;
+            private final IsLikedDTO isLiked;
 
-            public RestaurantListDTO(RestaurantDTO restaurant, IsLikedDTO isLikedDTO) {
+            public RestaurantListDTO(RestaurantDTO restaurant, IsLikedDTO isLiked) {
                 this.restaurant = restaurant;
-                this.isLikedDTO = isLikedDTO;
+                this.isLiked = isLiked;
             }
         }
 

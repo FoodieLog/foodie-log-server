@@ -1,4 +1,4 @@
-package com.foodielog.application.user.dto;
+package com.foodielog.application.restaurant.dto;
 
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -24,12 +24,12 @@ public class RestaurantFeedListDTO {
 
     @Getter
     public static class RestaurantInfoDTO {
-        private final RestaurantDTO restaurantDTO;
-        private final IsLikedDTO isLikedDTO;
+        private final RestaurantDTO restaurant;
+        private final IsLikedDTO isLiked;
 
-        public RestaurantInfoDTO(RestaurantDTO restaurantDTO, IsLikedDTO isLikedDTO) {
-            this.restaurantDTO = restaurantDTO;
-            this.isLikedDTO = isLikedDTO;
+        public RestaurantInfoDTO(RestaurantDTO restaurant, IsLikedDTO isLiked) {
+            this.restaurant = restaurant;
+            this.isLiked = isLiked;
         }
     }
 
