@@ -31,7 +31,7 @@ public class RestaurantController {
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @GetMapping("/restaurant/{restaurantId}")
+    @GetMapping("/{restaurantId}")
     public ResponseEntity<?> getRestaurantDetail(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long restaurantId
