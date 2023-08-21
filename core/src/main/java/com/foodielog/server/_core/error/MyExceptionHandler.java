@@ -44,9 +44,14 @@ public class MyExceptionHandler {
 
     // @Validated 예외 처리
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> inValid(ConstraintViolationException e) {
+    public ResponseEntity<?> inValidParam(ConstraintViolationException e) {
         ApiUtils.ApiResult<?> apiResult = ApiUtils.error(e.getMessage(), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(apiResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<?> inValid(ValidationException e) {
+        return new ResponseEntity<>(e.body(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
