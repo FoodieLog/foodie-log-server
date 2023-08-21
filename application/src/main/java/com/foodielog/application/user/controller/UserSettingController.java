@@ -1,9 +1,6 @@
 package com.foodielog.application.user.controller;
 
-import com.foodielog.application.user.dto.ChangeNotificationDTO;
-import com.foodielog.application.user.dto.ChangePasswordDTO;
-import com.foodielog.application.user.dto.ChangeProfileDTO;
-import com.foodielog.application.user.dto.CheckBadgeApplyDTO;
+import com.foodielog.application.user.dto.*;
 import com.foodielog.application.user.service.UserSettingService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
@@ -39,6 +36,13 @@ public class UserSettingController {
     public ResponseEntity<?> checkBadgeApply(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
         CheckBadgeApplyDTO.Response response = userSettingService.checkBadgeApply(user);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @PostMapping("/badge")
+    public ResponseEntity<?> creatBadgeApplyDTO(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+        CreateBadgeApplyDTO.Response response = userSettingService.creatBadgeApply(user);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
