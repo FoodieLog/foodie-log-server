@@ -90,6 +90,10 @@ public class User {
         return user;
     }
 
+    public void changeNotificationFlag(Flag flag) {
+        this.notificationFlag = flag;
+    }
+
     public void resetPassword(String password) {
         this.password = password;
     }

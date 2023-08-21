@@ -1,5 +1,6 @@
 package com.foodielog.application.user.service;
 
+import com.foodielog.application.user.dto.ChangeNotificationDTO;
 import com.foodielog.application.user.dto.ChangePasswordDTO;
 import com.foodielog.application.user.dto.ChangeProfileDTO;
 import com.foodielog.server._core.error.ErrorMessage;
@@ -21,6 +22,14 @@ public class UserSettingService {
     private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
+
+    @Transactional
+    public ChangeNotificationDTO.Response changeNotification(User user, ChangeNotificationDTO.Request request) {
+        user.changeNotificationFlag(request.getFlag());
+        userRepository.save(user);
+
+        return new ChangeNotificationDTO.Response(user, request.getFlag());
+    }
 
     @Transactional
     public ChangePasswordDTO.Response changePassword(User user, ChangePasswordDTO.Request request) {

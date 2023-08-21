@@ -1,5 +1,6 @@
 package com.foodielog.application.user.controller;
 
+import com.foodielog.application.user.dto.ChangeNotificationDTO;
 import com.foodielog.application.user.dto.ChangePasswordDTO;
 import com.foodielog.application.user.dto.ChangeProfileDTO;
 import com.foodielog.application.user.service.UserSettingService;
@@ -21,6 +22,17 @@ import javax.validation.Valid;
 @RestController
 public class UserSettingController {
     private final UserSettingService userSettingService;
+
+    @PutMapping("/notification")
+    public ResponseEntity<?> changeNotification(
+            @RequestBody @Valid ChangeNotificationDTO.Request request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            Error error
+    ) {
+        User user = principalDetails.getUser();
+        ChangeNotificationDTO.Response response = userSettingService.changeNotification(user, request);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
 
     @PutMapping("/password")
     public ResponseEntity<?> changePassword(
