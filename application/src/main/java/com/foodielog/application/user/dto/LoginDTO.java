@@ -22,6 +22,7 @@ public class LoginDTO {
 
     @Getter
     public static class Response {
+        private final Long id;
         private final String nickName;
         private final String profileImageUrl;
         private final String accessToken;
@@ -30,6 +31,7 @@ public class LoginDTO {
         private final String refreshToken;
 
         public Response(User user, String accessToken, String refreshToken) {
+            this.id = user.getId();
             this.nickName = user.getNickName();
             this.profileImageUrl = user.getProfileImageUrl();
             this.accessToken = accessToken;
