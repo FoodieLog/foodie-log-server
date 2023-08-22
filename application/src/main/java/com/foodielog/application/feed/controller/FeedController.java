@@ -2,7 +2,6 @@ package com.foodielog.application.feed.controller;
 
 import com.foodielog.application.feed.dto.LikeFeedDTO;
 import com.foodielog.application.feed.dto.FeedRequest;
-import com.foodielog.application.feed.dto.UnLikeFeedDTO;
 import com.foodielog.application.feed.service.FeedService;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
@@ -17,14 +16,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/feed")
 @RestController
 public class FeedController {
@@ -73,10 +75,9 @@ public class FeedController {
 
     @DeleteMapping("/unlike")
     public ResponseEntity<?> unlike(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                    @Valid @RequestBody UnLikeFeedDTO.Request request,
-                                    Errors errors)
+                                    @Positive @RequestParam Long feedId)
     {
-        feedService.unLikeFeed(principalDetails.getUser(), request.getFeedId());
+        feedService.unLikeFeed(principalDetails.getUser(), feedId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

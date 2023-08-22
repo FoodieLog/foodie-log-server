@@ -89,6 +89,9 @@ public class FeedService {
     public void likeFeed(User user, Long feedId) {
         Feed feed = getFeed(feedId);
 
+        Restaurant restaurant = feed.getRestaurant();
+        likeRestaurantIfNotExists(user, restaurant);
+
         boolean isFeedLike = feedLikeRepository.existsByUserAndFeed(user, feed);
 
         if (isFeedLike) {
@@ -112,5 +115,14 @@ public class FeedService {
     private Feed getFeed(Long feedId) {
         return feedRepository.findById(feedId)
                 .orElseThrow(() -> new Exception404("피드가 없습니다."));
+    }
+
+    private void likeRestaurantIfNotExists(User user, Restaurant restaurant) {
+        boolean isRestaurantLike = restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant);
+
+        if (!isRestaurantLike) {
+            RestaurantLike restaurantLike = RestaurantLike.createRestaurantLike(restaurant, user);
+            restaurantLikeRepository.save(restaurantLike);
+        }
     }
 }
