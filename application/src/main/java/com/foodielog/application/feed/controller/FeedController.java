@@ -1,6 +1,8 @@
 package com.foodielog.application.feed.controller;
 
+import com.foodielog.application.feed.dto.LikeFeedDTO;
 import com.foodielog.application.feed.dto.FeedRequest;
+import com.foodielog.application.feed.dto.UnLikeFeedDTO;
 import com.foodielog.application.feed.service.FeedService;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
@@ -23,7 +25,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/feed")
 @RestController
 public class FeedController {
 
@@ -58,5 +60,23 @@ public class FeedController {
         feedService.save(saveDTO, files, user);
 
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @PostMapping("/like")
+    public ResponseEntity<?> like(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                  @Valid @RequestBody LikeFeedDTO.Request request,
+                                  Errors errors)
+    {
+        feedService.likeFeed(principalDetails.getUser(), request.getFeedId());
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/unlike")
+    public ResponseEntity<?> unlike(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                    @Valid @RequestBody UnLikeFeedDTO.Request request,
+                                    Errors errors)
+    {
+        feedService.unLikeFeed(principalDetails.getUser(), request.getFeedId());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

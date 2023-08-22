@@ -1,5 +1,7 @@
 package com.foodielog.server.feed.entity;
 
+import com.foodielog.server.feed.type.ContentStatus;
+import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,4 +30,11 @@ public class FeedLike {
 
     @CreationTimestamp
     private Timestamp createdAt;
+
+    public static FeedLike createFeedLike(Feed feed, User user) {
+        FeedLike feedLike = new FeedLike();
+        feedLike.feed = feed;
+        feedLike.user = user;
+        return feedLike;
+    }
 }

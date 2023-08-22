@@ -1,10 +1,13 @@
 package com.foodielog.application.feed.service;
 
 import com.foodielog.application.feed.dto.FeedRequest;
+import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
 import com.foodielog.server._core.s3.S3Uploader;
 import com.foodielog.server.feed.entity.Feed;
+import com.foodielog.server.feed.entity.FeedLike;
 import com.foodielog.server.feed.entity.Media;
+import com.foodielog.server.feed.repository.FeedLikeRepository;
 import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.repository.MediaRepository;
 import com.foodielog.server.restaurant.entity.Restaurant;
@@ -28,6 +31,7 @@ public class FeedService {
     private final MediaRepository mediaRepository;
     private final RestaurantLikeRepository restaurantLikeRepository;
     private final S3Uploader s3Uploader;
+    private final FeedLikeRepository feedLikeRepository;
 
     @Transactional
     public void save(FeedRequest.SaveDTO saveDTO, List<MultipartFile> files, User user) {
@@ -79,5 +83,34 @@ public class FeedService {
                 searchPlace.getAddress_name(),
                 searchPlace.getRoad_address_name()
         );
+    }
+
+    @Transactional
+    public void likeFeed(User user, Long feedId) {
+        Feed feed = getFeed(feedId);
+
+        boolean isFeedLike = feedLikeRepository.existsByUserAndFeed(user, feed);
+
+        if (isFeedLike) {
+            throw new Exception404("이미 좋아요 된 피드입니다.");
+        }
+
+        FeedLike feedLike = FeedLike.createFeedLike(feed, user);
+        feedLikeRepository.save(feedLike);
+    }
+
+    @Transactional
+    public void unLikeFeed(User user, Long feedId) {
+        Feed feed = getFeed(feedId);
+
+        FeedLike feedLike = feedLikeRepository.findByUserAndFeed(user, feed)
+                .orElseThrow(() -> new Exception404("좋아요 되지 않은 피드입니다."));
+
+        feedLikeRepository.delete(feedLike);
+    }
+
+    private Feed getFeed(Long feedId) {
+        return feedRepository.findById(feedId)
+                .orElseThrow(() -> new Exception404("피드가 없습니다."));
     }
 }
