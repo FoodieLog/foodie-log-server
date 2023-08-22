@@ -14,9 +14,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Positive;
+
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/user")
 @RestController
 public class UserController {
@@ -59,5 +63,25 @@ public class UserController {
         User user = principalDetails.getUser();
         UserRestaurantListDTO.Response response = userService.getRestaurantList(userId, user);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @PostMapping("/{userId}/follow")
+    public ResponseEntity<?> follow(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable(name = "userId") @Positive Long followedId
+    ) {
+        User user = principalDetails.getUser();
+        userService.follow(user, followedId);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{userId}/unfollow")
+    public ResponseEntity<?> unFollow(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable(name = "userId") @Positive Long followedId
+    ) {
+        User user = principalDetails.getUser();
+        userService.unFollow(user, followedId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

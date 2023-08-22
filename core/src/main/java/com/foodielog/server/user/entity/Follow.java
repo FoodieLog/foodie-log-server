@@ -27,4 +27,11 @@ public class Follow {
 
     @CreationTimestamp
     private Timestamp createdAt; // 나 -> 너
+
+    public static Follow createFollow(User following, User followed) {
+        Follow follow = new Follow();
+        follow.followingId = following;
+        follow.followedId = followed;
+        return follow;
+    }
 }
