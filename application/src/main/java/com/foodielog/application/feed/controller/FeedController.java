@@ -66,17 +66,17 @@ public class FeedController {
 
     @PostMapping("/like")
     public ResponseEntity<?> like(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                  @Valid @RequestBody LikeFeedDTO.Request request,
-                                  Errors errors)
-    {
+                                  @RequestBody @Valid LikeFeedDTO.Request request,
+                                  Errors errors
+    ) {
         feedService.likeFeed(principalDetails.getUser(), request.getFeedId());
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 
     @DeleteMapping("/unlike")
     public ResponseEntity<?> unlike(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                    @Positive @RequestParam Long feedId)
-    {
+                                    @RequestParam @Positive Long feedId
+    ) {
         feedService.unLikeFeed(principalDetails.getUser(), feedId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
