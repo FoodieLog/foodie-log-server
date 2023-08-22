@@ -12,6 +12,7 @@ import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,36 @@ public class UserAuthService {
     private final S3Uploader s3Uploader;
 
     private final UserRepository userRepository;
+
+    /* 토큰 재발급 */
+    public ReissueDTO.Response reissue(ReissueDTO.Request request) {
+        // Refresh Token 유효성 검사
+        jwtTokenProvider.isTokenValid(request.getRefreshToken());
+
+        // Refresh Token 검증
+        Authentication authentication = jwtTokenProvider.getAuthentication(request.getAccessToken());
+        String redisRT = redisService.getObjectByKey(RedisService.REFRESH_TOKEN_PREFIX
+                + authentication.getName(), String.class);
+        if (!redisRT.equals(request.getRefreshToken())) {
+            throw new Exception400("Refresh Token", "정보가 일치하지 않습니다.");
+        }
+
+        // 재발급
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
+
+        String accessToken = jwtTokenProvider.createAccessToken(user);
+        String refreshToken = jwtTokenProvider.createRefreshToken(user);
+
+        log.info("엑세스 토큰 재생성 완료: " + accessToken);
+        log.info("리프레시 토큰 재생성 완료: " + refreshToken);
+
+        // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
+        redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), refreshToken,
+                JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
+
+        return new ReissueDTO.Response(accessToken, refreshToken);
+    }
 
     /* 회원 가입 */
     @Transactional(readOnly = true)
