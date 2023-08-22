@@ -3,7 +3,9 @@ package com.foodielog.application.user.service;
 import com.foodielog.application.user.dto.*;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
+import com.foodielog.server._core.redis.RedisService;
 import com.foodielog.server._core.s3.S3Uploader;
+import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server.admin.entity.BadgeApply;
 import com.foodielog.server.admin.repository.BadgeApplyRepository;
 import com.foodielog.server.user.entity.User;
@@ -16,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserSettingService {
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
     private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
     private final BadgeApplyRepository badgeApplyRepository;
@@ -62,6 +67,19 @@ public class UserSettingService {
         userRepository.save(user);
 
         return new ChangePasswordDTO.Response(user.getEmail());
+    }
+
+    @Transactional
+    public LogoutDTO.Response logout(String accessToken) {
+        Long expiration = jwtTokenProvider.getExpiration(accessToken);
+        String email = jwtTokenProvider.getEmail(accessToken);
+
+        // 리프레시 토큰 삭제
+        redisService.deleteByKey(RedisService.REFRESH_TOKEN_PREFIX + email);
+        // 엑세스 토큰은 만료 시점까지 블랙리스트 등록
+        redisService.setObjectByKey(accessToken, RedisService.LOGOUT_VALUE_PREFIX, expiration, TimeUnit.MILLISECONDS);
+
+        return new LogoutDTO.Response(email, Boolean.TRUE);
     }
 
     @Transactional
