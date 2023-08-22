@@ -65,20 +65,20 @@ public class UserController {
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @PostMapping("/{userId}/follow")
+    @PostMapping("/follow")
     public ResponseEntity<?> follow(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @PathVariable(name = "userId") @Positive Long followedId
+            @RequestParam(name = "userId") @Positive Long followedId
     ) {
         User user = principalDetails.getUser();
         userService.follow(user, followedId);
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{userId}/unfollow")
+    @DeleteMapping("/unfollow")
     public ResponseEntity<?> unFollow(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @PathVariable(name = "userId") @Positive Long followedId
+            @RequestParam(name = "userId") @Positive Long followedId
     ) {
         User user = principalDetails.getUser();
         userService.unFollow(user, followedId);
