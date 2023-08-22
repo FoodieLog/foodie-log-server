@@ -30,6 +30,19 @@ public class UserAuthController {
     private final UserAuthService userAuthService;
     private final UserOauthService oauthUserService;
 
+    /* 토큰 재발급*/
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(
+            @RequestBody @Valid ReissueDTO.Request request,
+            Errors errors
+    ) {
+        ReissueDTO.Response response = userAuthService.reissue(request);
+
+        HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
+
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), headers, HttpStatus.OK);
+    }
+
     /* 회원 가입 */
     @GetMapping("/exists/email")
     public ResponseEntity<?> checkExistsEmail(@RequestParam @Email String input) {
