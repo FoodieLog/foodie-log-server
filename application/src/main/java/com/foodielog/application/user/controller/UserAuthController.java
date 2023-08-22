@@ -103,7 +103,7 @@ public class UserAuthController {
     public ResponseEntity<?> kakaoLogin(@RequestParam String code) {
         log.info("kakao 인가 code : " + code);
 
-        LoginDTO.Response response = oauthUserService.kakaoLogin(code);
+        KakaoLoginDTO.Response response = oauthUserService.kakaoLogin(code);
 
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
 

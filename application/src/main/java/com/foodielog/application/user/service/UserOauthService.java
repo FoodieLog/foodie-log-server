@@ -1,10 +1,6 @@
 package com.foodielog.application.user.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.foodielog.application.user.dto.KakaoDTO;
-import com.foodielog.application.user.dto.LoginDTO;
+import com.foodielog.application.user.dto.KakaoLoginDTO;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception401;
@@ -12,6 +8,7 @@ import com.foodielog.server._core.error.exception.Exception500;
 import com.foodielog.server._core.redis.RedisService;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server._core.util.ExternalUtil;
+import com.foodielog.server._core.util.JsonConverter;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.ProviderType;
@@ -52,13 +49,14 @@ public class UserOauthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
+    private final JsonConverter jsonConverter;
     private final UserRepository userRepository;
 
     @Transactional
-    public LoginDTO.Response kakaoLogin(String code) {
-        KakaoDTO.Token kakaoAccessToken = getKakaoAccessToken(code);
-        KakaoDTO.UserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken.getAccessToken());
-        KakaoDTO.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
+    public KakaoLoginDTO.Response kakaoLogin(String code) {
+        KakaoLoginDTO.ApiResponse.Token kakaoAccessToken = getKakaoAccessToken(code);
+        KakaoLoginDTO.ApiResponse.UserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken.getAccessToken());
+        KakaoLoginDTO.ApiResponse.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
 
         if (!kakaoAccount.getIsEmailValid()) {
             throw new Exception401("로그인 불가: 카카오 계정에 연결된 이메일이 유효하지 않습니다.");
@@ -86,10 +84,10 @@ public class UserOauthService {
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + loginUser.getEmail(), refreshToken,
                 JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
-        return new LoginDTO.Response(loginUser, accessToken, refreshToken);
+        return new KakaoLoginDTO.Response(loginUser, accessToken, refreshToken, kakaoAccessToken.getAccessToken());
     }
 
-    public KakaoDTO.Token getKakaoAccessToken(String code) {
+    private KakaoLoginDTO.ApiResponse.Token getKakaoAccessToken(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", KAKAO_GRANT_TYPE);
         body.add("client_id", KAKAO_API_KEY);
@@ -102,35 +100,16 @@ public class UserOauthService {
             throw new Exception500(tokenResponse.getBody());
         }
 
-        ObjectMapper om = new ObjectMapper();
-        om.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        try {
-            KakaoDTO.Token kakaoToken = om.readValue(tokenResponse.getBody(), KakaoDTO.Token.class);
-
-            log.info("kakao access_token : " + kakaoToken.getAccessToken());
-            return kakaoToken;
-        } catch (JsonProcessingException e) {
-            throw new Exception500("Kakao 로그인(1): Json 파싱 오류");
-        }
+        return jsonConverter.jsonToObject(tokenResponse.getBody(), KakaoLoginDTO.ApiResponse.Token.class);
     }
 
-    public KakaoDTO.UserInfo getKakaoUserInfo(String token) {
+    private KakaoLoginDTO.ApiResponse.UserInfo getKakaoUserInfo(String token) {
         ResponseEntity<String> userInfoResponse = ExternalUtil.kakaoUserInfoRequest(KAKAO_USER_INFO_URI, HttpMethod.POST, token);
 
         if (!userInfoResponse.getStatusCode().equals(HttpStatus.OK)) {
             throw new Exception500(userInfoResponse.getBody());
         }
 
-        ObjectMapper om = new ObjectMapper();
-        om.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        try {
-            KakaoDTO.UserInfo userInfo = om.readValue(userInfoResponse.getBody(), KakaoDTO.UserInfo.class);
-
-            log.info("kakao email : " + userInfo.getKakaoAccount().getEmail());
-            return userInfo;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new Exception500("Kakao 로그인(2): Json 파싱 오류");
-        }
+        return jsonConverter.jsonToObject(userInfoResponse.getBody(), KakaoLoginDTO.ApiResponse.UserInfo.class);
     }
 }
