@@ -58,7 +58,7 @@ public class JwtTokenProvider {
 
     // Request Header에서 token 값 추출
     public String resolveToken(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
+        String header = request.getHeader(HEADER);
         return header.replaceAll(TOKEN_PREFIX, "");
     }
 
@@ -90,7 +90,7 @@ public class JwtTokenProvider {
     }
 
     // 토큰에서 email 정보 추출
-    private String getEmail(String jwt) {
+    public String getEmail(String jwt) {
         return Jwts.parserBuilder()
                 .setSigningKey(JWT_KEY)
                 .build()
@@ -99,4 +99,16 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
+    // 토큰에서 유효기간 추출
+    public Long getExpiration(String jwt) {
+        Date expiration = Jwts.parserBuilder()
+                .setSigningKey(JWT_KEY)
+                .build()
+                .parseClaimsJws(jwt)
+                .getBody()
+                .getExpiration();
+
+        Long now = new Date().getTime();
+        return (expiration.getTime() - now);
+    }
 }

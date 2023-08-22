@@ -3,6 +3,7 @@ package com.foodielog.application.user.controller;
 import com.foodielog.application.user.dto.*;
 import com.foodielog.application.user.service.UserSettingService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
+import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,15 @@ public class UserSettingController {
     ) {
         User user = principalDetails.getUser();
         ChangePasswordDTO.Response response = userSettingService.changePassword(user, request);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader(JwtTokenProvider.HEADER) String accessToken) {
+        accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
+
+        LogoutDTO.Response response = userSettingService.logout(accessToken);
+
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 

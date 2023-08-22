@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisService {
     public static final String EMAIL_AUTH_CODE_PREFIX = "AuthCode ";
     public static final String REFRESH_TOKEN_PREFIX = "RT ";
+    public static final String LOGOUT_VALUE_PREFIX = "logout";
 
     private final RedisTemplate<String, String> redisTemplate;
     private final JsonConverter jsonConverter;
@@ -38,5 +39,9 @@ public class RedisService {
         vop.set(key, jsonConverter.objectToJson(obj));
         redisTemplate.expire(key, timeOut, timeUnit);
         log.info("redis set 성공 key: " + key);
+    }
+
+    public boolean deleteByKey(String key) {
+        return Boolean.TRUE.equals(redisTemplate.delete(key));
     }
 }
