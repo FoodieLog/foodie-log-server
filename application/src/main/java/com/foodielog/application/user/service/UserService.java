@@ -14,7 +14,7 @@ import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.restaurant.entity.RestaurantLike;
 import com.foodielog.server.restaurant.repository.RestaurantLikeRepository;
-import com.foodielog.server.restaurant.repository.RestaurantRepository;
+import com.foodielog.server.user.entity.Follow;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
 import com.foodielog.server.user.repository.UserRepository;
@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -135,5 +136,38 @@ public class UserService {
     private User validationUserId(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new Exception404("에러"));
+    }
+
+    @Transactional
+    public void follow(User following, Long followedId) {
+        if (following.getId().equals(followedId)) {
+            throw new Exception404("자신한테 팔로우 할 수 없습니다.");
+        }
+        User followed = validationUserId(followedId);
+
+        boolean isFollow = getOptionalFollow(following, followed).isPresent();
+        if (isFollow) {
+            throw new Exception404("이미 팔로우 된 유저입니다");
+        }
+
+        Follow follow = Follow.createFollow(following, followed);
+        followRepository.save(follow);
+    }
+
+    @Transactional
+    public void unFollow(User following, Long followedId) {
+        if (following.getId().equals(followedId)) {
+            throw new Exception404("자신을 언팔로우 할 수 없습니다.");
+        }
+        User followed = validationUserId(followedId);
+
+        Follow follow = getOptionalFollow(following, followed)
+                .orElseThrow(() -> new Exception404("팔로우 되지 않은 유저입니다."));
+
+        followRepository.delete(follow);
+    }
+
+    private Optional<Follow> getOptionalFollow(User following, User followed) {
+        return followRepository.findByFollowingIdAndFollowedId(following, followed);
     }
 }
