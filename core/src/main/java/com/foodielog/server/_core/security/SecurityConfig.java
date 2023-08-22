@@ -3,6 +3,7 @@ package com.foodielog.server._core.security;
 import com.foodielog.server._core.error.exception.Exception401;
 import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.security.jwt.JwtAuthenticationFilter;
+import com.foodielog.server._core.security.jwt.JwtExceptionFilter;
 import com.foodielog.server._core.util.FilterResponseUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -54,6 +56,7 @@ public class SecurityConfig {
 
         // 7. JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 넣는다
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtExceptionFilter, jwtAuthenticationFilter.getClass());
 
         // 8. 인증 실패 처리
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
