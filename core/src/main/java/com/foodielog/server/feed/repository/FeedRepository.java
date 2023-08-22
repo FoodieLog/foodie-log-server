@@ -19,4 +19,13 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
     List<Feed> getFeeds(@Param("user") User user, @Param("feedId") Long feedId, Pageable pageable);
 
     List<Feed> findAllByRestaurantId(Long restaurantId);
+
+    @Query("SELECT f, COUNT(fl) AS likeCount " +
+            "FROM Feed f " +
+            "LEFT JOIN FeedLike fl ON f.id = fl.feed.id " +
+            "WHERE f.restaurant.id = :restaurantId " +
+            "AND f.status = 'NORMAL' " +
+            "GROUP BY f.id " +
+            "ORDER BY likeCount DESC, f.id DESC")
+    List<Feed> findTop3ByRestaurantId(Long restaurantId, Pageable pageable);
 }

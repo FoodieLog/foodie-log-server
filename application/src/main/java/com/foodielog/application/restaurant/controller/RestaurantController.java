@@ -1,6 +1,7 @@
 package com.foodielog.application.restaurant.controller;
 
 import com.foodielog.application.restaurant.dto.LikedRestaurantDTO;
+import com.foodielog.application.restaurant.dto.RecommendedRestaurantDTO;
 import com.foodielog.application.restaurant.dto.RestaurantFeedListDTO;
 import com.foodielog.application.restaurant.service.RestaurantService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
@@ -62,5 +63,13 @@ public class RestaurantController {
         User user = principalDetails.getUser();
         restaurantService.unlikeRestaurant(user, restaurantId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/recommended")
+    public ResponseEntity<?> getRecommendedRestaurant(
+            @RequestParam(name = "address") String address
+    ) {
+        RecommendedRestaurantDTO.Response response = restaurantService.getRecommendedRestaurant(address);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
