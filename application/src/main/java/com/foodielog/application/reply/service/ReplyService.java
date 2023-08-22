@@ -39,7 +39,7 @@ public class ReplyService {
         Reply reply = replyRepository.findByIdAndUserId(replyId, user.getId())
                 .orElseThrow(() -> new Exception404("에러"));
 
-        reply.deleteReply();
+        reply.deleteReplyByUser();
     }
 
     @Transactional(readOnly = true)
