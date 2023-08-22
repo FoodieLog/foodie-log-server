@@ -1,6 +1,5 @@
 package com.foodielog.server._core.security.jwt;
 
-import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.security.auth.PrincipalDetailsService;
 import com.foodielog.server.user.entity.User;
@@ -71,15 +70,15 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (SignatureException ex) {
-            throw new Exception400("message", "Invalid JWT signature");
+            throw new JwtException("Invalid JWT signature");
         } catch (MalformedJwtException ex) {
-            throw new Exception400("message", "Invalid JWT token");
+            throw new JwtException("Invalid JWT token");
         } catch (ExpiredJwtException ex) {
-            throw new Exception400("message", "Expired JWT token");
+            throw new JwtException("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            throw new Exception400("message", "Unsupported JWT token");
+            throw new JwtException("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            throw new Exception400("message", "JWT claims string is empty.");
+            throw new JwtException("JWT claims string is empty.");
         }
     }
 

@@ -1,6 +1,7 @@
 package com.foodielog.server._core.security.jwt;
 
 import com.foodielog.server._core.redis.RedisService;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -43,7 +44,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = jwtTokenProvider.resolveToken(request);
 
-        if (jwtTokenProvider.isTokenValid(token) && !redisService.hasKey(token)) {
+        if (jwtTokenProvider.isTokenValid(token)) {
+            if (redisService.hasKey(token)) {
+                throw new JwtException("Already logged out User");
+            }
+
             // 토큰으로부터 유저 정보 받아오기
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             // SecurityContext 에 Authentication 객체 저장
