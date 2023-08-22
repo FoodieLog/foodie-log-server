@@ -107,4 +107,8 @@ public class User {
 
         this.aboutMe = aboutMe;
     }
+
+    public void withdraw() {
+        this.status = UserStatus.WITHDRAW;
+    }
 }
