@@ -1,6 +1,7 @@
 package com.foodielog.application.restaurant.service;
 
 import com.foodielog.application.restaurant.dto.LikedRestaurantDTO;
+import com.foodielog.application.restaurant.dto.RecommendedRestaurantDTO;
 import com.foodielog.application.restaurant.dto.RestaurantFeedListDTO;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
@@ -17,6 +18,8 @@ import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,6 +91,17 @@ public class RestaurantService {
         restaurantLikeRepository.delete(restaurantLike);
     }
 
+    @Transactional(readOnly = true)
+    public RecommendedRestaurantDTO.Response getRecommendedRestaurant(String address) {
+        List<Restaurant> restaurants = restaurantRepository.findByRoadAddressContaining(address);
+
+        List<RecommendedRestaurantDTO.RestaurantsDTO> restaurantsDTOList = restaurants.stream()
+                .map(restaurant -> createRestaurantsDTO(restaurant))
+                .collect(Collectors.toList());
+
+        return new RecommendedRestaurantDTO.Response(restaurantsDTOList);
+    }
+
     private Restaurant validRestaurant(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new Exception404("해당 맛집을 찾을 수 없습니다."));
@@ -147,5 +161,16 @@ public class RestaurantService {
             restaurantFeedsDTOList.add(restaurantFeedsDTO);
         }
         return restaurantFeedsDTOList;
+    }
+
+    private RecommendedRestaurantDTO.RestaurantsDTO createRestaurantsDTO(Restaurant restaurant) {
+        Pageable pageable = PageRequest.of(0, 3);
+        List<Feed> feeds = feedRepository.findTop3ByRestaurantId(restaurant.getId(), pageable);
+
+        List<RecommendedRestaurantDTO.FeedsDTO> feedsDTOList = feeds.stream()
+                .map(feed -> new RecommendedRestaurantDTO.FeedsDTO(feed))
+                .collect(Collectors.toList());
+
+        return new RecommendedRestaurantDTO.RestaurantsDTO(restaurant, feedsDTOList);
     }
 }
