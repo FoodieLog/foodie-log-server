@@ -67,6 +67,22 @@ public class UserSettingController {
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
+    @PostMapping("/withdraw")
+    public ResponseEntity<?> withdraw(
+            @RequestHeader(JwtTokenProvider.HEADER) String accessToken,
+            @RequestBody @Valid WithdrawDTO.Request request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            Error error
+
+    ) {
+        accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
+        User user = principalDetails.getUser();
+
+        WithdrawDTO.Response response = userSettingService.withdraw(accessToken, user, request);
+
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
     @PutMapping("/profile")
     public ResponseEntity<?> ChangeProfile(
             @RequestPart(value = "content") @Valid ChangeProfileDTO.Request request,

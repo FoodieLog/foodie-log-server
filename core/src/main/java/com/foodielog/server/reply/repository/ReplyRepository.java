@@ -12,12 +12,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
-	Optional<Reply> findByIdAndUserId(Long id, Long userId);
+    Optional<Reply> findByIdAndUserId(Long id, Long userId);
 
-	@Query("SELECT r FROM Reply r " +
-			"JOIN FETCH r.user " +
-			"WHERE r.feed.id = :feedId and r.id > :id and r.status = 'NORMAL'")
-	List<Reply> getReplyList(@Param("feedId") Long feedId, @Param("id") Long id, Pageable pageable);
+    List<Reply> findByUserId(Long id);
 
-	Long countByFeed(Feed feed);
+    @Query("SELECT r FROM Reply r " +
+            "JOIN FETCH r.user " +
+            "WHERE r.feed.id = :feedId and r.id > :id and r.status = 'NORMAL'")
+    List<Reply> getReplyList(@Param("feedId") Long feedId, @Param("id") Long id, Pageable pageable);
+
+    Long countByFeed(Feed feed);
+
+    Long countByUser(User user);
 }
