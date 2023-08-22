@@ -1,10 +1,7 @@
 package com.foodielog.application.restaurant.service;
 
-import com.foodielog.application.restaurant.dto.LikeRestaurantDTO;
 import com.foodielog.application.restaurant.dto.LikedRestaurantDTO;
 import com.foodielog.application.restaurant.dto.RestaurantFeedListDTO;
-import com.foodielog.application.restaurant.dto.UnlikeRestaurantDTO;
-import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -68,12 +65,11 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void likeRestaurant(User user, LikeRestaurantDTO.Request requestDTO) {
-        Long restaurantId = requestDTO.getRestaurantId();
+    public void likeRestaurant(User user, Long restaurantId) {
         Restaurant restaurant = validRestaurant(restaurantId);
 
         if (restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant)) {
-            throw new Exception400("restaurantLike", "이미 좋아요를 누른 맛집입니다.");
+            throw new Exception404("이미 좋아요를 누른 맛집입니다.");
         }
 
         RestaurantLike restaurantLike = RestaurantLike.createRestaurantLike(restaurant, user);
@@ -81,12 +77,11 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void unlikeRestaurant(User user, UnlikeRestaurantDTO.Request requestDTO) {
-        Long restaurantId = requestDTO.getRestaurantId();
+    public void unlikeRestaurant(User user, Long restaurantId) {
         Restaurant restaurant = validRestaurant(restaurantId);
 
         if (!restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant)) {
-            throw new Exception400("restaurantLike", "이미 좋아요를 취소한 맛집입니다.");
+            throw new Exception404("이미 좋아요를 취소한 맛집입니다.");
         }
 
         RestaurantLike restaurantLike = restaurantLikeRepository.findByUserIdAndRestaurantId(user.getId(), restaurantId);
