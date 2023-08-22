@@ -66,4 +66,8 @@ public class Reply {
 	public void deleteReply() {
 		status = ContentStatus.DELETED;
 	}
+
+	public void deleteReplyByUser() {
+		status = ContentStatus.HIDDEN;
+	}
 }

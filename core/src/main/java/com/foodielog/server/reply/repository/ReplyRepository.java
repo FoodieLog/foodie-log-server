@@ -16,7 +16,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
 	@Query("SELECT r FROM Reply r " +
 			"JOIN FETCH r.user " +
-			"WHERE r.feed.id = :feedId and r.id > :id")
+			"WHERE r.feed.id = :feedId and r.id > :id and r.status = 'NORMAL'")
 	List<Reply> getReplyList(@Param("feedId") Long feedId, @Param("id") Long id, Pageable pageable);
 
 	Long countByFeed(Feed feed);
