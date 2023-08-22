@@ -44,4 +44,8 @@ public class RedisService {
     public boolean deleteByKey(String key) {
         return Boolean.TRUE.equals(redisTemplate.delete(key));
     }
+
+    public boolean hasKey(String key) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
 }
