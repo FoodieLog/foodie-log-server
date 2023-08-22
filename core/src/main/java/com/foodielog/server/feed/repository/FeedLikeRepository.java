@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface FeedLikeRepository extends JpaRepository<FeedLike, Long> {
     boolean existsByUserAndFeed(User user, Feed feed);
 
+    Optional<FeedLike> findByUserAndFeed(User user, Feed feed);
+
     Long countByFeed(Feed feed);
 
     Optional<FeedLike> findByUserId(Long id);
