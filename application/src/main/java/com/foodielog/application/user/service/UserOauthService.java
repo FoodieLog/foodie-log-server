@@ -12,6 +12,7 @@ import com.foodielog.server._core.util.JsonConverter;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.ProviderType;
+import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,7 +72,7 @@ public class UserOauthService {
             userRepository.save(user);
         }
 
-        User loginUser = userRepository.findByEmail(kakaoAccount.getEmail())
+        User loginUser = userRepository.findByEmailAndStatus(kakaoAccount.getEmail(), UserStatus.NORMAL)
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
         String accessToken = jwtTokenProvider.createAccessToken(loginUser);
