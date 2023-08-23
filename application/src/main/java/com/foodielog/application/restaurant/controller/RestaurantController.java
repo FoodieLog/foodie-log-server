@@ -25,7 +25,7 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @GetMapping("/map/liked")
-    public ResponseEntity<?> getMyRestaurant(
+    public ResponseEntity<ApiUtils.ApiResult<LikedRestaurantDTO.Response>> getMyRestaurant(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         User user = principalDetails.getUser();
@@ -34,7 +34,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/{restaurantId}")
-    public ResponseEntity<?> getRestaurantDetail(
+    public ResponseEntity<ApiUtils.ApiResult<RestaurantFeedListDTO.Response>> getRestaurantDetail(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long restaurantId
     ) {
@@ -44,7 +44,7 @@ public class RestaurantController {
     }
 
     @PostMapping("/like")
-    public ResponseEntity<?> likeRestaurant(
+    public ResponseEntity<ApiUtils.ApiResult<String>> likeRestaurant(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam(name = "restaurant") @Positive Long restaurantId,
             Error error
@@ -55,7 +55,7 @@ public class RestaurantController {
     }
 
     @DeleteMapping("/unlike")
-    public ResponseEntity<?> unlikeRestaurant(
+    public ResponseEntity<HttpStatus> unlikeRestaurant(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam(name = "restaurant") @Positive Long restaurantId,
             Error error
@@ -66,7 +66,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/recommended")
-    public ResponseEntity<?> getRecommendedRestaurant(
+    public ResponseEntity<ApiUtils.ApiResult<RecommendedRestaurantDTO.Response>> getRecommendedRestaurant(
             @RequestParam(name = "address") String address
     ) {
         RecommendedRestaurantDTO.Response response = restaurantService.getRecommendedRestaurant(address);

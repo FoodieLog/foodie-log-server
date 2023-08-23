@@ -23,25 +23,30 @@ public class ReplyController {
     private final ReplyService replyService;
 
     @PostMapping("/{feedId}")
-    public ResponseEntity<?> saveReply(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                       @PathVariable Long feedId,
-                                       @Valid @RequestBody ReplyCreatDTO.Request createDTO,
-                                       Errors errors) {
+    public ResponseEntity<ApiUtils.ApiResult<ReplyCreatDTO.Response>> saveReply(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Long feedId,
+            @Valid @RequestBody ReplyCreatDTO.Request createDTO,
+            Errors errors) {
         ReplyCreatDTO.Response response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{replyId}")
-    public ResponseEntity<?> deleteReply(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                         @PathVariable Long replyId) {
+    public ResponseEntity<HttpStatus> deleteReply(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Long replyId
+    ) {
         replyService.deleteReply(principalDetails.getUser(), replyId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{feedId}")
-    public ResponseEntity<?> getReplyList(@PathVariable Long feedId,
-                                          @RequestParam Long replyId,
-                                          @PageableDefault Pageable pageable) {
+    public ResponseEntity<ApiUtils.ApiResult<ReplyCreatDTO.ListDTO>> getReplyList(
+            @PathVariable Long feedId,
+            @RequestParam Long replyId,
+            @PageableDefault Pageable pageable
+    ) {
         ReplyCreatDTO.ListDTO response = replyService.getListReply(feedId, replyId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
