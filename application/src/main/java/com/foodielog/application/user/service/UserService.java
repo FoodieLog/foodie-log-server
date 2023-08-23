@@ -1,9 +1,6 @@
 package com.foodielog.application.user.service;
 
-import com.foodielog.application.user.dto.UserFeedListDTO;
-import com.foodielog.application.user.dto.UserProfileDTO;
-import com.foodielog.application.user.dto.UserRestaurantListDTO;
-import com.foodielog.application.user.dto.UserThumbnailDTO;
+import com.foodielog.application.user.dto.*;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -169,5 +166,15 @@ public class UserService {
 
     private Optional<Follow> getOptionalFollow(User following, User followed) {
         return followRepository.findByFollowingIdAndFollowedId(following, followed);
+    }
+
+    public UserSearchDTO.Response search(String keyword) {
+        List<User> userList = userRepository.searchUserOrderByFollowedIdDesc(keyword);
+
+        List<UserSearchDTO.Response.UserDTO> userDTOList = userList.stream()
+                .map(UserSearchDTO.Response.UserDTO::new)
+                .collect(Collectors.toList());
+
+        return new UserSearchDTO.Response(userDTOList);
     }
 }

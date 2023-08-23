@@ -1,9 +1,6 @@
 package com.foodielog.application.user.controller;
 
-import com.foodielog.application.user.dto.UserFeedListDTO;
-import com.foodielog.application.user.dto.UserProfileDTO;
-import com.foodielog.application.user.dto.UserRestaurantListDTO;
-import com.foodielog.application.user.dto.UserThumbnailDTO;
+import com.foodielog.application.user.dto.*;
 import com.foodielog.application.user.service.UserService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
@@ -83,5 +80,12 @@ public class UserController {
         User user = principalDetails.getUser();
         userService.unFollow(user, followedId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam String keyword) {
+        UserSearchDTO.Response response = userService.search(keyword);
+
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
