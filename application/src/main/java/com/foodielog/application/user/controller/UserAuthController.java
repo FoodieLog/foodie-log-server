@@ -32,7 +32,7 @@ public class UserAuthController {
 
     /* 토큰 재발급*/
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(
+    public ResponseEntity<ApiUtils.ApiResult<ReissueDTO.Response>> reissue(
             @RequestBody @Valid ReissueDTO.Request request,
             Errors errors
     ) {
@@ -45,7 +45,9 @@ public class UserAuthController {
 
     /* 회원 가입 */
     @GetMapping("/exists/email")
-    public ResponseEntity<?> checkExistsEmail(@RequestParam @Email String input) {
+    public ResponseEntity<ApiUtils.ApiResult<ExistsEmailDTO.Response>> checkExistsEmail(
+            @RequestParam @Email String input
+    ) {
         ExistsEmailDTO.Response response = userAuthService.checkExistsEmail(input);
 
         HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
@@ -53,7 +55,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(
+    public ResponseEntity<ApiUtils.ApiResult<SignUpDTO.Response>> signUp(
             @RequestPart(value = "content") @Valid SignUpDTO.Request request,
             @RequestPart(value = "file") MultipartFile file,
             Errors errors
@@ -65,21 +67,25 @@ public class UserAuthController {
 
     /* 이메일 인증 */
     @GetMapping("/email/code-requests/signup")
-    public ResponseEntity<?> sendCodeForSignUp(@RequestParam @Email String email) {
+    public ResponseEntity<ApiUtils.ApiResult<SendCodeDTO.ForSignUpDTO.Response>> sendCodeForSignUp(
+            @RequestParam @Email String email
+    ) {
         SendCodeDTO.ForSignUpDTO.Response response = userAuthService.sendCodeForSignUp(email);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/email/code-requests/password")
-    public ResponseEntity<?> sendCodeForPassword(@RequestParam @Email String email) {
+    public ResponseEntity<ApiUtils.ApiResult<SendCodeDTO.ForPassWordDTO.Response>> sendCodeForPassword(
+            @RequestParam @Email String email
+    ) {
         SendCodeDTO.ForPassWordDTO.Response response = userAuthService.sendCodeForPassword(email);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/email/verification")
-    public ResponseEntity<?> verificationCode(
+    public ResponseEntity<ApiUtils.ApiResult<VerifiedCodeDTO.Response>> verificationCode(
             @RequestParam @Email String email,
             @RequestParam @Size(min = 4, max = 4) String code
     ) {
@@ -91,7 +97,9 @@ public class UserAuthController {
 
     /* 로그인 */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO.Request loginDTO, Errors errors) {
+    public ResponseEntity<ApiUtils.ApiResult<LoginDTO.Response>> login(
+            @RequestBody @Valid LoginDTO.Request loginDTO, Errors errors
+    ) {
         LoginDTO.Response response = userAuthService.login(loginDTO);
 
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
@@ -100,7 +108,9 @@ public class UserAuthController {
     }
 
     @GetMapping("/login/kakao")
-    public ResponseEntity<?> kakaoLogin(@RequestParam String code) {
+    public ResponseEntity<ApiUtils.ApiResult<KakaoLoginDTO.Response>> kakaoLogin(
+            @RequestParam String code
+    ) {
         log.info("kakao 인가 code : " + code);
 
         KakaoLoginDTO.Response response = oauthUserService.kakaoLogin(code);
@@ -120,7 +130,9 @@ public class UserAuthController {
 
     /* 프로필 설정 */
     @GetMapping("/exists/nickname")
-    public ResponseEntity<?> checkExistsNickName(@RequestParam @ValidNickName String input) {
+    public ResponseEntity<ApiUtils.ApiResult<ExistsNickNameDTO.Response>> checkExistsNickName(
+            @RequestParam @ValidNickName String input
+    ) {
         ExistsNickNameDTO.Response response = userAuthService.checkExistsNickName(input);
 
         HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
@@ -129,7 +141,9 @@ public class UserAuthController {
 
     /* 비밀번호 찾기*/
     @PutMapping("/password/reset")
-    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordDTO.Request request, Errors errors) {
+    public ResponseEntity<ApiUtils.ApiResult<ResetPasswordDTO.Response>> resetPassword(
+            @RequestBody @Valid ResetPasswordDTO.Request request, Errors errors
+    ) {
         ResetPasswordDTO.Response response = userAuthService.resetPassword(request);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);

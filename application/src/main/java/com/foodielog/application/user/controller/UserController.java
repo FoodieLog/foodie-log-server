@@ -25,7 +25,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}/profile")
-    public ResponseEntity<?> getProfile(
+    public ResponseEntity<ApiUtils.ApiResult<UserProfileDTO.Response>> getProfile(
             @PathVariable Long userId
     ) {
         UserProfileDTO.Response response = userService.getProfile(userId);
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/feed/thumbnail")
-    public ResponseEntity<?> getThumbnail(
+    public ResponseEntity<ApiUtils.ApiResult<UserThumbnailDTO.Response>> getThumbnail(
             @PathVariable Long userId,
             @RequestParam(name = "feed") Long feedId,
             @PageableDefault(size = 15) Pageable pageable
@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/feed/list")
-    public ResponseEntity<?> getFeeds(
+    public ResponseEntity<ApiUtils.ApiResult<UserFeedListDTO.Response>> getFeeds(
             @PathVariable Long userId,
             @RequestParam(name = "feed") Long feedId,
             @PageableDefault(size = 15) Pageable pageable
@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/map")
-    public ResponseEntity<?> getRestaurantListByMap(
+    public ResponseEntity<ApiUtils.ApiResult<UserRestaurantListDTO.Response>> getRestaurantListByMap(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long userId
     ) {
@@ -63,7 +63,7 @@ public class UserController {
     }
 
     @PostMapping("/follow")
-    public ResponseEntity<?> follow(
+    public ResponseEntity<ApiUtils.ApiResult<String>> follow(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam(name = "userId") @Positive Long followedId
     ) {
@@ -73,7 +73,7 @@ public class UserController {
     }
 
     @DeleteMapping("/unfollow")
-    public ResponseEntity<?> unFollow(
+    public ResponseEntity<HttpStatus> unFollow(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam(name = "userId") @Positive Long followedId
     ) {
@@ -83,7 +83,9 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> search(@RequestParam String keyword) {
+    public ResponseEntity<ApiUtils.ApiResult<UserSearchDTO.Response>> search(
+            @RequestParam String keyword
+    ) {
         UserSearchDTO.Response response = userService.search(keyword);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);

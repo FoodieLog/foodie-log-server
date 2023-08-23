@@ -23,7 +23,7 @@ public class UserSettingController {
     private final UserSettingService userSettingService;
 
     @PutMapping("/notification")
-    public ResponseEntity<?> changeNotification(
+    public ResponseEntity<ApiUtils.ApiResult<ChangeNotificationDTO.Response>> changeNotification(
             @RequestBody @Valid ChangeNotificationDTO.Request request,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             Error error
@@ -34,21 +34,25 @@ public class UserSettingController {
     }
 
     @GetMapping("/badge")
-    public ResponseEntity<?> checkBadgeApply(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<ApiUtils.ApiResult<CheckBadgeApplyDTO.Response>> checkBadgeApply(
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
         User user = principalDetails.getUser();
         CheckBadgeApplyDTO.Response response = userSettingService.checkBadgeApply(user);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @PostMapping("/badge")
-    public ResponseEntity<?> creatBadgeApplyDTO(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<ApiUtils.ApiResult<CreateBadgeApplyDTO.Response>> creatBadgeApplyDTO(
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
         User user = principalDetails.getUser();
         CreateBadgeApplyDTO.Response response = userSettingService.creatBadgeApply(user);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @PutMapping("/password")
-    public ResponseEntity<?> changePassword(
+    public ResponseEntity<ApiUtils.ApiResult<ChangePasswordDTO.Response>> changePassword(
             @RequestBody @Valid ChangePasswordDTO.Request request,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             Error error
@@ -59,7 +63,9 @@ public class UserSettingController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader(JwtTokenProvider.HEADER) String accessToken) {
+    public ResponseEntity<ApiUtils.ApiResult<LogoutDTO.Response>> logout(
+            @RequestHeader(JwtTokenProvider.HEADER) String accessToken
+    ) {
         accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
 
         LogoutDTO.Response response = userSettingService.logout(accessToken);
@@ -68,7 +74,7 @@ public class UserSettingController {
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<?> withdraw(
+    public ResponseEntity<ApiUtils.ApiResult<WithdrawDTO.Response>> withdraw(
             @RequestHeader(JwtTokenProvider.HEADER) String accessToken,
             @RequestBody @Valid WithdrawDTO.Request request,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -84,7 +90,7 @@ public class UserSettingController {
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<?> ChangeProfile(
+    public ResponseEntity<ApiUtils.ApiResult<ChangeProfileDTO.Response>> ChangeProfile(
             @RequestPart(value = "content") @Valid ChangeProfileDTO.Request request,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
