@@ -1,6 +1,6 @@
 package com.foodielog.application.feed.service;
 
-import com.foodielog.application.feed.dto.FeedRequest;
+import com.foodielog.application.feed.dto.FeedSaveDTO;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
 import com.foodielog.server._core.s3.S3Uploader;
@@ -34,15 +34,15 @@ public class FeedService {
     private final FeedLikeRepository feedLikeRepository;
 
     @Transactional
-    public void save(FeedRequest.SaveDTO saveDTO, List<MultipartFile> files, User user) {
-        Restaurant restaurant = dtoToRestaurant(saveDTO.getSelectedSearchPlace());
+    public void save(FeedSaveDTO.Request request, List<MultipartFile> files, User user) {
+        Restaurant restaurant = dtoToRestaurant(request.getSelectedSearchPlace());
         Restaurant savedRestaurant = saveRestaurant(restaurant);
 
-        checkIsLiked(user, savedRestaurant, saveDTO);
+        checkIsLiked(user, savedRestaurant, request);
 
         List<String> filesUrl = s3Uploader.saveFiles(files);
 
-        Feed feed = Feed.createFeed(savedRestaurant, user, saveDTO.getContent(), filesUrl.get(0));
+        Feed feed = Feed.createFeed(savedRestaurant, user, request.getContent(), filesUrl.get(0));
         feedRepository.save(feed);
 
         for (String fileUrl : filesUrl) {
@@ -51,12 +51,12 @@ public class FeedService {
         }
     }
 
-    private void checkIsLiked(User user, Restaurant restaurant, FeedRequest.SaveDTO saveDTO) {
+    private void checkIsLiked(User user, Restaurant restaurant, FeedSaveDTO.Request request) {
         if (restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant)) {
             return;
         }
 
-        if (!saveDTO.getIsLiked()) {
+        if (!request.getIsLiked()) {
             return;
         }
 

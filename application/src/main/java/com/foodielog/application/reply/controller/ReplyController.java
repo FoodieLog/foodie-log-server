@@ -1,7 +1,6 @@
 package com.foodielog.application.reply.controller;
 
-import com.foodielog.application.reply.dto.ReplyRequest;
-import com.foodielog.application.reply.dto.ReplyResponse;
+import com.foodielog.application.reply.dto.ReplyCreatDTO;
 import com.foodielog.application.reply.service.ReplyService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
@@ -26,9 +25,9 @@ public class ReplyController {
     @PostMapping("/{feedId}")
     public ResponseEntity<?> saveReply(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                        @PathVariable Long feedId,
-                                       @Valid @RequestBody ReplyRequest.CreateDTO createDTO,
+                                       @Valid @RequestBody ReplyCreatDTO.Request createDTO,
                                        Errors errors) {
-        ReplyResponse.CreateDTO response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
+        ReplyCreatDTO.Response response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
@@ -43,7 +42,7 @@ public class ReplyController {
     public ResponseEntity<?> getReplyList(@PathVariable Long feedId,
                                           @RequestParam Long replyId,
                                           @PageableDefault Pageable pageable) {
-        ReplyResponse.ListDTO response = replyService.getListReply(feedId, replyId, pageable);
+        ReplyCreatDTO.ListDTO response = replyService.getListReply(feedId, replyId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
