@@ -5,13 +5,17 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class FeedRequest {
+public class FeedSaveDTO {
 
     @Getter
-    public static class SaveDTO {
+    public static class Request {
         private KakaoApiResponse.SearchPlace selectedSearchPlace;
         private String content;
+
+        @NotBlank
         private Boolean isLiked;
     }
 }

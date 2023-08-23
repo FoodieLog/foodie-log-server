@@ -1,7 +1,7 @@
 package com.foodielog.application.feed.controller;
 
+import com.foodielog.application.feed.dto.FeedSaveDTO;
 import com.foodielog.application.feed.dto.LikeFeedDTO;
-import com.foodielog.application.feed.dto.FeedRequest;
 import com.foodielog.application.feed.service.FeedService;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -35,22 +36,18 @@ public class FeedController {
     private final KakaoApiService kakaoApiService;
 
     @GetMapping("/search/restaurant")
-    public ResponseEntity<?> useKakaoSearchApi(
-            @RequestParam String keyword
+    public ResponseEntity<ApiUtils.ApiResult<KakaoApiResponse>> useKakaoSearchApi(
+            @RequestParam @NotBlank String keyword
     ) {
         log.info("kakao search keyword" + keyword);
-
-        if (keyword == null || keyword.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(ApiUtils.error("검색어를 입력해주세요.", HttpStatus.BAD_REQUEST));
-        }
 
         KakaoApiResponse kakaoApiResponse = kakaoApiService.getKakaoSearchApi(keyword);
         return new ResponseEntity<>(ApiUtils.success(kakaoApiResponse, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @PostMapping("/feed")
-    public ResponseEntity<?> feedSave(
-            @RequestPart(value = "content") @Valid FeedRequest.SaveDTO saveDTO,
+    @PostMapping("/save")
+    public ResponseEntity<ApiUtils.ApiResult<String>> feedSave(
+            @RequestPart(value = "content") @Valid FeedSaveDTO.Request request,
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal PrincipalDetails principalDetails, Errors errors
     ) {
@@ -59,23 +56,24 @@ public class FeedController {
         }
 
         User user = principalDetails.getUser();
-        feedService.save(saveDTO, files, user);
+        feedService.save(request, files, user);
 
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 
     @PostMapping("/like")
-    public ResponseEntity<?> like(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                  @RequestBody @Valid LikeFeedDTO.Request request,
-                                  Errors errors
+    public ResponseEntity<ApiUtils.ApiResult<String>> like(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody @Valid LikeFeedDTO.Request request, Errors errors
     ) {
         feedService.likeFeed(principalDetails.getUser(), request.getFeedId());
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 
     @DeleteMapping("/unlike")
-    public ResponseEntity<?> unlike(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                    @RequestParam @Positive Long feedId
+    public ResponseEntity<ApiUtils.ApiResult> unlike(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam @Positive Long feedId
     ) {
         feedService.unLikeFeed(principalDetails.getUser(), feedId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
