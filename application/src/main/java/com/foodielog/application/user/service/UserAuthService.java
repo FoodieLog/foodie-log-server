@@ -10,6 +10,7 @@ import com.foodielog.server._core.s3.S3Uploader;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
+import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -49,7 +50,7 @@ public class UserAuthService {
         }
 
         // 재발급
-        User user = userRepository.findByEmail(authentication.getName())
+        User user = userRepository.findByEmailAndStatus(authentication.getName(), UserStatus.NORMAL)
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
         String accessToken = jwtTokenProvider.createAccessToken(user);
@@ -150,7 +151,7 @@ public class UserAuthService {
     /* 로그인 */
     @Transactional(readOnly = true)
     public LoginDTO.Response login(LoginDTO.Request loginDTO) {
-        User user = userRepository.findByEmail(loginDTO.getEmail())
+        User user = userRepository.findByEmailAndStatus(loginDTO.getEmail(), UserStatus.NORMAL)
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
@@ -180,7 +181,7 @@ public class UserAuthService {
     /* 비밀번호 변경 */
     @Transactional
     public ResetPasswordDTO.Response resetPassword(ResetPasswordDTO.Request request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmailAndStatus(request.getEmail(), UserStatus.NORMAL)
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
         user.resetPassword(passwordEncoder.encode(request.getPassword()));
