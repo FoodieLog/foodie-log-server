@@ -9,6 +9,7 @@ import com.foodielog.server.feed.entity.Media;
 import com.foodielog.server.feed.repository.FeedLikeRepository;
 import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.repository.MediaRepository;
+import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.restaurant.entity.RestaurantLike;
@@ -134,7 +135,7 @@ public class RestaurantService {
                 new RestaurantFeedListDTO.FeedRestaurantDTO(restaurant);
 
         List<RestaurantFeedListDTO.RestaurantFeedsDTO> restaurantFeedsDTOList = new ArrayList<>();
-        List<Feed> feeds = feedRepository.findAllByRestaurantId(restaurant.getId());
+        List<Feed> feeds = feedRepository.findAllByRestaurantIdAndStatus(restaurant.getId(), ContentStatus.NORMAL);
 
         for (Feed feed : feeds) {
             List<Media> mediaList = mediaRepository.findByFeed(feed);
@@ -143,7 +144,7 @@ public class RestaurantService {
                     .collect(Collectors.toList());
 
             Long likeCount = feedLikeRepository.countByFeed(feed);
-            Long replyCount = replyRepository.countByFeed(feed);
+            Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
 
             boolean isFollowed = followRepository.findByFollowingIdAndFollowedId(user, feed.getUser())
                     .isPresent();

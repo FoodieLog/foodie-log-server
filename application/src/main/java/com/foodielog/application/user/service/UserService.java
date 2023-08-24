@@ -7,6 +7,7 @@ import com.foodielog.server.feed.entity.Media;
 import com.foodielog.server.feed.repository.FeedLikeRepository;
 import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.repository.MediaRepository;
+import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.restaurant.entity.RestaurantLike;
@@ -15,6 +16,7 @@ import com.foodielog.server.user.entity.Follow;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
 import com.foodielog.server.user.repository.UserRepository;
+import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -89,7 +91,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserRestaurantListDTO.Response getRestaurantList(Long userId, User user) {
         User feedOwner = validationUserId(userId);
-        List<Feed> feeds = feedRepository.findByUserId(feedOwner.getId());
+        List<Feed> feeds = feedRepository.findByUserIdAndStatus(feedOwner.getId(), ContentStatus.NORMAL);
 
         List<UserRestaurantListDTO.Response.RestaurantListDTO> restaurantListDTOList = new ArrayList<>();
 
@@ -118,7 +120,7 @@ public class UserService {
 
     private UserFeedListDTO.FeedDTO getFeedDTO(Feed feed, List<UserFeedListDTO.FeedImageDTO> feedImages) {
         Long likeCount = feedLikeRepository.countByFeed(feed);
-        Long replyCount = replyRepository.countByFeed(feed);
+        Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
         String share = null;
 
         return new UserFeedListDTO.FeedDTO(feed, feedImages, likeCount, replyCount, share);
@@ -131,7 +133,7 @@ public class UserService {
     }
 
     private User validationUserId(Long userId) {
-        return userRepository.findById(userId)
+        return userRepository.findByIdAndStatus(userId, UserStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("에러"));
     }
 
