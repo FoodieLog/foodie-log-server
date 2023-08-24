@@ -2,6 +2,7 @@ package com.foodielog.application.feed.controller;
 
 import com.foodielog.application.feed.dto.FeedSaveDTO;
 import com.foodielog.application.feed.dto.LikeFeedDTO;
+import com.foodielog.application.feed.dto.UpdateFeedDTO;
 import com.foodielog.application.feed.service.FeedService;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
@@ -78,5 +79,26 @@ public class FeedController {
     ) {
         feedService.unLikeFeed(principalDetails.getUser(), feedId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<ApiUtils.ApiResult<String>> delete(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam(name = "feed") @Positive Long feedId
+    ) {
+        User user = principalDetails.getUser();
+        feedService.deleteFeed(user, feedId);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ApiUtils.ApiResult<String>> update(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody @Valid UpdateFeedDTO.Request request,
+            Errors errors
+    ) {
+        User user = principalDetails.getUser();
+        feedService.updateFeed(user, request);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 }

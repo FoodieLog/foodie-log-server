@@ -60,4 +60,12 @@ public class Feed {
     public void deleteFeed() {
         status = ContentStatus.DELETED;
     }
+
+    public void deleteFeedByUser() {
+        status = ContentStatus.HIDDEN;
+    }
+
+    public void updateFeed(String content) {
+        this.content = content;
+    }
 }
