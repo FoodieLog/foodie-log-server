@@ -2,6 +2,7 @@ package com.foodielog.application.feed.controller;
 
 import com.foodielog.application.feed.dto.FeedSaveDTO;
 import com.foodielog.application.feed.dto.LikeFeedDTO;
+import com.foodielog.application.feed.dto.ReportFeedDTO;
 import com.foodielog.application.feed.dto.UpdateFeedDTO;
 import com.foodielog.application.feed.service.FeedService;
 import com.foodielog.server._core.error.ErrorMessage;
@@ -99,6 +100,17 @@ public class FeedController {
     ) {
         User user = principalDetails.getUser();
         feedService.updateFeed(user, request);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @PostMapping("/report")
+    public ResponseEntity<ApiUtils.ApiResult<String>> report(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody @Valid ReportFeedDTO.Request request,
+            Errors errors
+    ) {
+        User user = principalDetails.getUser();
+        feedService.reportFeed(user, request);
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 }

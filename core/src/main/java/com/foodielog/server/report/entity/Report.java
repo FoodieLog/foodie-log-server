@@ -50,4 +50,15 @@ public class Report {
 
     @UpdateTimestamp
     private Timestamp updatedAt;
+
+    public static Report createReport(User reporterId, User reportedId, ReportType type, Long contentId, ReportReason reportReason) {
+        Report report = new Report();
+        report.reporterId = reporterId;
+        report.reportedId = reportedId;
+        report.type = type;
+        report.contentId = contentId;
+        report.reportReason = reportReason;
+        report.status = ProcessedStatus.UNPROCESSED;
+        return report;
+    }
 }
