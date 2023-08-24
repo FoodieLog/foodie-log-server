@@ -1,6 +1,8 @@
 package com.foodielog.application.feed.service;
 
 import com.foodielog.application.feed.dto.FeedSaveDTO;
+import com.foodielog.application.feed.dto.UpdateFeedDTO;
+import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
 import com.foodielog.server._core.s3.S3Uploader;
@@ -10,6 +12,9 @@ import com.foodielog.server.feed.entity.Media;
 import com.foodielog.server.feed.repository.FeedLikeRepository;
 import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.repository.MediaRepository;
+import com.foodielog.server.feed.type.ContentStatus;
+import com.foodielog.server.reply.entity.Reply;
+import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.restaurant.entity.RestaurantLike;
 import com.foodielog.server.restaurant.repository.RestaurantLikeRepository;
@@ -32,6 +37,7 @@ public class FeedService {
     private final RestaurantLikeRepository restaurantLikeRepository;
     private final S3Uploader s3Uploader;
     private final FeedLikeRepository feedLikeRepository;
+    private final ReplyRepository replyRepository;
 
     @Transactional
     public void save(FeedSaveDTO.Request request, List<MultipartFile> files, User user) {
@@ -113,7 +119,7 @@ public class FeedService {
     }
 
     private Feed getFeed(Long feedId) {
-        return feedRepository.findById(feedId)
+        return feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("피드가 없습니다."));
     }
 
@@ -123,6 +129,35 @@ public class FeedService {
         if (!isRestaurantLike) {
             RestaurantLike restaurantLike = RestaurantLike.createRestaurantLike(restaurant, user);
             restaurantLikeRepository.save(restaurantLike);
+        }
+    }
+
+    @Transactional
+    public void deleteFeed(User user, Long feedId) {
+        Feed feed = getFeed(feedId);
+        checkAccess(feed, user);
+
+        List<Reply> replyList = replyRepository.findByFeedIdAndStatus(feedId, ContentStatus.NORMAL);
+        replyList.forEach(Reply::deleteReplyByUser);
+
+        feed.deleteFeedByUser();
+    }
+
+    @Transactional
+    public void updateFeed(User user, UpdateFeedDTO.Request request) {
+        Long feedId = request.getFeedId();
+        Feed feed = getFeed(feedId);
+        checkAccess(feed, user);
+
+        String contents = request.getContent();
+        feed.updateFeed(contents);
+    }
+
+    private void checkAccess(Feed feed, User user) {
+        Long feedOwnerId = feed.getUser().getId();
+
+        if (!feedOwnerId.equals(user.getId())) {
+            throw new Exception403("해당 피드에 대한 권한이 없습니다.");
         }
     }
 }

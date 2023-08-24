@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FeedRepository extends JpaRepository<Feed, Long> {
     Long countByUser(User user);
@@ -31,4 +32,6 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             "GROUP BY f.id " +
             "ORDER BY likeCount DESC, f.id DESC")
     List<Feed> findTop3ByRestaurantId(Long restaurantId, Pageable pageable);
+
+    Optional<Feed> findByIdAndStatus(Long feedId, ContentStatus status);
 }
