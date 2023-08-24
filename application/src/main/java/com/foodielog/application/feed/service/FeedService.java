@@ -1,6 +1,7 @@
 package com.foodielog.application.feed.service;
 
 import com.foodielog.application.feed.dto.FeedSaveDTO;
+import com.foodielog.application.feed.dto.ReportFeedDTO;
 import com.foodielog.application.feed.dto.UpdateFeedDTO;
 import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.error.exception.Exception404;
@@ -15,6 +16,9 @@ import com.foodielog.server.feed.repository.MediaRepository;
 import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
+import com.foodielog.server.report.entity.Report;
+import com.foodielog.server.report.repository.ReportRepository;
+import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.restaurant.entity.RestaurantLike;
 import com.foodielog.server.restaurant.repository.RestaurantLikeRepository;
@@ -38,6 +42,7 @@ public class FeedService {
     private final S3Uploader s3Uploader;
     private final FeedLikeRepository feedLikeRepository;
     private final ReplyRepository replyRepository;
+    private final ReportRepository reportRepository;
 
     @Transactional
     public void save(FeedSaveDTO.Request request, List<MultipartFile> files, User user) {
@@ -158,6 +163,28 @@ public class FeedService {
 
         if (!feedOwnerId.equals(user.getId())) {
             throw new Exception403("해당 피드에 대한 권한이 없습니다.");
+        }
+    }
+
+    @Transactional
+    public void reportFeed(User user, ReportFeedDTO.Request request) {
+        Feed feed = getFeed(request.getFeedId());
+        User reported = feed.getUser();
+
+        if (user.getId().equals(reported.getId())) {
+            throw new Exception404("자신의 피드는 신고할 수 없습니다.");
+        }
+
+        checkReportedFeed(user, feed);
+        
+        Report report = Report.createReport(user, reported, ReportType.FEED, feed.getId(), request.getReportReason());
+        reportRepository.save(report);
+    }
+
+    private void checkReportedFeed(User user, Feed feed) {
+        boolean isReported = reportRepository.existsByReporterIdAndTypeAndContentId(user, ReportType.FEED, feed.getId());
+        if (isReported) {
+            throw new Exception404("이미 신고 처리된 피드입니다.");
         }
     }
 }

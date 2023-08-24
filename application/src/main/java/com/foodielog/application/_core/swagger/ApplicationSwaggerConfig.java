@@ -3,6 +3,7 @@ package com.foodielog.application._core.swagger;
 import com.fasterxml.classmate.TypeResolver;
 import com.foodielog.application.feed.dto.FeedSaveDTO;
 import com.foodielog.application.feed.dto.LikeFeedDTO;
+import com.foodielog.application.feed.dto.ReportFeedDTO;
 import com.foodielog.application.feed.dto.UpdateFeedDTO;
 import com.foodielog.application.reply.dto.ReplyCreatDTO;
 import com.foodielog.application.user.dto.*;
@@ -53,7 +54,8 @@ public class ApplicationSwaggerConfig {
                 .additionalModels(typeResolver.resolve(ResetPasswordDTO.Request.class))
                 .additionalModels(typeResolver.resolve(SignUpDTO.Request.class))
                 .additionalModels(typeResolver.resolve(WithdrawDTO.Request.class))
-                .additionalModels(typeResolver.resolve(UpdateFeedDTO.Request.class));
+                .additionalModels(typeResolver.resolve(UpdateFeedDTO.Request.class))
+                .additionalModels(typeResolver.resolve(ReportFeedDTO.Request.class));
     }
 
     private ApiInfo apiInfo() {
