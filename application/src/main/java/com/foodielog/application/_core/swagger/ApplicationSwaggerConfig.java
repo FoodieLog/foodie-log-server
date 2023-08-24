@@ -3,6 +3,7 @@ package com.foodielog.application._core.swagger;
 import com.fasterxml.classmate.TypeResolver;
 import com.foodielog.application.feed.dto.FeedSaveDTO;
 import com.foodielog.application.feed.dto.LikeFeedDTO;
+import com.foodielog.application.feed.dto.UpdateFeedDTO;
 import com.foodielog.application.reply.dto.ReplyCreatDTO;
 import com.foodielog.application.user.dto.*;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,7 @@ public class ApplicationSwaggerConfig {
     public Docket api(TypeResolver typeResolver) {
         Docket docket = new Docket(DocumentationType.OAS_30);
 
-        setReuestDTO(docket, typeResolver);
+        setRequestDTO(docket, typeResolver);
 
         return docket.apiInfo(apiInfo())
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
@@ -39,7 +40,7 @@ public class ApplicationSwaggerConfig {
                 .build();
     }
 
-    private Docket setReuestDTO(Docket docket, TypeResolver typeResolver) {
+    private Docket setRequestDTO(Docket docket, TypeResolver typeResolver) {
         return docket
                 .additionalModels(typeResolver.resolve(FeedSaveDTO.Request.class))
                 .additionalModels(typeResolver.resolve(LikeFeedDTO.Request.class))
@@ -51,7 +52,8 @@ public class ApplicationSwaggerConfig {
                 .additionalModels(typeResolver.resolve(ReissueDTO.Request.class))
                 .additionalModels(typeResolver.resolve(ResetPasswordDTO.Request.class))
                 .additionalModels(typeResolver.resolve(SignUpDTO.Request.class))
-                .additionalModels(typeResolver.resolve(WithdrawDTO.Request.class));
+                .additionalModels(typeResolver.resolve(WithdrawDTO.Request.class))
+                .additionalModels(typeResolver.resolve(UpdateFeedDTO.Request.class));
     }
 
     private ApiInfo apiInfo() {
