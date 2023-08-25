@@ -1,8 +1,8 @@
 package com.foodielog.application.feed.service;
 
 import com.foodielog.application.feed.dto.FeedSaveDTO;
-import com.foodielog.application.feed.dto.ReportFeedDTO;
 import com.foodielog.application.feed.dto.MainFeedListDTO;
+import com.foodielog.application.feed.dto.ReportFeedDTO;
 import com.foodielog.application.feed.dto.UpdateFeedDTO;
 import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.error.exception.Exception404;
@@ -26,7 +26,6 @@ import com.foodielog.server.restaurant.repository.RestaurantLikeRepository;
 import com.foodielog.server.restaurant.repository.RestaurantRepository;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
-import com.google.type.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
