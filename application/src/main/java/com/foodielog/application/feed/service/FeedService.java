@@ -2,6 +2,7 @@ package com.foodielog.application.feed.service;
 
 import com.foodielog.application.feed.dto.FeedSaveDTO;
 import com.foodielog.application.feed.dto.ReportFeedDTO;
+import com.foodielog.application.feed.dto.MainFeedListDTO;
 import com.foodielog.application.feed.dto.UpdateFeedDTO;
 import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.error.exception.Exception404;
@@ -24,13 +25,20 @@ import com.foodielog.server.restaurant.entity.RestaurantLike;
 import com.foodielog.server.restaurant.repository.RestaurantLikeRepository;
 import com.foodielog.server.restaurant.repository.RestaurantRepository;
 import com.foodielog.server.user.entity.User;
+import com.foodielog.server.user.repository.FollowRepository;
+import com.google.type.Date;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +51,7 @@ public class FeedService {
     private final FeedLikeRepository feedLikeRepository;
     private final ReplyRepository replyRepository;
     private final ReportRepository reportRepository;
+    private final FollowRepository followRepository;
 
     @Transactional
     public void save(FeedSaveDTO.Request request, List<MultipartFile> files, User user) {
@@ -176,7 +185,7 @@ public class FeedService {
         }
 
         checkReportedFeed(user, feed);
-        
+
         Report report = Report.createReport(user, reported, ReportType.FEED, feed.getId(), request.getReportReason());
         reportRepository.save(report);
     }
@@ -186,5 +195,48 @@ public class FeedService {
         if (isReported) {
             throw new Exception404("이미 신고 처리된 피드입니다.");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public MainFeedListDTO.Response getMainFeed(User user, Long feedId, Pageable pageable) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime date = now.minusMonths(1);
+
+        List<Feed> mainFeeds = feedRepository.getMainFeed(user, feedId, 0L, Timestamp.valueOf(date), pageable);
+
+        List<MainFeedListDTO.MainFeedsDTO> mainFeedDTOList = new ArrayList<>();
+
+        for (Feed mainFeed : mainFeeds) {
+            List<Media> mediaList = mediaRepository.findByFeed(mainFeed);
+
+            List<MainFeedListDTO.FeedImageDTO> feedImageDTO = getFeedImageDTO(mediaList);
+            MainFeedListDTO.FeedDTO feedDTO = getFeedDTO(mainFeed, feedImageDTO);
+            MainFeedListDTO.MainFeedRestaurantDTO mainFeedRestaurantDTO = getUserRestaurantDTO(mainFeed);
+
+            boolean isFollowed = followRepository.existsByFollowedId(user);
+            boolean isLiked = feedLikeRepository.existsByUser(user);
+
+            mainFeedDTOList.add(new MainFeedListDTO.MainFeedsDTO(feedDTO, mainFeedRestaurantDTO, isFollowed, isLiked));
+        }
+        return new MainFeedListDTO.Response(mainFeedDTOList);
+    }
+
+    private MainFeedListDTO.MainFeedRestaurantDTO getUserRestaurantDTO(Feed feed) {
+        Restaurant restaurant = feed.getRestaurant();
+        return new MainFeedListDTO.MainFeedRestaurantDTO(restaurant);
+    }
+
+    private MainFeedListDTO.FeedDTO getFeedDTO(Feed feed, List<MainFeedListDTO.FeedImageDTO> feedImages) {
+        Long likeCount = feedLikeRepository.countByFeed(feed);
+        Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
+        String share = null;
+
+        return new MainFeedListDTO.FeedDTO(feed, feedImages, likeCount, replyCount, share);
+    }
+
+    private List<MainFeedListDTO.FeedImageDTO> getFeedImageDTO(List<Media> mediaList) {
+        return mediaList.stream()
+                .map(MainFeedListDTO.FeedImageDTO::new)
+                .collect(Collectors.toList());
     }
 }
