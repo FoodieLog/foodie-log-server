@@ -4,6 +4,7 @@ import com.foodielog.application.feed.dto.FeedSaveDTO;
 import com.foodielog.application.feed.dto.LikeFeedDTO;
 import com.foodielog.application.feed.dto.ReportFeedDTO;
 import com.foodielog.application.feed.dto.UpdateFeedDTO;
+import com.foodielog.application.feed.dto.MainFeedListDTO;
 import com.foodielog.application.feed.service.FeedService;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
@@ -14,6 +15,8 @@ import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -112,5 +116,15 @@ public class FeedController {
         User user = principalDetails.getUser();
         feedService.reportFeed(user, request);
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<ApiUtils.ApiResult<MainFeedListDTO.Response>> list(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam @PositiveOrZero Long feedId,
+            @PageableDefault(size = 15) Pageable pageable
+    ) {
+        MainFeedListDTO.Response response = feedService.getMainFeed(principalDetails.getUser(), feedId, pageable);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,4 +35,12 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
     List<Feed> findTop3ByRestaurantId(Long restaurantId, Pageable pageable);
 
     Optional<Feed> findByIdAndStatus(Long feedId, ContentStatus status);
+
+    @Query("SELECT f FROM Feed f " +
+            "LEFT JOIN Follow fo ON f.user = fo.followedId AND fo.followingId = :user " +
+            "WHERE (fo.followedId IS NOT NULL " +
+            "OR f.id IN (SELECT li.feed FROM FeedLike li WHERE li.feed.id > :feedId GROUP BY li.feed HAVING COUNT(li.feed) >= :likeCount)) " +
+            "AND f.status = 'NORMAL' AND f.createdAt >= :date ")
+    List<Feed> getMainFeed(@Param("user") User user, @Param("feedId") Long feedId,
+                           @Param("likeCount") Long likeCount, @Param("date") Timestamp date, Pageable pageable);
 }
