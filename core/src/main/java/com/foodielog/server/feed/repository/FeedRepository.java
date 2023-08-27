@@ -20,8 +20,8 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
     List<Feed> findByUserIdAndStatus(Long userId, ContentStatus status);
 
     @Query("SELECT f FROM Feed f " +
-            "WHERE f.user = :user AND f.id > :feedId")
-    List<Feed> getFeeds(@Param("user") User user, @Param("feedId") Long feedId, Pageable pageable);
+            "WHERE f.user = :user AND f.id > :feedId AND f.status = :status")
+    List<Feed> getFeeds(@Param("user") User user, @Param("feedId") Long feedId, ContentStatus status, Pageable pageable);
 
     List<Feed> findAllByRestaurantIdAndStatus(Long restaurantId, ContentStatus status);
 

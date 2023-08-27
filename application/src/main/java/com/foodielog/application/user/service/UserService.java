@@ -55,7 +55,7 @@ public class UserService {
     public UserThumbnailDTO.Response getThumbnail(Long userId, Long feedId, Pageable pageable) {
         User user = validationUserId(userId);
 
-        List<Feed> feeds = feedRepository.getFeeds(user, feedId, pageable);
+        List<Feed> feeds = feedRepository.getFeeds(user, feedId, ContentStatus.NORMAL, pageable);
 
         List<UserThumbnailDTO.ThumbnailDTO> thumbnailDTO = feeds.stream()
                 .map(UserThumbnailDTO.ThumbnailDTO::new)
@@ -68,7 +68,7 @@ public class UserService {
     public UserFeedListDTO.Response getFeeds(Long userId, Long feedId, Pageable pageable) {
         User user = validationUserId(userId);
 
-        List<Feed> feeds = feedRepository.getFeeds(user, feedId, pageable);
+        List<Feed> feeds = feedRepository.getFeeds(user, feedId, ContentStatus.NORMAL, pageable);
 
         List<UserFeedListDTO.UserFeedsDTO> userFeedsDTOList = new ArrayList<>();
 
@@ -80,7 +80,7 @@ public class UserService {
             UserFeedListDTO.UserRestaurantDTO userRestaurantDTO = getUserRestaurantDTO(feed);
 
             boolean isFollowed = followRepository.existsByFollowedId(user);
-            boolean isLiked = restaurantLikeRepository.existsByUser(user);
+            boolean isLiked = feedLikeRepository.existsByUser(user);
 
             userFeedsDTOList.add(new UserFeedListDTO.UserFeedsDTO(feedDTO, userRestaurantDTO, isFollowed, isLiked));
         }

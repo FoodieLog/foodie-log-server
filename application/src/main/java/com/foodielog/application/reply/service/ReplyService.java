@@ -1,11 +1,16 @@
 package com.foodielog.application.reply.service;
 
+import com.foodielog.application.feed.dto.ReportFeedDTO;
 import com.foodielog.application.reply.dto.ReplyCreatDTO;
+import com.foodielog.application.reply.dto.ReportReplyDTO;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.repository.FeedRepository;
+import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
+import com.foodielog.server.report.entity.Report;
+import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +29,7 @@ public class ReplyService {
 
     @Transactional
     public ReplyCreatDTO.Response createReply(User user, Long feedId, ReplyCreatDTO.Request createDTO) {
-        Feed feed = feedRepository.findById(feedId)
+        Feed feed = feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("에러"));
 
         Reply reply = Reply.createReply(user, feed, createDTO.getContent());
@@ -35,7 +40,7 @@ public class ReplyService {
 
     @Transactional
     public void deleteReply(User user, Long replyId) {
-        Reply reply = replyRepository.findByIdAndUserId(replyId, user.getId())
+        Reply reply = replyRepository.findByIdAndUserIdAndStatus(replyId, user.getId(), ContentStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("에러"));
 
         reply.deleteReplyByUser();
@@ -43,7 +48,7 @@ public class ReplyService {
 
     @Transactional(readOnly = true)
     public ReplyCreatDTO.ListDTO getListReply(Long feedId, Long replyId, Pageable pageable) {
-        Feed feed = feedRepository.findById(feedId)
+        Feed feed = feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("에러"));
 
         List<Reply> replyList = replyRepository.getReplyList(feedId, replyId, pageable);

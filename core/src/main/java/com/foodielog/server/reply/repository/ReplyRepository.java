@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
-    Optional<Reply> findByIdAndUserId(Long id, Long userId);
+    Optional<Reply> findByIdAndStatus(Long id, ContentStatus status);
+
+    Optional<Reply> findByIdAndUserIdAndStatus(Long id, Long userId, ContentStatus status);
 
     List<Reply> findByUserId(Long id);
 
