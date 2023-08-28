@@ -9,13 +9,10 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class MainFeedListResp {
-    @Getter
-    public static class Response {
-        private final List<MainFeedsDTO> content;
+    private final List<MainFeedsDTO> content;
 
-        public Response(List<MainFeedsDTO> content) {
-            this.content = content;
-        }
+    public MainFeedListResp(List<MainFeedsDTO> content) {
+        this.content = content;
     }
 
     @Getter

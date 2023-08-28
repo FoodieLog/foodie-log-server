@@ -197,7 +197,7 @@ public class FeedService {
     }
 
     @Transactional(readOnly = true)
-    public MainFeedListResp.Response getMainFeed(User user, Long feedId, Pageable pageable) {
+    public MainFeedListResp getMainFeed(User user, Long feedId, Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime date = now.minusMonths(1);
 
@@ -217,7 +217,7 @@ public class FeedService {
 
             mainFeedDTOList.add(new MainFeedListResp.MainFeedsDTO(feedDTO, mainFeedRestaurantDTO, isFollowed, isLiked));
         }
-        return new MainFeedListResp.Response(mainFeedDTOList);
+        return new MainFeedListResp(mainFeedDTOList);
     }
 
     private MainFeedListResp.MainFeedRestaurantDTO getUserRestaurantDTO(Feed feed) {
