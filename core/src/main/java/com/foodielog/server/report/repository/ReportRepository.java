@@ -6,5 +6,5 @@ import com.foodielog.server.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReportRepository extends JpaRepository<Report, Long> {
-    boolean existsByReporterIdAndTypeAndContentId(User repoterId, ReportType type, Long contentId);
+    boolean existsByReporterIdAndTypeAndContentId(User reporterId, ReportType type, Long contentId);
 }
