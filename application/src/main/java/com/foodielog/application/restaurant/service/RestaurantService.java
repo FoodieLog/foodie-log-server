@@ -1,8 +1,8 @@
 package com.foodielog.application.restaurant.service;
 
-import com.foodielog.application.restaurant.dto.LikedRestaurantDTO;
-import com.foodielog.application.restaurant.dto.RecommendedRestaurantDTO;
-import com.foodielog.application.restaurant.dto.RestaurantFeedListDTO;
+import com.foodielog.application.restaurant.dto.response.LikedRestaurantDTO;
+import com.foodielog.application.restaurant.dto.response.RecommendedRestaurantDTO;
+import com.foodielog.application.restaurant.dto.response.RestaurantFeedListDTO;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -41,31 +41,31 @@ public class RestaurantService {
     private final FollowRepository followRepository;
 
     @Transactional(readOnly = true)
-    public LikedRestaurantDTO.Response getLikedRestaurant(User user) {
+    public LikedRestaurantDTO getLikedRestaurant(User user) {
         List<RestaurantLike> restaurantLikes = restaurantLikeRepository.findByUser(user);
 
-        List<LikedRestaurantDTO.Response.RestaurantListDTO> restaurantListDTOList = new ArrayList<>();
+        List<LikedRestaurantDTO.RestaurantListDTO> restaurantListDTOList = new ArrayList<>();
         for (RestaurantLike restaurantLike : restaurantLikes) {
             if (restaurantLike == null) {
                 throw new Exception404("에러");
             }
 
-            LikedRestaurantDTO.Response.RestaurantListDTO restaurantListDTO = getRestaurantListDTO(restaurantLike);
+            LikedRestaurantDTO.RestaurantListDTO restaurantListDTO = getRestaurantListDTO(restaurantLike);
             restaurantListDTOList.add(restaurantListDTO);
         }
 
-        return new LikedRestaurantDTO.Response(restaurantListDTOList);
+        return new LikedRestaurantDTO(restaurantListDTOList);
     }
 
     @Transactional(readOnly = true)
-    public RestaurantFeedListDTO.Response getRestaurantDetail(User user, Long restaurantId) {
+    public RestaurantFeedListDTO getRestaurantDetail(User user, Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new Exception404("에러"));
 
         RestaurantFeedListDTO.RestaurantInfoDTO restaurantInfoDTO = createRestaurantInfoDTO(restaurant, user);
         List<RestaurantFeedListDTO.RestaurantFeedsDTO> restaurantFeedsDTOList = createRestaurantFeedsDTO(restaurant, user);
 
-        return new RestaurantFeedListDTO.Response(restaurantInfoDTO, restaurantFeedsDTOList);
+        return new RestaurantFeedListDTO(restaurantInfoDTO, restaurantFeedsDTOList);
     }
 
     @Transactional
@@ -93,14 +93,14 @@ public class RestaurantService {
     }
 
     @Transactional(readOnly = true)
-    public RecommendedRestaurantDTO.Response getRecommendedRestaurant(String address) {
+    public RecommendedRestaurantDTO getRecommendedRestaurant(String address) {
         List<Restaurant> restaurants = restaurantRepository.findByRoadAddressContaining(address);
 
         List<RecommendedRestaurantDTO.RestaurantsDTO> restaurantsDTOList = restaurants.stream()
                 .map(restaurant -> createRestaurantsDTO(restaurant))
                 .collect(Collectors.toList());
 
-        return new RecommendedRestaurantDTO.Response(restaurantsDTOList);
+        return new RecommendedRestaurantDTO(restaurantsDTOList);
     }
 
     private Restaurant validRestaurant(Long restaurantId) {
@@ -108,13 +108,13 @@ public class RestaurantService {
                 .orElseThrow(() -> new Exception404("해당 맛집을 찾을 수 없습니다."));
     }
 
-    private LikedRestaurantDTO.Response.RestaurantListDTO getRestaurantListDTO(RestaurantLike restaurantLike) {
+    private LikedRestaurantDTO.RestaurantListDTO getRestaurantListDTO(RestaurantLike restaurantLike) {
         Restaurant restaurant = restaurantLike.getRestaurant();
 
-        LikedRestaurantDTO.Response.RestaurantDTO restaurantDTO = new LikedRestaurantDTO.Response.RestaurantDTO(restaurant);
-        LikedRestaurantDTO.Response.IsLikedDTO isLikedDTO = new LikedRestaurantDTO.Response.IsLikedDTO(restaurantLike.getId(), true);
+        LikedRestaurantDTO.RestaurantDTO restaurantDTO = new LikedRestaurantDTO.RestaurantDTO(restaurant);
+        LikedRestaurantDTO.IsLikedDTO isLikedDTO = new LikedRestaurantDTO.IsLikedDTO(restaurantLike.getId(), true);
 
-        return new LikedRestaurantDTO.Response.RestaurantListDTO(restaurantDTO, isLikedDTO);
+        return new LikedRestaurantDTO.RestaurantListDTO(restaurantDTO, isLikedDTO);
     }
 
     private RestaurantFeedListDTO.RestaurantInfoDTO createRestaurantInfoDTO(Restaurant restaurant, User user) {

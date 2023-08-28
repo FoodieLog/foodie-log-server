@@ -1,4 +1,4 @@
-package com.foodielog.application.restaurant.dto;
+package com.foodielog.application.restaurant.dto.response;
 
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -10,16 +10,12 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class RestaurantFeedListDTO {
+    private final RestaurantInfoDTO restaurantInfo;
+    private final List<RestaurantFeedsDTO> content;
 
-    @Getter
-    public static class Response {
-        private final RestaurantInfoDTO restaurantInfo;
-        private final List<RestaurantFeedsDTO> content;
-
-        public Response(RestaurantInfoDTO restaurantInfo, List<RestaurantFeedsDTO> content) {
-            this.restaurantInfo = restaurantInfo;
-            this.content = content;
-        }
+    public RestaurantFeedListDTO(RestaurantInfoDTO restaurantInfo, List<RestaurantFeedsDTO> content) {
+        this.restaurantInfo = restaurantInfo;
+        this.content = content;
     }
 
     @Getter
