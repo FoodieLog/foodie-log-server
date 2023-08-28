@@ -9,6 +9,7 @@ import org.springframework.lang.Nullable;
 import java.sql.Timestamp;
 import java.util.List;
 
+@Getter
 public class RestaurantFeedListResp {
     private final RestaurantInfoDTO restaurantInfo;
     private final List<RestaurantFeedsDTO> content;
