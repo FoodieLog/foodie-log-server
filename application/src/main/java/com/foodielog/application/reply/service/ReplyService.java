@@ -1,7 +1,8 @@
 package com.foodielog.application.reply.service;
 
-import com.foodielog.application.reply.dto.ReplyCreatDTO;
-import com.foodielog.application.reply.dto.ReportReplyDTO;
+import com.foodielog.application.reply.dto.request.ReplyCreatReq;
+import com.foodielog.application.reply.dto.request.ReportReplyReq;
+import com.foodielog.application.reply.dto.response.ReplyCreatResp;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.repository.FeedRepository;
@@ -29,14 +30,14 @@ public class ReplyService {
     private final ReportRepository reportRepository;
 
     @Transactional
-    public ReplyCreatDTO.Response createReply(User user, Long feedId, ReplyCreatDTO.Request createDTO) {
+    public ReplyCreatResp createReply(User user, Long feedId, ReplyCreatReq createDTO) {
         Feed feed = feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("에러"));
 
         Reply reply = Reply.createReply(user, feed, createDTO.getContent());
         Reply saveReply = replyRepository.save(reply);
 
-        return new ReplyCreatDTO.Response(saveReply);
+        return new ReplyCreatResp(saveReply);
     }
 
     @Transactional
@@ -48,21 +49,21 @@ public class ReplyService {
     }
 
     @Transactional(readOnly = true)
-    public ReplyCreatDTO.ListDTO getListReply(Long feedId, Long replyId, Pageable pageable) {
+    public ReplyCreatResp.ListDTO getListReply(Long feedId, Long replyId, Pageable pageable) {
         Feed feed = feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("에러"));
 
         List<Reply> replyList = replyRepository.getReplyList(feedId, replyId, pageable);
 
-        List<ReplyCreatDTO.ReplyDTO> replyListDTO = replyList.stream()
-                .map(ReplyCreatDTO.ReplyDTO::new)
+        List<ReplyCreatResp.ReplyDTO> replyListDTO = replyList.stream()
+                .map(ReplyCreatResp.ReplyDTO::new)
                 .collect(Collectors.toList());
 
-        return new ReplyCreatDTO.ListDTO(feed, replyListDTO);
+        return new ReplyCreatResp.ListDTO(feed, replyListDTO);
     }
 
     @Transactional
-    public void reportReply(User user, ReportReplyDTO.Request request) {
+    public void reportReply(User user, ReportReplyReq request) {
         Reply reply = replyRepository.findByIdAndStatus(request.getReplyId(), ContentStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
 
