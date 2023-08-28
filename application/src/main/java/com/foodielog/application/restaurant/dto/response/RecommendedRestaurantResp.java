@@ -6,10 +6,10 @@ import lombok.Getter;
 
 import java.util.List;
 
-public class RecommendedRestaurantDTO {
+public class RecommendedRestaurantResp {
     private final List<RestaurantsDTO> restaurantList;
 
-    public RecommendedRestaurantDTO(List<RestaurantsDTO> restaurantList) {
+    public RecommendedRestaurantResp(List<RestaurantsDTO> restaurantList) {
         this.restaurantList = restaurantList;
     }
 

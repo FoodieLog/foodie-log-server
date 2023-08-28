@@ -6,10 +6,10 @@ import org.springframework.lang.Nullable;
 
 import java.util.List;
 
-public class LikedRestaurantDTO {
+public class LikedRestaurantResp {
     private final List<RestaurantListDTO> content;
 
-    public LikedRestaurantDTO(List<RestaurantListDTO> content) {
+    public LikedRestaurantResp(List<RestaurantListDTO> content) {
         this.content = content;
     }
 
