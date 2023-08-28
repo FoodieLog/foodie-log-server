@@ -1,9 +1,12 @@
 package com.foodielog.application.reply.controller;
 
+import com.foodielog.application.feed.dto.ReportFeedDTO;
 import com.foodielog.application.reply.dto.ReplyCreatDTO;
+import com.foodielog.application.reply.dto.ReportReplyDTO;
 import com.foodielog.application.reply.service.ReplyService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
+import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -49,5 +52,15 @@ public class ReplyController {
     ) {
         ReplyCreatDTO.ListDTO response = replyService.getListReply(feedId, replyId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @PostMapping("/report")
+    public ResponseEntity<ApiUtils.ApiResult<String>> report(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody @Valid ReportReplyDTO.Request request,
+            Errors errors
+    ) {
+        replyService.reportReply(principalDetails.getUser(), request);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 }
