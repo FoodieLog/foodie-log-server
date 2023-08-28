@@ -8,6 +8,7 @@ import lombok.Getter;
 import java.sql.Timestamp;
 import java.util.List;
 
+@Getter
 public class MainFeedListResp {
     private final List<MainFeedsDTO> content;
 

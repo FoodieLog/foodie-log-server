@@ -6,6 +6,7 @@ import org.springframework.lang.Nullable;
 
 import java.util.List;
 
+@Getter
 public class LikedRestaurantResp {
     private final List<RestaurantListDTO> content;
 
