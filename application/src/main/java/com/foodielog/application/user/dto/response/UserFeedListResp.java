@@ -1,4 +1,4 @@
-package com.foodielog.application.user.dto;
+package com.foodielog.application.user.dto.response;
 
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -8,14 +8,12 @@ import lombok.Getter;
 import java.sql.Timestamp;
 import java.util.List;
 
-public class UserFeedListDTO {
-    @Getter
-    public static class Response {
-        private final List<UserFeedsDTO> content;
+@Getter
+public class UserFeedListResp {
+    private final List<UserFeedsDTO> content;
 
-        public Response(List<UserFeedsDTO> content) {
-            this.content = content;
-        }
+    public UserFeedListResp(List<UserFeedsDTO> content) {
+        this.content = content;
     }
 
     @Getter
@@ -86,3 +84,4 @@ public class UserFeedListDTO {
         }
     }
 }
+

@@ -1,32 +1,30 @@
-package com.foodielog.application.user.dto;
+package com.foodielog.application.user.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.foodielog.server.user.entity.User;
 import lombok.Getter;
 
-public class KakaoLoginDTO {
-    @Getter
-    public static class Response {
-        private final Long id;
-        private final String nickName;
-        private final String profileImageUrl;
-        private final String accessToken;
-        private final String kakaoAccessToken;
+@Getter
+public class KakaoLoginResp {
+    private final Long id;
+    private final String nickName;
+    private final String profileImageUrl;
+    private final String accessToken;
+    private final String kakaoAccessToken;
 
-        @JsonIgnore
-        private final String refreshToken;
+    @JsonIgnore
+    private final String refreshToken;
 
-        public Response(User user, String accessToken, String refreshToken, String kakaoAccessToken) {
-            this.id = user.getId();
-            this.nickName = user.getNickName();
-            this.profileImageUrl = user.getProfileImageUrl();
-            this.accessToken = accessToken;
-            this.refreshToken = refreshToken;
-            this.kakaoAccessToken = kakaoAccessToken;
-        }
+    public KakaoLoginResp(User user, String accessToken, String refreshToken, String kakaoAccessToken) {
+        this.id = user.getId();
+        this.nickName = user.getNickName();
+        this.profileImageUrl = user.getProfileImageUrl();
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.kakaoAccessToken = kakaoAccessToken;
     }
 
-    public static class ApiResponse {
+    public static class kakaoApiResp {
         @Getter
         public static class Token {
             private String accessToken;
@@ -54,3 +52,4 @@ public class KakaoLoginDTO {
         }
     }
 }
+

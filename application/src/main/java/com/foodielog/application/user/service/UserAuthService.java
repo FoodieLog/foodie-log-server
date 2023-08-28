@@ -1,7 +1,11 @@
 package com.foodielog.application.user.service;
 
 import com.foodielog.application._core.smtp.MailService;
-import com.foodielog.application.user.dto.*;
+import com.foodielog.application.user.dto.request.LoginReq;
+import com.foodielog.application.user.dto.request.ReissueReq;
+import com.foodielog.application.user.dto.request.ResetPasswordReq;
+import com.foodielog.application.user.dto.request.SignUpReq;
+import com.foodielog.application.user.dto.response.*;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception500;
@@ -37,7 +41,7 @@ public class UserAuthService {
     private final UserRepository userRepository;
 
     /* 토큰 재발급 */
-    public ReissueDTO.Response reissue(ReissueDTO.Request request) {
+    public ReissueResp reissue(ReissueReq request) {
         // Refresh Token 유효성 검사
         jwtTokenProvider.isTokenValid(request.getRefreshToken());
 
@@ -63,18 +67,18 @@ public class UserAuthService {
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), refreshToken,
                 JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
-        return new ReissueDTO.Response(accessToken, refreshToken);
+        return new ReissueResp(accessToken, refreshToken);
     }
 
     /* 회원 가입 */
     @Transactional(readOnly = true)
-    public ExistsEmailDTO.Response checkExistsEmail(String email) {
+    public ExistsEmailResp checkExistsEmail(String email) {
         Boolean isExists = userRepository.existsByEmail(email);
-        return new ExistsEmailDTO.Response(email, isExists);
+        return new ExistsEmailResp(email, isExists);
     }
 
     @Transactional
-    public SignUpDTO.Response signUp(SignUpDTO.Request request, MultipartFile file) {
+    public SignUpResp signUp(SignUpReq request, MultipartFile file) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new Exception400("email", "이미 가입된 이메일 입니다");
         }
@@ -89,13 +93,13 @@ public class UserAuthService {
 
         userRepository.save(user);
 
-        return new SignUpDTO.Response(user.getEmail(), user.getNickName(), user.getProfileImageUrl());
+        return new SignUpResp(user.getEmail(), user.getNickName(), user.getProfileImageUrl());
     }
 
 
     /* 이메일 인증 */
     @Transactional
-    public SendCodeDTO.ForSignUpDTO.Response sendCodeForSignUp(String email) {
+    public SendCodeForSignupResp sendCodeForSignUp(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new Exception400("email", "이미 가입된 이메일 입니다");
         }
@@ -108,11 +112,11 @@ public class UserAuthService {
         // 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
         redisService.setObjectByKey(RedisService.EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
 
-        return new SendCodeDTO.ForSignUpDTO.Response(email);
+        return new SendCodeForSignupResp(email);
     }
 
     @Transactional
-    public SendCodeDTO.ForPassWordDTO.Response sendCodeForPassword(String email) {
+    public SendCodeForPasswordResp sendCodeForPassword(String email) {
         if (!userRepository.existsByEmail(email)) {
             throw new Exception400("email", "해당 이메일 주소가 없습니다.");
         }
@@ -125,15 +129,15 @@ public class UserAuthService {
         // 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
         redisService.setObjectByKey(RedisService.EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
 
-        return new SendCodeDTO.ForPassWordDTO.Response(email);
+        return new SendCodeForPasswordResp(email);
     }
 
     @Transactional(readOnly = true)
-    public VerifiedCodeDTO.Response verifiedCode(String email, String code) {
+    public VerifiedCodeResp verifiedCode(String email, String code) {
         String redisAuthCode = redisService.getObjectByKey(RedisService.EMAIL_AUTH_CODE_PREFIX + email, String.class);
         Boolean isVerified = redisAuthCode.equals(code);
 
-        return new VerifiedCodeDTO.Response(email, code, isVerified);
+        return new VerifiedCodeResp(email, code, isVerified);
     }
 
     private String createCode() {
@@ -150,7 +154,7 @@ public class UserAuthService {
 
     /* 로그인 */
     @Transactional(readOnly = true)
-    public LoginDTO.Response login(LoginDTO.Request loginDTO) {
+    public LoginResp login(LoginReq loginDTO) {
         User user = userRepository.findByEmailAndStatus(loginDTO.getEmail(), UserStatus.NORMAL)
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
@@ -168,24 +172,24 @@ public class UserAuthService {
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), refreshToken,
                 JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
-        return new LoginDTO.Response(user, accessToken, refreshToken);
+        return new LoginResp(user, accessToken, refreshToken);
     }
 
     /* 프로필 설정 */
     @Transactional(readOnly = true)
-    public ExistsNickNameDTO.Response checkExistsNickName(String nickName) {
+    public ExistsNickNameResp checkExistsNickName(String nickName) {
         Boolean isExists = userRepository.existsByNickName(nickName);
-        return new ExistsNickNameDTO.Response(nickName, isExists);
+        return new ExistsNickNameResp(nickName, isExists);
     }
 
     /* 비밀번호 변경 */
     @Transactional
-    public ResetPasswordDTO.Response resetPassword(ResetPasswordDTO.Request request) {
+    public ResetPasswordResp resetPassword(ResetPasswordReq request) {
         User user = userRepository.findByEmailAndStatus(request.getEmail(), UserStatus.NORMAL)
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
         user.resetPassword(passwordEncoder.encode(request.getPassword()));
 
-        return new ResetPasswordDTO.Response(request.getEmail());
+        return new ResetPasswordResp(request.getEmail());
     }
 }

@@ -1,6 +1,10 @@
 package com.foodielog.application.user.controller;
 
-import com.foodielog.application.user.dto.*;
+import com.foodielog.application.user.dto.request.ChangeNotificationReq;
+import com.foodielog.application.user.dto.request.ChangePasswordReq;
+import com.foodielog.application.user.dto.request.ChangeProfileReq;
+import com.foodielog.application.user.dto.request.WithdrawReq;
+import com.foodielog.application.user.dto.response.*;
 import com.foodielog.application.user.service.UserSettingService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
@@ -23,60 +27,60 @@ public class UserSettingController {
     private final UserSettingService userSettingService;
 
     @PutMapping("/notification")
-    public ResponseEntity<ApiUtils.ApiResult<ChangeNotificationDTO.Response>> changeNotification(
-            @RequestBody @Valid ChangeNotificationDTO.Request request,
+    public ResponseEntity<ApiUtils.ApiResult<ChangeNotificationResp>> changeNotification(
+            @RequestBody @Valid ChangeNotificationReq request,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             Error error
     ) {
         User user = principalDetails.getUser();
-        ChangeNotificationDTO.Response response = userSettingService.changeNotification(user, request);
+        ChangeNotificationResp response = userSettingService.changeNotification(user, request);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/badge")
-    public ResponseEntity<ApiUtils.ApiResult<CheckBadgeApplyDTO.Response>> checkBadgeApply(
+    public ResponseEntity<ApiUtils.ApiResult<CheckBadgeApplyResp>> checkBadgeApply(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         User user = principalDetails.getUser();
-        CheckBadgeApplyDTO.Response response = userSettingService.checkBadgeApply(user);
+        CheckBadgeApplyResp response = userSettingService.checkBadgeApply(user);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @PostMapping("/badge")
-    public ResponseEntity<ApiUtils.ApiResult<CreateBadgeApplyDTO.Response>> creatBadgeApplyDTO(
+    public ResponseEntity<ApiUtils.ApiResult<CreateBadgeApplyResp>> creatBadgeApplyDTO(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         User user = principalDetails.getUser();
-        CreateBadgeApplyDTO.Response response = userSettingService.creatBadgeApply(user);
+        CreateBadgeApplyResp response = userSettingService.creatBadgeApply(user);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @PutMapping("/password")
-    public ResponseEntity<ApiUtils.ApiResult<ChangePasswordDTO.Response>> changePassword(
-            @RequestBody @Valid ChangePasswordDTO.Request request,
+    public ResponseEntity<ApiUtils.ApiResult<ChangePasswordResp>> changePassword(
+            @RequestBody @Valid ChangePasswordReq request,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             Error error
     ) {
         User user = principalDetails.getUser();
-        ChangePasswordDTO.Response response = userSettingService.changePassword(user, request);
+        ChangePasswordResp response = userSettingService.changePassword(user, request);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiUtils.ApiResult<LogoutDTO.Response>> logout(
+    public ResponseEntity<ApiUtils.ApiResult<LogoutResp>> logout(
             @RequestHeader(JwtTokenProvider.HEADER) String accessToken
     ) {
         accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
 
-        LogoutDTO.Response response = userSettingService.logout(accessToken);
+        LogoutResp response = userSettingService.logout(accessToken);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<ApiUtils.ApiResult<WithdrawDTO.Response>> withdraw(
+    public ResponseEntity<ApiUtils.ApiResult<WithdrawResp>> withdraw(
             @RequestHeader(JwtTokenProvider.HEADER) String accessToken,
-            @RequestBody @Valid WithdrawDTO.Request request,
+            @RequestBody @Valid WithdrawReq request,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             Error error
 
@@ -84,20 +88,20 @@ public class UserSettingController {
         accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
         User user = principalDetails.getUser();
 
-        WithdrawDTO.Response response = userSettingService.withdraw(accessToken, user, request);
+        WithdrawResp response = userSettingService.withdraw(accessToken, user, request);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<ApiUtils.ApiResult<ChangeProfileDTO.Response>> ChangeProfile(
-            @RequestPart(value = "content") @Valid ChangeProfileDTO.Request request,
+    public ResponseEntity<ApiUtils.ApiResult<ChangeProfileResp>> ChangeProfile(
+            @RequestPart(value = "content") @Valid ChangeProfileReq request,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             Errors errors
     ) {
         User user = principalDetails.getUser();
-        ChangeProfileDTO.Response response = userSettingService.ChangeProfile(user, request, file);
+        ChangeProfileResp response = userSettingService.ChangeProfile(user, request, file);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }

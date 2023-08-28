@@ -1,6 +1,6 @@
 package com.foodielog.application.user.service;
 
-import com.foodielog.application.user.dto.KakaoLoginDTO;
+import com.foodielog.application.user.dto.response.KakaoLoginResp;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception401;
@@ -54,10 +54,10 @@ public class UserOauthService {
     private final UserRepository userRepository;
 
     @Transactional
-    public KakaoLoginDTO.Response kakaoLogin(String code) {
-        KakaoLoginDTO.ApiResponse.Token kakaoAccessToken = getKakaoAccessToken(code);
-        KakaoLoginDTO.ApiResponse.UserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken.getAccessToken());
-        KakaoLoginDTO.ApiResponse.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
+    public KakaoLoginResp kakaoLogin(String code) {
+        KakaoLoginResp.kakaoApiResp.Token kakaoAccessToken = getKakaoAccessToken(code);
+        KakaoLoginResp.kakaoApiResp.UserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken.getAccessToken());
+        KakaoLoginResp.kakaoApiResp.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
 
         if (!kakaoAccount.getIsEmailValid()) {
             throw new Exception401("로그인 불가: 카카오 계정에 연결된 이메일이 유효하지 않습니다.");
@@ -85,10 +85,10 @@ public class UserOauthService {
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + loginUser.getEmail(), refreshToken,
                 JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
-        return new KakaoLoginDTO.Response(loginUser, accessToken, refreshToken, kakaoAccessToken.getAccessToken());
+        return new KakaoLoginResp(loginUser, accessToken, refreshToken, kakaoAccessToken.getAccessToken());
     }
 
-    private KakaoLoginDTO.ApiResponse.Token getKakaoAccessToken(String code) {
+    private KakaoLoginResp.kakaoApiResp.Token getKakaoAccessToken(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", KAKAO_GRANT_TYPE);
         body.add("client_id", KAKAO_API_KEY);
@@ -101,16 +101,16 @@ public class UserOauthService {
             throw new Exception500(tokenResponse.getBody());
         }
 
-        return jsonConverter.jsonToObject(tokenResponse.getBody(), KakaoLoginDTO.ApiResponse.Token.class);
+        return jsonConverter.jsonToObject(tokenResponse.getBody(), KakaoLoginResp.kakaoApiResp.Token.class);
     }
 
-    private KakaoLoginDTO.ApiResponse.UserInfo getKakaoUserInfo(String token) {
+    private KakaoLoginResp.kakaoApiResp.UserInfo getKakaoUserInfo(String token) {
         ResponseEntity<String> userInfoResponse = ExternalUtil.kakaoUserInfoRequest(KAKAO_USER_INFO_URI, HttpMethod.POST, token);
 
         if (!userInfoResponse.getStatusCode().equals(HttpStatus.OK)) {
             throw new Exception500(userInfoResponse.getBody());
         }
 
-        return jsonConverter.jsonToObject(userInfoResponse.getBody(), KakaoLoginDTO.ApiResponse.UserInfo.class);
+        return jsonConverter.jsonToObject(userInfoResponse.getBody(), KakaoLoginResp.kakaoApiResp.UserInfo.class);
     }
 }

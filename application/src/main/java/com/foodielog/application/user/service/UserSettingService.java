@@ -1,6 +1,10 @@
 package com.foodielog.application.user.service;
 
-import com.foodielog.application.user.dto.*;
+import com.foodielog.application.user.dto.request.ChangeNotificationReq;
+import com.foodielog.application.user.dto.request.ChangePasswordReq;
+import com.foodielog.application.user.dto.request.ChangeProfileReq;
+import com.foodielog.application.user.dto.request.WithdrawReq;
+import com.foodielog.application.user.dto.response.*;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.redis.RedisService;
@@ -43,32 +47,32 @@ public class UserSettingService {
     private final WithdrawUserRepository withdrawUserRepository;
 
     @Transactional
-    public ChangeNotificationDTO.Response changeNotification(User user, ChangeNotificationDTO.Request request) {
+    public ChangeNotificationResp changeNotification(User user, ChangeNotificationReq request) {
         user.changeNotificationFlag(request.getFlag());
         userRepository.save(user);
 
-        return new ChangeNotificationDTO.Response(user, request.getFlag());
+        return new ChangeNotificationResp(user, request.getFlag());
     }
 
     @Transactional(readOnly = true)
-    public CheckBadgeApplyDTO.Response checkBadgeApply(User user) {
+    public CheckBadgeApplyResp checkBadgeApply(User user) {
         Timestamp createdAt = badgeApplyRepository.findByUserId(user.getId())
                 .map(BadgeApply::getCreatedAt)
                 .orElseGet(() -> null);
 
-        return new CheckBadgeApplyDTO.Response(user, createdAt);
+        return new CheckBadgeApplyResp(user, createdAt);
     }
 
     @Transactional
-    public CreateBadgeApplyDTO.Response creatBadgeApply(User user) {
+    public CreateBadgeApplyResp creatBadgeApply(User user) {
         BadgeApply badgeApply = BadgeApply.createBadgeApply(user);
         badgeApplyRepository.save(badgeApply);
 
-        return new CreateBadgeApplyDTO.Response(user, badgeApply);
+        return new CreateBadgeApplyResp(user, badgeApply);
     }
 
     @Transactional
-    public ChangePasswordDTO.Response changePassword(User user, ChangePasswordDTO.Request request) {
+    public ChangePasswordResp changePassword(User user, ChangePasswordReq request) {
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new Exception400("password", ErrorMessage.PASSWORD_NOT_MATCH);
         }
@@ -77,18 +81,18 @@ public class UserSettingService {
 
         userRepository.save(user);
 
-        return new ChangePasswordDTO.Response(user.getEmail());
+        return new ChangePasswordResp(user.getEmail());
     }
 
     @Transactional
-    public LogoutDTO.Response logout(String accessToken) {
+    public LogoutResp logout(String accessToken) {
         String email = invalidatedToken(accessToken);
 
-        return new LogoutDTO.Response(email, Boolean.TRUE);
+        return new LogoutResp(email, Boolean.TRUE);
     }
 
     @Transactional
-    public WithdrawDTO.Response withdraw(String accessToken, User user, WithdrawDTO.Request request) {
+    public WithdrawResp withdraw(String accessToken, User user, WithdrawReq request) {
         // 탈퇴 유저 저장
         Long feedCount = feedRepository.countByUser(user);
         Long replyCount = replyRepository.countByUser(user);
@@ -109,7 +113,7 @@ public class UserSettingService {
         // 토큰 무효화
         invalidatedToken(accessToken);
 
-        return new WithdrawDTO.Response(user.getEmail(), Boolean.TRUE);
+        return new WithdrawResp(user.getEmail(), Boolean.TRUE);
     }
 
     private String invalidatedToken(String accessToken) {
@@ -124,7 +128,7 @@ public class UserSettingService {
     }
 
     @Transactional
-    public ChangeProfileDTO.Response ChangeProfile(User user, ChangeProfileDTO.Request request, MultipartFile file) {
+    public ChangeProfileResp ChangeProfile(User user, ChangeProfileReq request, MultipartFile file) {
         // 기존 닉네임과 일치 하지 않은데 중복이라면 중복! (기존 닉네임과 동일 하다면 닉네임을 변경 하는게 아님)
         if (!user.getNickName().equals(request.getNickName())
                 && userRepository.existsByNickName(request.getNickName())
@@ -145,6 +149,6 @@ public class UserSettingService {
 
         userRepository.save(user);
 
-        return new ChangeProfileDTO.Response(user.getNickName(), user.getProfileImageUrl(), user.getAboutMe());
+        return new ChangeProfileResp(user.getNickName(), user.getProfileImageUrl(), user.getAboutMe());
     }
 }

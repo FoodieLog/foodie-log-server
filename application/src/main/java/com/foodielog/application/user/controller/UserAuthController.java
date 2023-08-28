@@ -1,6 +1,10 @@
 package com.foodielog.application.user.controller;
 
-import com.foodielog.application.user.dto.*;
+import com.foodielog.application.user.dto.request.LoginReq;
+import com.foodielog.application.user.dto.request.ReissueReq;
+import com.foodielog.application.user.dto.request.ResetPasswordReq;
+import com.foodielog.application.user.dto.request.SignUpReq;
+import com.foodielog.application.user.dto.response.*;
 import com.foodielog.application.user.service.UserAuthService;
 import com.foodielog.application.user.service.UserOauthService;
 import com.foodielog.server._core.customValid.valid.ValidNickName;
@@ -32,11 +36,11 @@ public class UserAuthController {
 
     /* 토큰 재발급*/
     @PostMapping("/reissue")
-    public ResponseEntity<ApiUtils.ApiResult<ReissueDTO.Response>> reissue(
-            @RequestBody @Valid ReissueDTO.Request request,
+    public ResponseEntity<ApiUtils.ApiResult<ReissueResp>> reissue(
+            @RequestBody @Valid ReissueReq request,
             Errors errors
     ) {
-        ReissueDTO.Response response = userAuthService.reissue(request);
+        ReissueResp response = userAuthService.reissue(request);
 
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
 
@@ -45,51 +49,51 @@ public class UserAuthController {
 
     /* 회원 가입 */
     @GetMapping("/exists/email")
-    public ResponseEntity<ApiUtils.ApiResult<ExistsEmailDTO.Response>> checkExistsEmail(
+    public ResponseEntity<ApiUtils.ApiResult<ExistsEmailResp>> checkExistsEmail(
             @RequestParam @Email String input
     ) {
-        ExistsEmailDTO.Response response = userAuthService.checkExistsEmail(input);
+        ExistsEmailResp response = userAuthService.checkExistsEmail(input);
 
         HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiUtils.ApiResult<SignUpDTO.Response>> signUp(
-            @RequestPart(value = "content") @Valid SignUpDTO.Request request,
+    public ResponseEntity<ApiUtils.ApiResult<SignUpResp>> signUp(
+            @RequestPart(value = "content") @Valid SignUpReq request,
             @RequestPart(value = "file") MultipartFile file,
             Errors errors
     ) {
-        SignUpDTO.Response response = userAuthService.signUp(request, file);
+        SignUpResp response = userAuthService.signUp(request, file);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     /* 이메일 인증 */
     @GetMapping("/email/code-requests/signup")
-    public ResponseEntity<ApiUtils.ApiResult<SendCodeDTO.ForSignUpDTO.Response>> sendCodeForSignUp(
+    public ResponseEntity<ApiUtils.ApiResult<SendCodeForSignupResp>> sendCodeForSignUp(
             @RequestParam @Email String email
     ) {
-        SendCodeDTO.ForSignUpDTO.Response response = userAuthService.sendCodeForSignUp(email);
+        SendCodeForSignupResp response = userAuthService.sendCodeForSignUp(email);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/email/code-requests/password")
-    public ResponseEntity<ApiUtils.ApiResult<SendCodeDTO.ForPassWordDTO.Response>> sendCodeForPassword(
+    public ResponseEntity<ApiUtils.ApiResult<SendCodeForPasswordResp>> sendCodeForPassword(
             @RequestParam @Email String email
     ) {
-        SendCodeDTO.ForPassWordDTO.Response response = userAuthService.sendCodeForPassword(email);
+        SendCodeForPasswordResp response = userAuthService.sendCodeForPassword(email);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/email/verification")
-    public ResponseEntity<ApiUtils.ApiResult<VerifiedCodeDTO.Response>> verificationCode(
+    public ResponseEntity<ApiUtils.ApiResult<VerifiedCodeResp>> verificationCode(
             @RequestParam @Email String email,
             @RequestParam @Size(min = 4, max = 4) String code
     ) {
-        VerifiedCodeDTO.Response response = userAuthService.verifiedCode(email, code);
+        VerifiedCodeResp response = userAuthService.verifiedCode(email, code);
         HttpStatus httpStatus = response.getIsVerified() ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
 
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
@@ -97,10 +101,10 @@ public class UserAuthController {
 
     /* 로그인 */
     @PostMapping("/login")
-    public ResponseEntity<ApiUtils.ApiResult<LoginDTO.Response>> login(
-            @RequestBody @Valid LoginDTO.Request loginDTO, Errors errors
+    public ResponseEntity<ApiUtils.ApiResult<LoginResp>> login(
+            @RequestBody @Valid LoginReq loginDTO, Errors errors
     ) {
-        LoginDTO.Response response = userAuthService.login(loginDTO);
+        LoginResp response = userAuthService.login(loginDTO);
 
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
 
@@ -108,12 +112,12 @@ public class UserAuthController {
     }
 
     @GetMapping("/login/kakao")
-    public ResponseEntity<ApiUtils.ApiResult<KakaoLoginDTO.Response>> kakaoLogin(
+    public ResponseEntity<ApiUtils.ApiResult<KakaoLoginResp>> kakaoLogin(
             @RequestParam String code
     ) {
         log.info("kakao 인가 code : " + code);
 
-        KakaoLoginDTO.Response response = oauthUserService.kakaoLogin(code);
+        KakaoLoginResp response = oauthUserService.kakaoLogin(code);
 
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
 
@@ -130,10 +134,10 @@ public class UserAuthController {
 
     /* 프로필 설정 */
     @GetMapping("/exists/nickname")
-    public ResponseEntity<ApiUtils.ApiResult<ExistsNickNameDTO.Response>> checkExistsNickName(
+    public ResponseEntity<ApiUtils.ApiResult<ExistsNickNameResp>> checkExistsNickName(
             @RequestParam @ValidNickName String input
     ) {
-        ExistsNickNameDTO.Response response = userAuthService.checkExistsNickName(input);
+        ExistsNickNameResp response = userAuthService.checkExistsNickName(input);
 
         HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
@@ -141,10 +145,10 @@ public class UserAuthController {
 
     /* 비밀번호 찾기*/
     @PutMapping("/password/reset")
-    public ResponseEntity<ApiUtils.ApiResult<ResetPasswordDTO.Response>> resetPassword(
-            @RequestBody @Valid ResetPasswordDTO.Request request, Errors errors
+    public ResponseEntity<ApiUtils.ApiResult<ResetPasswordResp>> resetPassword(
+            @RequestBody @Valid ResetPasswordReq request, Errors errors
     ) {
-        ResetPasswordDTO.Response response = userAuthService.resetPassword(request);
+        ResetPasswordResp response = userAuthService.resetPassword(request);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
