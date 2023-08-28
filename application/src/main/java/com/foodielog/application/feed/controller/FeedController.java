@@ -1,10 +1,10 @@
 package com.foodielog.application.feed.controller;
 
-import com.foodielog.application.feed.dto.FeedSaveDTO;
-import com.foodielog.application.feed.dto.LikeFeedDTO;
-import com.foodielog.application.feed.dto.ReportFeedDTO;
-import com.foodielog.application.feed.dto.UpdateFeedDTO;
-import com.foodielog.application.feed.dto.MainFeedListDTO;
+import com.foodielog.application.feed.dto.request.FeedSaveReq;
+import com.foodielog.application.feed.dto.request.LikeFeedReq;
+import com.foodielog.application.feed.dto.request.ReportFeedReq;
+import com.foodielog.application.feed.dto.request.UpdateFeedReq;
+import com.foodielog.application.feed.dto.response.MainFeedListResp;
 import com.foodielog.application.feed.service.FeedService;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
@@ -53,7 +53,7 @@ public class FeedController {
 
     @PostMapping("/save")
     public ResponseEntity<ApiUtils.ApiResult<String>> feedSave(
-            @RequestPart(value = "content") @Valid FeedSaveDTO.Request request,
+            @RequestPart(value = "content") @Valid FeedSaveReq request,
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal PrincipalDetails principalDetails, Errors errors
     ) {
@@ -70,7 +70,7 @@ public class FeedController {
     @PostMapping("/like")
     public ResponseEntity<ApiUtils.ApiResult<String>> like(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody @Valid LikeFeedDTO.Request request,
+            @RequestBody @Valid LikeFeedReq request,
             Errors errors
     ) {
         feedService.likeFeed(principalDetails.getUser(), request.getFeedId());
@@ -99,7 +99,7 @@ public class FeedController {
     @PutMapping("/update")
     public ResponseEntity<ApiUtils.ApiResult<String>> update(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody @Valid UpdateFeedDTO.Request request,
+            @RequestBody @Valid UpdateFeedReq request,
             Errors errors
     ) {
         User user = principalDetails.getUser();
@@ -110,7 +110,7 @@ public class FeedController {
     @PostMapping("/report")
     public ResponseEntity<ApiUtils.ApiResult<String>> report(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody @Valid ReportFeedDTO.Request request,
+            @RequestBody @Valid ReportFeedReq request,
             Errors errors
     ) {
         User user = principalDetails.getUser();
@@ -119,12 +119,12 @@ public class FeedController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ApiUtils.ApiResult<MainFeedListDTO.Response>> list(
+    public ResponseEntity<ApiUtils.ApiResult<MainFeedListResp.Response>> list(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam @PositiveOrZero Long feedId,
             @PageableDefault(size = 15) Pageable pageable
     ) {
-        MainFeedListDTO.Response response = feedService.getMainFeed(principalDetails.getUser(), feedId, pageable);
+        MainFeedListResp.Response response = feedService.getMainFeed(principalDetails.getUser(), feedId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }

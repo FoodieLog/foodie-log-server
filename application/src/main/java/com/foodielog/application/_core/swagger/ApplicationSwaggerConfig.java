@@ -1,12 +1,6 @@
 package com.foodielog.application._core.swagger;
 
 import com.fasterxml.classmate.TypeResolver;
-import com.foodielog.application.feed.dto.FeedSaveDTO;
-import com.foodielog.application.feed.dto.LikeFeedDTO;
-import com.foodielog.application.feed.dto.ReportFeedDTO;
-import com.foodielog.application.feed.dto.UpdateFeedDTO;
-import com.foodielog.application.reply.dto.ReplyCreatDTO;
-import com.foodielog.application.user.dto.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +24,7 @@ public class ApplicationSwaggerConfig {
     public Docket api(TypeResolver typeResolver) {
         Docket docket = new Docket(DocumentationType.OAS_30);
 
-        setRequestDTO(docket, typeResolver);
+//        setRequestDTO(docket, typeResolver);
 
         return docket.apiInfo(apiInfo())
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
@@ -41,23 +35,24 @@ public class ApplicationSwaggerConfig {
                 .build();
     }
 
-    private Docket setRequestDTO(Docket docket, TypeResolver typeResolver) {
-        return docket
-                .additionalModels(typeResolver.resolve(FeedSaveDTO.Request.class))
-                .additionalModels(typeResolver.resolve(LikeFeedDTO.Request.class))
-                .additionalModels(typeResolver.resolve(ReplyCreatDTO.Request.class))
-                .additionalModels(typeResolver.resolve(ChangeNotificationDTO.Request.class))
-                .additionalModels(typeResolver.resolve(ChangePasswordDTO.Request.class))
-                .additionalModels(typeResolver.resolve(ChangeProfileDTO.Request.class))
-                .additionalModels(typeResolver.resolve(LoginDTO.Request.class))
-                .additionalModels(typeResolver.resolve(ReissueDTO.Request.class))
-                .additionalModels(typeResolver.resolve(ResetPasswordDTO.Request.class))
-                .additionalModels(typeResolver.resolve(SignUpDTO.Request.class))
-                .additionalModels(typeResolver.resolve(WithdrawDTO.Request.class))
-                .additionalModels(typeResolver.resolve(UpdateFeedDTO.Request.class))
-                .additionalModels(typeResolver.resolve(ReportFeedDTO.Request.class));
-    }
-
+    /*
+        private Docket setRequestDTO(Docket docket, TypeResolver typeResolver) {
+            return docket
+                    .additionalModels(typeResolver.resolve(FeedSaveReq.Request.class))
+                    .additionalModels(typeResolver.resolve(LikeFeedReq.Request.class))
+                    .additionalModels(typeResolver.resolve(ReplyCreatDTO.Request.class))
+                    .additionalModels(typeResolver.resolve(ChangeNotificationDTO.Request.class))
+                    .additionalModels(typeResolver.resolve(ChangePasswordDTO.Request.class))
+                    .additionalModels(typeResolver.resolve(ChangeProfileDTO.Request.class))
+                    .additionalModels(typeResolver.resolve(LoginDTO.Request.class))
+                    .additionalModels(typeResolver.resolve(ReissueDTO.Request.class))
+                    .additionalModels(typeResolver.resolve(ResetPasswordDTO.Request.class))
+                    .additionalModels(typeResolver.resolve(SignUpDTO.Request.class))
+                    .additionalModels(typeResolver.resolve(WithdrawDTO.Request.class))
+                    .additionalModels(typeResolver.resolve(UpdateFeedReq.Request.class))
+                    .additionalModels(typeResolver.resolve(ReportFeedReq.Request.class));
+        }
+    */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title(SERVICE_NAME)
