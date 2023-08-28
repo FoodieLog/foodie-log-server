@@ -1,4 +1,4 @@
-package com.foodielog.application.restaurant.dto;
+package com.foodielog.application.restaurant.dto.response;
 
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.restaurant.entity.Restaurant;
@@ -7,14 +7,10 @@ import lombok.Getter;
 import java.util.List;
 
 public class RecommendedRestaurantDTO {
+    private final List<RestaurantsDTO> restaurantList;
 
-    @Getter
-    public static class Response {
-        private final List<RestaurantsDTO> restaurantList;
-
-        public Response(List<RestaurantsDTO> restaurantList) {
-            this.restaurantList = restaurantList;
-        }
+    public RecommendedRestaurantDTO(List<RestaurantsDTO> restaurantList) {
+        this.restaurantList = restaurantList;
     }
 
     @Getter
