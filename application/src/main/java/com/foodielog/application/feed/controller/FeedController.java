@@ -119,12 +119,12 @@ public class FeedController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ApiUtils.ApiResult<MainFeedListResp.Response>> list(
+    public ResponseEntity<ApiUtils.ApiResult<MainFeedListResp>> list(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam @PositiveOrZero Long feedId,
             @PageableDefault(size = 15) Pageable pageable
     ) {
-        MainFeedListResp.Response response = feedService.getMainFeed(principalDetails.getUser(), feedId, pageable);
+        MainFeedListResp response = feedService.getMainFeed(principalDetails.getUser(), feedId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
