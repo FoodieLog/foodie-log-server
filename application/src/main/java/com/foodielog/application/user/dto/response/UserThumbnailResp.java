@@ -1,18 +1,16 @@
-package com.foodielog.application.user.dto;
+package com.foodielog.application.user.dto.response;
 
 import com.foodielog.server.feed.entity.Feed;
 import lombok.Getter;
 
 import java.util.List;
 
-public class UserThumbnailDTO {
-    @Getter
-    public static class Response {
-        private final List<ThumbnailDTO> content;
+@Getter
+public class UserThumbnailResp {
+    private final List<ThumbnailDTO> content;
 
-        public Response(List<ThumbnailDTO> content) {
-            this.content = content;
-        }
+    public UserThumbnailResp(List<ThumbnailDTO> content) {
+        this.content = content;
     }
 
     @Getter
@@ -25,5 +23,5 @@ public class UserThumbnailDTO {
             this.thumbnailUrl = feed.getThumbnailUrl();
         }
     }
-
 }
+

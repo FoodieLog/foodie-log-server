@@ -1,6 +1,6 @@
 package com.foodielog.application.user.controller;
 
-import com.foodielog.application.user.dto.*;
+import com.foodielog.application.user.dto.response.*;
 import com.foodielog.application.user.service.UserService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
@@ -25,40 +25,40 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}/profile")
-    public ResponseEntity<ApiUtils.ApiResult<UserProfileDTO.Response>> getProfile(
+    public ResponseEntity<ApiUtils.ApiResult<UserProfileResp>> getProfile(
             @PathVariable Long userId
     ) {
-        UserProfileDTO.Response response = userService.getProfile(userId);
+        UserProfileResp response = userService.getProfile(userId);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/feed/thumbnail")
-    public ResponseEntity<ApiUtils.ApiResult<UserThumbnailDTO.Response>> getThumbnail(
+    public ResponseEntity<ApiUtils.ApiResult<UserThumbnailResp>> getThumbnail(
             @PathVariable Long userId,
             @RequestParam(name = "feed") Long feedId,
             @PageableDefault(size = 15) Pageable pageable
     ) {
-        UserThumbnailDTO.Response response = userService.getThumbnail(userId, feedId, pageable);
+        UserThumbnailResp response = userService.getThumbnail(userId, feedId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/feed/list")
-    public ResponseEntity<ApiUtils.ApiResult<UserFeedListDTO.Response>> getFeeds(
+    public ResponseEntity<ApiUtils.ApiResult<UserFeedListResp>> getFeeds(
             @PathVariable Long userId,
             @RequestParam(name = "feed") Long feedId,
             @PageableDefault(size = 15) Pageable pageable
     ) {
-        UserFeedListDTO.Response response = userService.getFeeds(userId, feedId, pageable);
+        UserFeedListResp response = userService.getFeeds(userId, feedId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/map")
-    public ResponseEntity<ApiUtils.ApiResult<UserRestaurantListDTO.Response>> getRestaurantListByMap(
+    public ResponseEntity<ApiUtils.ApiResult<UserRestaurantListResp>> getRestaurantListByMap(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long userId
     ) {
         User user = principalDetails.getUser();
-        UserRestaurantListDTO.Response response = userService.getRestaurantList(userId, user);
+        UserRestaurantListResp response = userService.getRestaurantList(userId, user);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -83,10 +83,10 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiUtils.ApiResult<UserSearchDTO.Response>> search(
+    public ResponseEntity<ApiUtils.ApiResult<UserSearchResp>> search(
             @RequestParam String keyword
     ) {
-        UserSearchDTO.Response response = userService.search(keyword);
+        UserSearchResp response = userService.search(keyword);
 
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }

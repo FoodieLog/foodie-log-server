@@ -1,6 +1,6 @@
 package com.foodielog.application.user.service;
 
-import com.foodielog.application.user.dto.*;
+import com.foodielog.application.user.dto.response.*;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -41,94 +41,94 @@ public class UserService {
     private final ReplyRepository replyRepository;
 
     @Transactional(readOnly = true)
-    public UserProfileDTO.Response getProfile(Long userId) {
+    public UserProfileResp getProfile(Long userId) {
         User user = validationUserId(userId);
 
         Long feedCount = feedRepository.countByUser(user);
         Long follower = followRepository.countByFollowedId(user);
         Long following = followRepository.countByFollowingId(user);
 
-        return new UserProfileDTO.Response(user, feedCount, follower, following);
+        return new UserProfileResp(user, feedCount, follower, following);
     }
 
     @Transactional(readOnly = true)
-    public UserThumbnailDTO.Response getThumbnail(Long userId, Long feedId, Pageable pageable) {
+    public UserThumbnailResp getThumbnail(Long userId, Long feedId, Pageable pageable) {
         User user = validationUserId(userId);
 
         List<Feed> feeds = feedRepository.getFeeds(user, feedId, ContentStatus.NORMAL, pageable);
 
-        List<UserThumbnailDTO.ThumbnailDTO> thumbnailDTO = feeds.stream()
-                .map(UserThumbnailDTO.ThumbnailDTO::new)
+        List<UserThumbnailResp.ThumbnailDTO> thumbnailDTO = feeds.stream()
+                .map(UserThumbnailResp.ThumbnailDTO::new)
                 .collect(Collectors.toList());
 
-        return new UserThumbnailDTO.Response(thumbnailDTO);
+        return new UserThumbnailResp(thumbnailDTO);
     }
 
     @Transactional(readOnly = true)
-    public UserFeedListDTO.Response getFeeds(Long userId, Long feedId, Pageable pageable) {
+    public UserFeedListResp getFeeds(Long userId, Long feedId, Pageable pageable) {
         User user = validationUserId(userId);
 
         List<Feed> feeds = feedRepository.getFeeds(user, feedId, ContentStatus.NORMAL, pageable);
 
-        List<UserFeedListDTO.UserFeedsDTO> userFeedsDTOList = new ArrayList<>();
+        List<UserFeedListResp.UserFeedsDTO> userFeedsDTOList = new ArrayList<>();
 
         for (Feed feed : feeds) {
             List<Media> mediaList = mediaRepository.findByFeed(feed);
 
-            List<UserFeedListDTO.FeedImageDTO> feedImages = getFeedImageDTO(mediaList);
-            UserFeedListDTO.FeedDTO feedDTO = getFeedDTO(feed, feedImages);
-            UserFeedListDTO.UserRestaurantDTO userRestaurantDTO = getUserRestaurantDTO(feed);
+            List<UserFeedListResp.FeedImageDTO> feedImages = getFeedImageDTO(mediaList);
+            UserFeedListResp.FeedDTO feedDTO = getFeedDTO(feed, feedImages);
+            UserFeedListResp.UserRestaurantDTO userRestaurantDTO = getUserRestaurantDTO(feed);
 
             boolean isFollowed = followRepository.existsByFollowedId(user);
             boolean isLiked = feedLikeRepository.existsByUser(user);
 
-            userFeedsDTOList.add(new UserFeedListDTO.UserFeedsDTO(feedDTO, userRestaurantDTO, isFollowed, isLiked));
+            userFeedsDTOList.add(new UserFeedListResp.UserFeedsDTO(feedDTO, userRestaurantDTO, isFollowed, isLiked));
         }
 
-        return new UserFeedListDTO.Response(userFeedsDTOList);
+        return new UserFeedListResp(userFeedsDTOList);
     }
 
     @Transactional(readOnly = true)
-    public UserRestaurantListDTO.Response getRestaurantList(Long userId, User user) {
+    public UserRestaurantListResp getRestaurantList(Long userId, User user) {
         User feedOwner = validationUserId(userId);
         List<Feed> feeds = feedRepository.findByUserIdAndStatus(feedOwner.getId(), ContentStatus.NORMAL);
 
-        List<UserRestaurantListDTO.Response.RestaurantListDTO> restaurantListDTOList = new ArrayList<>();
+        List<UserRestaurantListResp.RestaurantListDTO> restaurantListDTOList = new ArrayList<>();
 
         for (Feed feed : feeds) {
             Restaurant restaurant = feed.getRestaurant();
-            UserRestaurantListDTO.Response.RestaurantDTO restaurantDTO =
-                    new UserRestaurantListDTO.Response.RestaurantDTO(restaurant);
+            UserRestaurantListResp.RestaurantDTO restaurantDTO =
+                    new UserRestaurantListResp.RestaurantDTO(restaurant);
 
             RestaurantLike restaurantLike =
                     restaurantLikeRepository.findByUserIdAndRestaurantId(user.getId(), restaurant.getId());
 
-            UserRestaurantListDTO.Response.IsLikedDTO isLikedDTO = (restaurantLike == null)
-                    ? new UserRestaurantListDTO.Response.IsLikedDTO(null, false)
-                    : new UserRestaurantListDTO.Response.IsLikedDTO(restaurantLike.getId(), true);
+            UserRestaurantListResp.IsLikedDTO isLikedDTO = (restaurantLike == null)
+                    ? new UserRestaurantListResp.IsLikedDTO(null, false)
+                    : new UserRestaurantListResp.IsLikedDTO(restaurantLike.getId(), true);
 
-            restaurantListDTOList.add(new UserRestaurantListDTO.Response.RestaurantListDTO(restaurantDTO, isLikedDTO));
+            restaurantListDTOList.add(new UserRestaurantListResp.RestaurantListDTO(restaurantDTO, isLikedDTO));
         }
 
-        return new UserRestaurantListDTO.Response(restaurantListDTOList);
+        return new UserRestaurantListResp(restaurantListDTOList);
     }
 
-    private UserFeedListDTO.UserRestaurantDTO getUserRestaurantDTO(Feed feed) {
+    private UserFeedListResp.UserRestaurantDTO getUserRestaurantDTO(Feed feed) {
         Restaurant restaurant = feed.getRestaurant();
-        return new UserFeedListDTO.UserRestaurantDTO(restaurant);
+        return new UserFeedListResp.UserRestaurantDTO(restaurant);
     }
 
-    private UserFeedListDTO.FeedDTO getFeedDTO(Feed feed, List<UserFeedListDTO.FeedImageDTO> feedImages) {
+    private UserFeedListResp.FeedDTO getFeedDTO(Feed feed, List<UserFeedListResp.FeedImageDTO> feedImages) {
         Long likeCount = feedLikeRepository.countByFeed(feed);
         Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
         String share = null;
 
-        return new UserFeedListDTO.FeedDTO(feed, feedImages, likeCount, replyCount, share);
+        return new UserFeedListResp.FeedDTO(feed, feedImages, likeCount, replyCount, share);
     }
 
-    private List<UserFeedListDTO.FeedImageDTO> getFeedImageDTO(List<Media> mediaList) {
+    private List<UserFeedListResp.FeedImageDTO> getFeedImageDTO(List<Media> mediaList) {
         return mediaList.stream()
-                .map(UserFeedListDTO.FeedImageDTO::new)
+                .map(UserFeedListResp.FeedImageDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -170,13 +170,13 @@ public class UserService {
         return followRepository.findByFollowingIdAndFollowedId(following, followed);
     }
 
-    public UserSearchDTO.Response search(String keyword) {
+    public UserSearchResp search(String keyword) {
         List<User> userList = userRepository.searchUserOrderByFollowedIdDesc(keyword);
 
-        List<UserSearchDTO.Response.UserDTO> userDTOList = userList.stream()
-                .map(UserSearchDTO.Response.UserDTO::new)
+        List<UserSearchResp.UserDTO> userDTOList = userList.stream()
+                .map(UserSearchResp.UserDTO::new)
                 .collect(Collectors.toList());
 
-        return new UserSearchDTO.Response(userDTOList);
+        return new UserSearchResp(userDTOList);
     }
 }
