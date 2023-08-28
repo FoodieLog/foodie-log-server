@@ -1,12 +1,10 @@
 package com.foodielog.application.reply.controller;
 
-import com.foodielog.application.feed.dto.ReportFeedDTO;
 import com.foodielog.application.reply.dto.ReplyCreatDTO;
 import com.foodielog.application.reply.dto.ReportReplyDTO;
 import com.foodielog.application.reply.service.ReplyService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
-import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
