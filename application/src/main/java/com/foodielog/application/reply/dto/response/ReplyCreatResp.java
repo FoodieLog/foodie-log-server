@@ -1,37 +1,26 @@
-package com.foodielog.application.reply.dto;
+package com.foodielog.application.reply.dto.response;
 
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.reply.entity.Reply;
 import lombok.Getter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 import java.util.List;
 
-public class ReplyCreatDTO {
-    @Getter
-    public static class Request {
-        @NotBlank(message = "내용이 공백일 수 없습니다.")
-        @Size(max = 150, message = "최대 글자수는 150 입니다.")
-        private String content;
-    }
+@Getter
+public class ReplyCreatResp {
+    private final Long id;
+    private final String nickName;
+    private final String content;
+    private final String profileImageUrl;
+    private final Timestamp createdAt;
 
-    @Getter
-    public static class Response {
-        private final Long id;
-        private final String nickName;
-        private final String content;
-        private final String profileImageUrl;
-        private final Timestamp createdAt;
-
-        public Response(Reply reply) {
-            this.id = reply.getId();
-            this.nickName = reply.getUser().getNickName();
-            this.content = reply.getContent();
-            this.profileImageUrl = reply.getUser().getProfileImageUrl();
-            this.createdAt = reply.getCreatedAt();
-        }
+    public ReplyCreatResp(Reply reply) {
+        this.id = reply.getId();
+        this.nickName = reply.getUser().getNickName();
+        this.content = reply.getContent();
+        this.profileImageUrl = reply.getUser().getProfileImageUrl();
+        this.createdAt = reply.getCreatedAt();
     }
 
     @Getter
