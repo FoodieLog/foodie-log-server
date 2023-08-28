@@ -1,8 +1,8 @@
 package com.foodielog.application.restaurant.service;
 
-import com.foodielog.application.restaurant.dto.response.LikedRestaurantDTO;
-import com.foodielog.application.restaurant.dto.response.RecommendedRestaurantDTO;
-import com.foodielog.application.restaurant.dto.response.RestaurantFeedListDTO;
+import com.foodielog.application.restaurant.dto.response.LikedRestaurantResp;
+import com.foodielog.application.restaurant.dto.response.RecommendedRestaurantResp;
+import com.foodielog.application.restaurant.dto.response.RestaurantFeedListResp;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -41,31 +41,31 @@ public class RestaurantService {
     private final FollowRepository followRepository;
 
     @Transactional(readOnly = true)
-    public LikedRestaurantDTO getLikedRestaurant(User user) {
+    public LikedRestaurantResp getLikedRestaurant(User user) {
         List<RestaurantLike> restaurantLikes = restaurantLikeRepository.findByUser(user);
 
-        List<LikedRestaurantDTO.RestaurantListDTO> restaurantListDTOList = new ArrayList<>();
+        List<LikedRestaurantResp.RestaurantListDTO> restaurantListDTOList = new ArrayList<>();
         for (RestaurantLike restaurantLike : restaurantLikes) {
             if (restaurantLike == null) {
                 throw new Exception404("에러");
             }
 
-            LikedRestaurantDTO.RestaurantListDTO restaurantListDTO = getRestaurantListDTO(restaurantLike);
+            LikedRestaurantResp.RestaurantListDTO restaurantListDTO = getRestaurantListDTO(restaurantLike);
             restaurantListDTOList.add(restaurantListDTO);
         }
 
-        return new LikedRestaurantDTO(restaurantListDTOList);
+        return new LikedRestaurantResp(restaurantListDTOList);
     }
 
     @Transactional(readOnly = true)
-    public RestaurantFeedListDTO getRestaurantDetail(User user, Long restaurantId) {
+    public RestaurantFeedListResp getRestaurantDetail(User user, Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new Exception404("에러"));
 
-        RestaurantFeedListDTO.RestaurantInfoDTO restaurantInfoDTO = createRestaurantInfoDTO(restaurant, user);
-        List<RestaurantFeedListDTO.RestaurantFeedsDTO> restaurantFeedsDTOList = createRestaurantFeedsDTO(restaurant, user);
+        RestaurantFeedListResp.RestaurantInfoDTO restaurantInfoDTO = createRestaurantInfoDTO(restaurant, user);
+        List<RestaurantFeedListResp.RestaurantFeedsDTO> restaurantFeedsDTOList = createRestaurantFeedsDTO(restaurant, user);
 
-        return new RestaurantFeedListDTO(restaurantInfoDTO, restaurantFeedsDTOList);
+        return new RestaurantFeedListResp(restaurantInfoDTO, restaurantFeedsDTOList);
     }
 
     @Transactional
@@ -93,14 +93,14 @@ public class RestaurantService {
     }
 
     @Transactional(readOnly = true)
-    public RecommendedRestaurantDTO getRecommendedRestaurant(String address) {
+    public RecommendedRestaurantResp getRecommendedRestaurant(String address) {
         List<Restaurant> restaurants = restaurantRepository.findByRoadAddressContaining(address);
 
-        List<RecommendedRestaurantDTO.RestaurantsDTO> restaurantsDTOList = restaurants.stream()
+        List<RecommendedRestaurantResp.RestaurantsDTO> restaurantsDTOList = restaurants.stream()
                 .map(restaurant -> createRestaurantsDTO(restaurant))
                 .collect(Collectors.toList());
 
-        return new RecommendedRestaurantDTO(restaurantsDTOList);
+        return new RecommendedRestaurantResp(restaurantsDTOList);
     }
 
     private Restaurant validRestaurant(Long restaurantId) {
@@ -108,39 +108,39 @@ public class RestaurantService {
                 .orElseThrow(() -> new Exception404("해당 맛집을 찾을 수 없습니다."));
     }
 
-    private LikedRestaurantDTO.RestaurantListDTO getRestaurantListDTO(RestaurantLike restaurantLike) {
+    private LikedRestaurantResp.RestaurantListDTO getRestaurantListDTO(RestaurantLike restaurantLike) {
         Restaurant restaurant = restaurantLike.getRestaurant();
 
-        LikedRestaurantDTO.RestaurantDTO restaurantDTO = new LikedRestaurantDTO.RestaurantDTO(restaurant);
-        LikedRestaurantDTO.IsLikedDTO isLikedDTO = new LikedRestaurantDTO.IsLikedDTO(restaurantLike.getId(), true);
+        LikedRestaurantResp.RestaurantDTO restaurantDTO = new LikedRestaurantResp.RestaurantDTO(restaurant);
+        LikedRestaurantResp.IsLikedDTO isLikedDTO = new LikedRestaurantResp.IsLikedDTO(restaurantLike.getId(), true);
 
-        return new LikedRestaurantDTO.RestaurantListDTO(restaurantDTO, isLikedDTO);
+        return new LikedRestaurantResp.RestaurantListDTO(restaurantDTO, isLikedDTO);
     }
 
-    private RestaurantFeedListDTO.RestaurantInfoDTO createRestaurantInfoDTO(Restaurant restaurant, User user) {
-        RestaurantFeedListDTO.RestaurantDTO restaurantDTO = new RestaurantFeedListDTO.RestaurantDTO(restaurant);
+    private RestaurantFeedListResp.RestaurantInfoDTO createRestaurantInfoDTO(Restaurant restaurant, User user) {
+        RestaurantFeedListResp.RestaurantDTO restaurantDTO = new RestaurantFeedListResp.RestaurantDTO(restaurant);
 
         RestaurantLike restaurantLike =
                 restaurantLikeRepository.findByUserIdAndRestaurantId(user.getId(), restaurant.getId());
 
-        RestaurantFeedListDTO.IsLikedDTO isLikedDTO = (restaurantLike == null)
-                ? new RestaurantFeedListDTO.IsLikedDTO(null, false)
-                : new RestaurantFeedListDTO.IsLikedDTO(restaurantLike.getId(), true);
+        RestaurantFeedListResp.IsLikedDTO isLikedDTO = (restaurantLike == null)
+                ? new RestaurantFeedListResp.IsLikedDTO(null, false)
+                : new RestaurantFeedListResp.IsLikedDTO(restaurantLike.getId(), true);
 
-        return new RestaurantFeedListDTO.RestaurantInfoDTO(restaurantDTO, isLikedDTO);
+        return new RestaurantFeedListResp.RestaurantInfoDTO(restaurantDTO, isLikedDTO);
     }
 
-    private List<RestaurantFeedListDTO.RestaurantFeedsDTO> createRestaurantFeedsDTO(Restaurant restaurant, User user) {
-        RestaurantFeedListDTO.FeedRestaurantDTO feedRestaurantDTO =
-                new RestaurantFeedListDTO.FeedRestaurantDTO(restaurant);
+    private List<RestaurantFeedListResp.RestaurantFeedsDTO> createRestaurantFeedsDTO(Restaurant restaurant, User user) {
+        RestaurantFeedListResp.FeedRestaurantDTO feedRestaurantDTO =
+                new RestaurantFeedListResp.FeedRestaurantDTO(restaurant);
 
-        List<RestaurantFeedListDTO.RestaurantFeedsDTO> restaurantFeedsDTOList = new ArrayList<>();
+        List<RestaurantFeedListResp.RestaurantFeedsDTO> restaurantFeedsDTOList = new ArrayList<>();
         List<Feed> feeds = feedRepository.findAllByRestaurantIdAndStatus(restaurant.getId(), ContentStatus.NORMAL);
 
         for (Feed feed : feeds) {
             List<Media> mediaList = mediaRepository.findByFeed(feed);
-            List<RestaurantFeedListDTO.FeedImageDTO> feedImageDTOS = mediaList.stream()
-                    .map(RestaurantFeedListDTO.FeedImageDTO::new)
+            List<RestaurantFeedListResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
+                    .map(RestaurantFeedListResp.FeedImageDTO::new)
                     .collect(Collectors.toList());
 
             Long likeCount = feedLikeRepository.countByFeed(feed);
@@ -153,25 +153,25 @@ public class RestaurantService {
 
             String share = null;
 
-            RestaurantFeedListDTO.FeedDTO feedDTO =
-                    new RestaurantFeedListDTO.FeedDTO(feed, feedImageDTOS, likeCount, replyCount, share);
+            RestaurantFeedListResp.FeedDTO feedDTO =
+                    new RestaurantFeedListResp.FeedDTO(feed, feedImageDTOS, likeCount, replyCount, share);
 
-            RestaurantFeedListDTO.RestaurantFeedsDTO restaurantFeedsDTO =
-                    new RestaurantFeedListDTO.RestaurantFeedsDTO(feedDTO, feedRestaurantDTO, isFollowed, isLiked);
+            RestaurantFeedListResp.RestaurantFeedsDTO restaurantFeedsDTO =
+                    new RestaurantFeedListResp.RestaurantFeedsDTO(feedDTO, feedRestaurantDTO, isFollowed, isLiked);
 
             restaurantFeedsDTOList.add(restaurantFeedsDTO);
         }
         return restaurantFeedsDTOList;
     }
 
-    private RecommendedRestaurantDTO.RestaurantsDTO createRestaurantsDTO(Restaurant restaurant) {
+    private RecommendedRestaurantResp.RestaurantsDTO createRestaurantsDTO(Restaurant restaurant) {
         Pageable pageable = PageRequest.of(0, 3);
         List<Feed> feeds = feedRepository.findTop3ByRestaurantId(restaurant.getId(), pageable);
 
-        List<RecommendedRestaurantDTO.FeedsDTO> feedsDTOList = feeds.stream()
-                .map(feed -> new RecommendedRestaurantDTO.FeedsDTO(feed))
+        List<RecommendedRestaurantResp.FeedsDTO> feedsDTOList = feeds.stream()
+                .map(feed -> new RecommendedRestaurantResp.FeedsDTO(feed))
                 .collect(Collectors.toList());
 
-        return new RecommendedRestaurantDTO.RestaurantsDTO(restaurant, feedsDTOList);
+        return new RecommendedRestaurantResp.RestaurantsDTO(restaurant, feedsDTOList);
     }
 }

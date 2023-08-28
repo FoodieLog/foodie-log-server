@@ -9,11 +9,11 @@ import org.springframework.lang.Nullable;
 import java.sql.Timestamp;
 import java.util.List;
 
-public class RestaurantFeedListDTO {
+public class RestaurantFeedListResp {
     private final RestaurantInfoDTO restaurantInfo;
     private final List<RestaurantFeedsDTO> content;
 
-    public RestaurantFeedListDTO(RestaurantInfoDTO restaurantInfo, List<RestaurantFeedsDTO> content) {
+    public RestaurantFeedListResp(RestaurantInfoDTO restaurantInfo, List<RestaurantFeedsDTO> content) {
         this.restaurantInfo = restaurantInfo;
         this.content = content;
     }

@@ -1,8 +1,8 @@
 package com.foodielog.application.restaurant.controller;
 
-import com.foodielog.application.restaurant.dto.response.LikedRestaurantDTO;
-import com.foodielog.application.restaurant.dto.response.RecommendedRestaurantDTO;
-import com.foodielog.application.restaurant.dto.response.RestaurantFeedListDTO;
+import com.foodielog.application.restaurant.dto.response.LikedRestaurantResp;
+import com.foodielog.application.restaurant.dto.response.RecommendedRestaurantResp;
+import com.foodielog.application.restaurant.dto.response.RestaurantFeedListResp;
 import com.foodielog.application.restaurant.service.RestaurantService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
@@ -25,21 +25,21 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @GetMapping("/map/liked")
-    public ResponseEntity<ApiUtils.ApiResult<LikedRestaurantDTO>> getMyRestaurant(
+    public ResponseEntity<ApiUtils.ApiResult<LikedRestaurantResp>> getMyRestaurant(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         User user = principalDetails.getUser();
-        LikedRestaurantDTO response = restaurantService.getLikedRestaurant(user);
+        LikedRestaurantResp response = restaurantService.getLikedRestaurant(user);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/{restaurantId}")
-    public ResponseEntity<ApiUtils.ApiResult<RestaurantFeedListDTO>> getRestaurantDetail(
+    public ResponseEntity<ApiUtils.ApiResult<RestaurantFeedListResp>> getRestaurantDetail(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long restaurantId
     ) {
         User user = principalDetails.getUser();
-        RestaurantFeedListDTO response = restaurantService.getRestaurantDetail(user, restaurantId);
+        RestaurantFeedListResp response = restaurantService.getRestaurantDetail(user, restaurantId);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -66,10 +66,10 @@ public class RestaurantController {
     }
 
     @GetMapping("/recommended")
-    public ResponseEntity<ApiUtils.ApiResult<RecommendedRestaurantDTO>> getRecommendedRestaurant(
+    public ResponseEntity<ApiUtils.ApiResult<RecommendedRestaurantResp>> getRecommendedRestaurant(
             @RequestParam(name = "address") String address
     ) {
-        RecommendedRestaurantDTO response = restaurantService.getRecommendedRestaurant(address);
+        RecommendedRestaurantResp response = restaurantService.getRecommendedRestaurant(address);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
