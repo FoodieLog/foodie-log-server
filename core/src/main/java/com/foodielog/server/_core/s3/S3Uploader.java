@@ -35,6 +35,11 @@ public class S3Uploader {
         List<String> uploadedUrls = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFiles) {
+
+            if (isDuplicate(multipartFile)) {
+                throw new Exception400("file", ErrorMessage.DUPLICATE_IMAGE);
+            }
+
             String uploadedUrl = saveFile(multipartFile);
             uploadedUrls.add(uploadedUrl);
         }
@@ -85,10 +90,6 @@ public class S3Uploader {
 
     public String saveFile(MultipartFile file) {
         checkFileSize(file);
-
-        if (isDuplicate(file)) {
-            throw new Exception400("file", ErrorMessage.DUPLICATE_IMAGE);
-        }
 
         String randomFilename = generateRandomFilename(file);
 
