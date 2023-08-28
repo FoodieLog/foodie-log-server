@@ -93,7 +93,7 @@ public class UserSettingService {
         Long feedCount = feedRepository.countByUser(user);
         Long replyCount = replyRepository.countByUser(user);
 
-        WithdrawUser withdrawUser = WithdrawUser.createWithdrawUser(user, feedCount, replyCount);
+        WithdrawUser withdrawUser = WithdrawUser.createWithdrawUser(user, feedCount, replyCount, request.getWithdrawReason());
         withdrawUserRepository.save(withdrawUser);
 
         // 유저, 피드, 댓글 상태 변경

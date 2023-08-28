@@ -1,5 +1,6 @@
 package com.foodielog.server.admin.entity;
 
+import com.foodielog.server.admin.type.WithdrawReason;
 import com.foodielog.server.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,20 +23,22 @@ public class WithdrawUser {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "feed_count")
     private Long feedCount;
 
-    @Column(name = "reply_count")
     private Long replyCount;
+
+    @Enumerated(EnumType.STRING)
+    private WithdrawReason withdrawReason;
 
     @CreationTimestamp
     private Timestamp createdAt;
 
-    public static WithdrawUser createWithdrawUser(User user, Long feedCount, Long replyCount) {
+    public static WithdrawUser createWithdrawUser(User user, Long feedCount, Long replyCount, WithdrawReason withdrawReason) {
         WithdrawUser withdrawUser = new WithdrawUser();
         withdrawUser.user = user;
         withdrawUser.feedCount = feedCount;
         withdrawUser.replyCount = replyCount;
+        withdrawUser.withdrawReason = withdrawReason;
         return withdrawUser;
     }
 }
