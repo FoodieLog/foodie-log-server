@@ -46,8 +46,7 @@ public class RestaurantController {
     @PostMapping("/like")
     public ResponseEntity<ApiUtils.ApiResult<String>> likeRestaurant(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(name = "restaurant") @Positive Long restaurantId,
-            Error error
+            @RequestParam(name = "restaurant") @Positive Long restaurantId
     ) {
         User user = principalDetails.getUser();
         restaurantService.likeRestaurant(user, restaurantId);
@@ -57,8 +56,7 @@ public class RestaurantController {
     @DeleteMapping("/unlike")
     public ResponseEntity<HttpStatus> unlikeRestaurant(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(name = "restaurant") @Positive Long restaurantId,
-            Error error
+            @RequestParam(name = "restaurant") @Positive Long restaurantId
     ) {
         User user = principalDetails.getUser();
         restaurantService.unlikeRestaurant(user, restaurantId);
