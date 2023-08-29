@@ -29,7 +29,8 @@ public class ReplyController {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long feedId,
             @Valid @RequestBody ReplyCreatReq createDTO,
-            Errors errors) {
+            Errors errors
+    ) {
         ReplyCreatResp response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
     }
@@ -47,7 +48,7 @@ public class ReplyController {
     public ResponseEntity<ApiUtils.ApiResult<ReplyCreatResp.ListDTO>> getReplyList(
             @PathVariable Long feedId,
             @RequestParam Long replyId,
-            @PageableDefault Pageable pageable
+            @PageableDefault(size = 15) Pageable pageable
     ) {
         ReplyCreatResp.ListDTO response = replyService.getListReply(feedId, replyId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
