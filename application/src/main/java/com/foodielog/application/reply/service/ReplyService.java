@@ -31,8 +31,7 @@ public class ReplyService {
 
     @Transactional
     public ReplyCreatResp createReply(User user, Long feedId, ReplyCreatReq createDTO) {
-        Feed feed = feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
-                .orElseThrow(() -> new Exception404("에러"));
+        Feed feed = getValidatedFeed(feedId);
 
         Reply reply = Reply.createReply(user, feed, createDTO.getContent());
         Reply saveReply = replyRepository.save(reply);
@@ -43,15 +42,14 @@ public class ReplyService {
     @Transactional
     public void deleteReply(User user, Long replyId) {
         Reply reply = replyRepository.findByIdAndUserIdAndStatus(replyId, user.getId(), ContentStatus.NORMAL)
-                .orElseThrow(() -> new Exception404("에러"));
+                .orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
 
         reply.deleteReplyByUser();
     }
 
     @Transactional(readOnly = true)
     public ReplyCreatResp.ListDTO getListReply(Long feedId, Long replyId, Pageable pageable) {
-        Feed feed = feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
-                .orElseThrow(() -> new Exception404("에러"));
+        Feed feed = getValidatedFeed(feedId);
 
         List<Reply> replyList = replyRepository.getReplyList(feedId, replyId, pageable);
 
@@ -77,6 +75,11 @@ public class ReplyService {
 
         Report report = Report.createReport(user, reported, ReportType.REPLY, reply.getId(), request.getReportReason());
         reportRepository.save(report);
+    }
+
+    private Feed getValidatedFeed(Long feedId) {
+        return feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
+                .orElseThrow(() -> new Exception404("해당 피드가 없습니다."));
     }
 
     private void checkReportedReply(User user, Reply reply) {
