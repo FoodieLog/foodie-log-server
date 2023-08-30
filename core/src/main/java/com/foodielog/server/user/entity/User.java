@@ -100,11 +100,7 @@ public class User {
 
     public void changeProfile(String nickName, String profileImageUrl, String aboutMe) {
         this.nickName = nickName;
-
-        if (profileImageUrl != null) {
-            this.profileImageUrl = profileImageUrl;
-        }
-
+        this.profileImageUrl = profileImageUrl;
         this.aboutMe = aboutMe;
     }
 
