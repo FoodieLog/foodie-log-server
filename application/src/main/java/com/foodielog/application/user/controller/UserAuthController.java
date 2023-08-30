@@ -42,7 +42,7 @@ public class UserAuthController {
     ) {
         ReissueResp response = userAuthService.reissue(request);
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
-        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), headers, HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), headers, HttpStatus.CREATED);
     }
 
     /* 회원 가입 */
@@ -62,7 +62,7 @@ public class UserAuthController {
             Errors errors
     ) {
         SignUpResp response = userAuthService.signUp(request, file);
-        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     /* 이메일 인증 */
