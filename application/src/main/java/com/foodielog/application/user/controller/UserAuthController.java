@@ -113,11 +113,9 @@ public class UserAuthController {
 
     @GetMapping("/login/kakao")
     public ResponseEntity<ApiUtils.ApiResult<KakaoLoginResp>> kakaoLogin(
-            @RequestParam String code
+            @RequestParam String token
     ) {
-        log.info("kakao 인가 code : " + code);
-
-        KakaoLoginResp response = oauthUserService.kakaoLogin(code);
+        KakaoLoginResp response = oauthUserService.kakaoLogin(token);
 
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
 

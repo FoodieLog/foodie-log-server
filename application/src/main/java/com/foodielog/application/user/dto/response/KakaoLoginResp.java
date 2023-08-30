@@ -26,16 +26,6 @@ public class KakaoLoginResp {
 
     public static class kakaoApiResp {
         @Getter
-        public static class Token {
-            private String accessToken;
-            private String tokenType;
-            private String refreshToken;
-            private int expiresIn;
-            private String scope;
-            private int refreshTokenExpiresIn;
-        }
-
-        @Getter
         public static class UserInfo {
             private Long id;
             private String connectedAt;
