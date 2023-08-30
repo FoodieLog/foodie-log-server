@@ -16,6 +16,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/reply")
@@ -47,7 +48,7 @@ public class ReplyController {
     @GetMapping("/{feedId}")
     public ResponseEntity<ApiUtils.ApiResult<ReplyCreatResp.ListDTO>> getReplyList(
             @PathVariable Long feedId,
-            @RequestParam Long replyId,
+            @RequestParam @PositiveOrZero Long replyId,
             @PageableDefault(size = 15) Pageable pageable
     ) {
         ReplyCreatResp.ListDTO response = replyService.getListReply(feedId, replyId, pageable);

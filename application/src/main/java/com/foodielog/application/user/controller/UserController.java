@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @RequiredArgsConstructor
 @Validated
@@ -35,7 +36,7 @@ public class UserController {
     @GetMapping("/{userId}/feed/thumbnail")
     public ResponseEntity<ApiUtils.ApiResult<UserThumbnailResp>> getThumbnail(
             @PathVariable Long userId,
-            @RequestParam(name = "feed") Long feedId,
+            @RequestParam @PositiveOrZero Long feedId,
             @PageableDefault(size = 15) Pageable pageable
     ) {
         UserThumbnailResp response = userService.getThumbnail(userId, feedId, pageable);
@@ -45,7 +46,7 @@ public class UserController {
     @GetMapping("/{userId}/feed/list")
     public ResponseEntity<ApiUtils.ApiResult<UserFeedListResp>> getFeeds(
             @PathVariable Long userId,
-            @RequestParam(name = "feed") Long feedId,
+            @RequestParam @PositiveOrZero Long feedId,
             @PageableDefault(size = 15) Pageable pageable
     ) {
         UserFeedListResp response = userService.getFeeds(userId, feedId, pageable);
@@ -65,7 +66,7 @@ public class UserController {
     @PostMapping("/follow")
     public ResponseEntity<ApiUtils.ApiResult<String>> follow(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(name = "userId") @Positive Long followedId
+            @RequestParam @Positive Long followedId
     ) {
         User user = principalDetails.getUser();
         userService.follow(user, followedId);
@@ -75,7 +76,7 @@ public class UserController {
     @DeleteMapping("/unfollow")
     public ResponseEntity<HttpStatus> unFollow(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(name = "userId") @Positive Long followedId
+            @RequestParam @Positive Long followedId
     ) {
         User user = principalDetails.getUser();
         userService.unFollow(user, followedId);
