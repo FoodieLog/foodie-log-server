@@ -61,6 +61,6 @@ public class ReplyController {
             Errors errors
     ) {
         replyService.reportReply(principalDetails.getUser(), request);
-        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 }

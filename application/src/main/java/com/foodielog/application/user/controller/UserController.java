@@ -69,7 +69,7 @@ public class UserController {
     ) {
         User user = principalDetails.getUser();
         userService.follow(user, followedId);
-        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/unfollow")
