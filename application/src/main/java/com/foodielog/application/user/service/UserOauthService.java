@@ -63,9 +63,6 @@ public class UserOauthService {
         String accessToken = jwtTokenProvider.createAccessToken(loginUser);
         String refreshToken = jwtTokenProvider.createRefreshToken(loginUser);
 
-        log.info("kakao 엑세스 토큰 생성 완료: " + accessToken);
-        log.info("kakao 리프레시 토큰 생성 완료: " + refreshToken);
-
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + loginUser.getEmail(), refreshToken,
                 JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
@@ -77,6 +74,7 @@ public class UserOauthService {
         ResponseEntity<String> userInfoResponse = ExternalUtil.kakaoUserInfoRequest(KAKAO_USER_INFO_URI, HttpMethod.POST, token);
 
         if (!userInfoResponse.getStatusCode().equals(HttpStatus.OK)) {
+            log.error("카카오 로그인: " + userInfoResponse.getBody());
             throw new Exception500(userInfoResponse.getBody());
         }
 
