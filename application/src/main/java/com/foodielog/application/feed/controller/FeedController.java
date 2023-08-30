@@ -69,7 +69,7 @@ public class FeedController {
             Errors errors
     ) {
         feedService.likeFeed(principalDetails.getUser(), request.getFeedId());
-        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/unlike")
