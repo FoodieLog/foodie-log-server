@@ -46,17 +46,17 @@ public class RestaurantController {
     @PostMapping("/like")
     public ResponseEntity<ApiUtils.ApiResult<String>> likeRestaurant(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(name = "restaurant") @Positive Long restaurantId
+            @RequestParam @Positive Long restaurantId
     ) {
         User user = principalDetails.getUser();
         restaurantService.likeRestaurant(user, restaurantId);
-        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/unlike")
     public ResponseEntity<HttpStatus> unlikeRestaurant(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(name = "restaurant") @Positive Long restaurantId
+            @RequestParam @Positive Long restaurantId
     ) {
         User user = principalDetails.getUser();
         restaurantService.unlikeRestaurant(user, restaurantId);
@@ -65,7 +65,7 @@ public class RestaurantController {
 
     @GetMapping("/recommended")
     public ResponseEntity<ApiUtils.ApiResult<RecommendedRestaurantResp>> getRecommendedRestaurant(
-            @RequestParam(name = "address") String address
+            @RequestParam String address
     ) {
         RecommendedRestaurantResp response = restaurantService.getRecommendedRestaurant(address);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);

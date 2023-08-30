@@ -15,4 +15,6 @@ public interface FollowRepository extends JpaRepository<Follow, FollowPK> {
     boolean existsByFollowedId(User user);
 
     Optional<Follow> findByFollowingIdAndFollowedId(User following, User followed);
+
+    boolean existsByFollowingIdAndFollowedId(User following, User followed);
 }

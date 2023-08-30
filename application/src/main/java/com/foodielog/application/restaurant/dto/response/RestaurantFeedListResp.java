@@ -89,9 +89,8 @@ public class RestaurantFeedListResp {
         private final String content;
         private final Long likeCount;
         private final Long replyCount;
-        private final String share;
 
-        public FeedDTO(Feed feed, List<FeedImageDTO> feedImages, Long likeCount, Long replyCount, String share) {
+        public FeedDTO(Feed feed, List<FeedImageDTO> feedImages, Long likeCount, Long replyCount) {
             this.feedId = feed.getId();
             this.nickName = feed.getUser().getNickName();
             this.profileImageUrl = feed.getUser().getProfileImageUrl();
@@ -101,7 +100,6 @@ public class RestaurantFeedListResp {
             this.content = feed.getContent();
             this.likeCount = likeCount;
             this.replyCount = replyCount;
-            this.share = share;
         }
     }
 

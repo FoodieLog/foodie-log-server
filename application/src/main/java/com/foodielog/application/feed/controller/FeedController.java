@@ -6,8 +6,6 @@ import com.foodielog.application.feed.dto.request.ReportFeedReq;
 import com.foodielog.application.feed.dto.request.UpdateFeedReq;
 import com.foodielog.application.feed.dto.response.MainFeedListResp;
 import com.foodielog.application.feed.service.FeedService;
-import com.foodielog.server._core.error.ErrorMessage;
-import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
 import com.foodielog.server._core.kakaoApi.KakaoApiService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
@@ -54,17 +52,14 @@ public class FeedController {
     @PostMapping("/save")
     public ResponseEntity<ApiUtils.ApiResult<String>> feedSave(
             @RequestPart(value = "content") @Valid FeedSaveReq request,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files,
-            @AuthenticationPrincipal PrincipalDetails principalDetails, Errors errors
+            @RequestPart(value = "files") List<MultipartFile> files,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            Errors errors
     ) {
-        if (files == null || files.isEmpty()) {
-            throw new Exception400("files", ErrorMessage.NO_SELECTED_IMAGE);
-        }
-
         User user = principalDetails.getUser();
         feedService.save(request, files, user);
 
-        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @PostMapping("/like")
@@ -89,14 +84,14 @@ public class FeedController {
     @PostMapping("/delete")
     public ResponseEntity<ApiUtils.ApiResult<String>> delete(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(name = "feed") @Positive Long feedId
+            @RequestParam @Positive Long feedId
     ) {
         User user = principalDetails.getUser();
         feedService.deleteFeed(user, feedId);
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<ApiUtils.ApiResult<String>> update(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody @Valid UpdateFeedReq request,
@@ -115,7 +110,7 @@ public class FeedController {
     ) {
         User user = principalDetails.getUser();
         feedService.reportFeed(user, request);
-        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @GetMapping("/list")
