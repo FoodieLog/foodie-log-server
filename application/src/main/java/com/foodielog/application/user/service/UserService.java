@@ -119,9 +119,8 @@ public class UserService {
     private UserFeedListResp.FeedDTO getFeedDTO(Feed feed, List<UserFeedListResp.FeedImageDTO> feedImages) {
         Long likeCount = feedLikeRepository.countByFeed(feed);
         Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
-        String share = null;
 
-        return new UserFeedListResp.FeedDTO(feed, feedImages, likeCount, replyCount, share);
+        return new UserFeedListResp.FeedDTO(feed, feedImages, likeCount, replyCount);
     }
 
     private List<UserFeedListResp.FeedImageDTO> getFeedImageDTO(List<Media> mediaList) {
