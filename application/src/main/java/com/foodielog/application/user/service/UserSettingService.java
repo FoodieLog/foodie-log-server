@@ -136,19 +136,26 @@ public class UserSettingService {
             throw new Exception400("nickName", "이미 사용 중인 닉네임 입니다");
         }
 
-        String storedFileUrl = null;
-        if (!file.isEmpty()) {
-            storedFileUrl = s3Uploader.saveFile(file);
-
-            if (user.getProfileImageUrl() != null) {
-                s3Uploader.deleteFile(user.getProfileImageUrl());
-            }
-        }
-
+        String storedFileUrl = getStoredFileUrl(user.getProfileImageUrl(), file);
         user.changeProfile(request.getNickName(), storedFileUrl, request.getAboutMe());
 
         userRepository.save(user);
 
         return new ChangeProfileResp(user.getNickName(), user.getProfileImageUrl(), user.getAboutMe());
+    }
+
+    private String getStoredFileUrl(String userProfileImageUrl, MultipartFile file) {
+        String storedFileUrl = userProfileImageUrl;
+
+        if (!file.isEmpty()) {
+            storedFileUrl = s3Uploader.saveFile(file);
+
+            // 기존 이미지 삭제
+            if (userProfileImageUrl != null) {
+                s3Uploader.deleteFile(userProfileImageUrl);
+            }
+        }
+
+        return storedFileUrl;
     }
 }
