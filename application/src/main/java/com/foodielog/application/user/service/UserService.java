@@ -18,7 +18,6 @@ import com.foodielog.server.user.repository.FollowRepository;
 import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
