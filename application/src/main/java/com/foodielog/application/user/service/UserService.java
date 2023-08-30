@@ -170,6 +170,7 @@ public class UserService {
         return followRepository.findByFollowingIdAndFollowedId(following, followed);
     }
 
+    @Transactional(readOnly = true)
     public UserSearchResp search(String keyword) {
         List<User> userList = userRepository.searchUserOrderByFollowedIdDesc(keyword);
 
