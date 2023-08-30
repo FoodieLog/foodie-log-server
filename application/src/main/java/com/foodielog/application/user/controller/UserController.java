@@ -87,7 +87,6 @@ public class UserController {
             @RequestParam String keyword
     ) {
         UserSearchResp response = userService.search(keyword);
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }

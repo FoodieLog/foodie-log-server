@@ -71,9 +71,7 @@ public class UserSettingController {
             @RequestHeader(JwtTokenProvider.HEADER) String accessToken
     ) {
         accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
-
         LogoutResp response = userSettingService.logout(accessToken);
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -83,13 +81,10 @@ public class UserSettingController {
             @RequestBody @Valid WithdrawReq request,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             Error error
-
     ) {
         accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
         User user = principalDetails.getUser();
-
         WithdrawResp response = userSettingService.withdraw(accessToken, user, request);
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -102,7 +97,6 @@ public class UserSettingController {
     ) {
         User user = principalDetails.getUser();
         ChangeProfileResp response = userSettingService.ChangeProfile(user, request, file);
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
