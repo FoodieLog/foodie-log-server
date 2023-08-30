@@ -21,8 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import javax.transaction.Transactional;
 import java.util.UUID;
@@ -32,18 +30,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class UserOauthService {
-    @Value("${kakao.api.key}")
-    private String KAKAO_API_KEY;
-
-    @Value("${kakao.login.grant-type}")
-    private String KAKAO_GRANT_TYPE;
-
-    @Value("${kakao.login.redirect-uri}")
-    private String KAKAO_REDIRECT_URI;
-
-    @Value("${kakao.login.token-uri}")
-    private String KAKAO_TOKEN_URI;
-
     @Value("${kakao.login.user-info-uri}")
     private String KAKAO_USER_INFO_URI;
 
@@ -54,9 +40,8 @@ public class UserOauthService {
     private final UserRepository userRepository;
 
     @Transactional
-    public KakaoLoginResp kakaoLogin(String code) {
-        KakaoLoginResp.kakaoApiResp.Token kakaoAccessToken = getKakaoAccessToken(code);
-        KakaoLoginResp.kakaoApiResp.UserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken.getAccessToken());
+    public KakaoLoginResp kakaoLogin(String token) {
+        KakaoLoginResp.kakaoApiResp.UserInfo kakaoUserInfo = getKakaoUserInfo(token);
         KakaoLoginResp.kakaoApiResp.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
 
         if (!kakaoAccount.getIsEmailValid()) {
@@ -85,23 +70,7 @@ public class UserOauthService {
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + loginUser.getEmail(), refreshToken,
                 JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
-        return new KakaoLoginResp(loginUser, accessToken, refreshToken, kakaoAccessToken.getAccessToken());
-    }
-
-    private KakaoLoginResp.kakaoApiResp.Token getKakaoAccessToken(String code) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", KAKAO_GRANT_TYPE);
-        body.add("client_id", KAKAO_API_KEY);
-        body.add("redirect_uri", KAKAO_REDIRECT_URI);
-        body.add("code", code);
-
-        ResponseEntity<String> tokenResponse = ExternalUtil.kakaoTokenRequest(KAKAO_TOKEN_URI, HttpMethod.POST, body);
-
-        if (!tokenResponse.getStatusCode().equals(HttpStatus.OK)) {
-            throw new Exception500(tokenResponse.getBody());
-        }
-
-        return jsonConverter.jsonToObject(tokenResponse.getBody(), KakaoLoginResp.kakaoApiResp.Token.class);
+        return new KakaoLoginResp(loginUser, accessToken, refreshToken, token);
     }
 
     private KakaoLoginResp.kakaoApiResp.UserInfo getKakaoUserInfo(String token) {
