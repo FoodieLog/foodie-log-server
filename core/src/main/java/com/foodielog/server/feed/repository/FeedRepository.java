@@ -32,7 +32,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             "AND f.status = 'NORMAL' " +
             "GROUP BY f.id " +
             "ORDER BY likeCount DESC, f.id DESC")
-    List<Feed> findTop3ByRestaurantId(Long restaurantId, Pageable pageable);
+    List<Feed> findTop3ByRestaurantId(@Param("restaurantId") Long restaurantId, Pageable pageable);
 
     Optional<Feed> findByIdAndStatus(Long feedId, ContentStatus status);
 

@@ -97,7 +97,7 @@ public class RestaurantService {
         List<Restaurant> restaurants = restaurantRepository.findByRoadAddressContaining(address);
 
         List<RecommendedRestaurantResp.RestaurantsDTO> restaurantsDTOList = restaurants.stream()
-                .map(restaurant -> createRestaurantsDTO(restaurant))
+                .map(this::createRestaurantsDTO)
                 .collect(Collectors.toList());
 
         return new RecommendedRestaurantResp(restaurantsDTOList);
@@ -146,15 +146,11 @@ public class RestaurantService {
             Long likeCount = feedLikeRepository.countByFeed(feed);
             Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
 
-            boolean isFollowed = followRepository.findByFollowingIdAndFollowedId(user, feed.getUser())
-                    .isPresent();
-            boolean isLiked = feedLikeRepository.findByUserId(user.getId())
-                    .isPresent();
-
-            String share = null;
+            boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, feed.getUser());
+            boolean isLiked = feedLikeRepository.existsByUser(user);
 
             RestaurantFeedListResp.FeedDTO feedDTO =
-                    new RestaurantFeedListResp.FeedDTO(feed, feedImageDTOS, likeCount, replyCount, share);
+                    new RestaurantFeedListResp.FeedDTO(feed, feedImageDTOS, likeCount, replyCount);
 
             RestaurantFeedListResp.RestaurantFeedsDTO restaurantFeedsDTO =
                     new RestaurantFeedListResp.RestaurantFeedsDTO(feedDTO, feedRestaurantDTO, isFollowed, isLiked);
@@ -169,7 +165,7 @@ public class RestaurantService {
         List<Feed> feeds = feedRepository.findTop3ByRestaurantId(restaurant.getId(), pageable);
 
         List<RecommendedRestaurantResp.FeedsDTO> feedsDTOList = feeds.stream()
-                .map(feed -> new RecommendedRestaurantResp.FeedsDTO(feed))
+                .map(RecommendedRestaurantResp.FeedsDTO::new)
                 .collect(Collectors.toList());
 
         return new RecommendedRestaurantResp.RestaurantsDTO(restaurant, feedsDTOList);
