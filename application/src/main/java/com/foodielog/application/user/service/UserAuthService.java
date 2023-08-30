@@ -87,8 +87,9 @@ public class UserAuthService {
             throw new Exception400("nickName", "이미 사용 중인 닉네임 입니다");
         }
 
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
         String storedFileUrl = s3Uploader.saveFile(file);
-        User user = User.createUser(request.getEmail(), request.getPassword(), request.getNickName(),
+        User user = User.createUser(request.getEmail(), encodedPassword, request.getNickName(),
                 storedFileUrl, request.getAboutMe());
 
         userRepository.save(user);
