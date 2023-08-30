@@ -41,9 +41,7 @@ public class UserAuthController {
             Errors errors
     ) {
         ReissueResp response = userAuthService.reissue(request);
-
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), headers, HttpStatus.OK);
     }
 
@@ -53,7 +51,6 @@ public class UserAuthController {
             @RequestParam @Email String input
     ) {
         ExistsEmailResp response = userAuthService.checkExistsEmail(input);
-
         HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
@@ -65,7 +62,6 @@ public class UserAuthController {
             Errors errors
     ) {
         SignUpResp response = userAuthService.signUp(request, file);
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -75,7 +71,6 @@ public class UserAuthController {
             @RequestParam @Email String email
     ) {
         SendCodeForSignupResp response = userAuthService.sendCodeForSignUp(email);
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -84,7 +79,6 @@ public class UserAuthController {
             @RequestParam @Email String email
     ) {
         SendCodeForPasswordResp response = userAuthService.sendCodeForPassword(email);
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -95,19 +89,17 @@ public class UserAuthController {
     ) {
         VerifiedCodeResp response = userAuthService.verifiedCode(email, code);
         HttpStatus httpStatus = response.getIsVerified() ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
-
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
 
     /* 로그인 */
     @PostMapping("/login")
     public ResponseEntity<ApiUtils.ApiResult<LoginResp>> login(
-            @RequestBody @Valid LoginReq loginDTO, Errors errors
+            @RequestBody @Valid LoginReq loginDTO,
+            Errors errors
     ) {
         LoginResp response = userAuthService.login(loginDTO);
-
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), headers, HttpStatus.OK);
     }
 
@@ -116,16 +108,13 @@ public class UserAuthController {
             @RequestParam String token
     ) {
         KakaoLoginResp response = oauthUserService.kakaoLogin(token);
-
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), headers, HttpStatus.OK);
     }
 
-    private static HttpHeaders getCookieHeaders(String refreshToken) {
+    private HttpHeaders getCookieHeaders(String refreshToken) {
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie cookie = CookieUtil.getRefreshTokenCookie(refreshToken);
-        log.info("쿠키 생성 완료: " + cookie.toString());
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
         return headers;
     }
@@ -136,7 +125,6 @@ public class UserAuthController {
             @RequestParam @ValidNickName String input
     ) {
         ExistsNickNameResp response = userAuthService.checkExistsNickName(input);
-
         HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
@@ -144,10 +132,10 @@ public class UserAuthController {
     /* 비밀번호 찾기*/
     @PutMapping("/password/reset")
     public ResponseEntity<ApiUtils.ApiResult<ResetPasswordResp>> resetPassword(
-            @RequestBody @Valid ResetPasswordReq request, Errors errors
+            @RequestBody @Valid ResetPasswordReq request,
+            Errors errors
     ) {
         ResetPasswordResp response = userAuthService.resetPassword(request);
-
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
