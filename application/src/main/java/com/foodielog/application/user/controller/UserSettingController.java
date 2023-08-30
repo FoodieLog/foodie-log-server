@@ -52,7 +52,7 @@ public class UserSettingController {
     ) {
         User user = principalDetails.getUser();
         CreateBadgeApplyResp response = userSettingService.creatBadgeApply(user);
-        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @PutMapping("/password")
@@ -85,7 +85,7 @@ public class UserSettingController {
         accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
         User user = principalDetails.getUser();
         WithdrawResp response = userSettingService.withdraw(accessToken, user, request);
-        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @PutMapping("/profile")
