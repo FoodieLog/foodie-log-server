@@ -11,7 +11,6 @@ import com.foodielog.server._core.customValid.valid.ValidNickName;
 import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server._core.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -25,7 +24,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
-@Slf4j
 @RequiredArgsConstructor
 @Validated
 @RequestMapping("/auth")

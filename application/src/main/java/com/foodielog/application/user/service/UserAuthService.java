@@ -16,7 +16,6 @@ import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserAuthService {
@@ -59,9 +57,6 @@ public class UserAuthService {
 
         String accessToken = jwtTokenProvider.createAccessToken(user);
         String refreshToken = jwtTokenProvider.createRefreshToken(user);
-
-        log.info("엑세스 토큰 재생성 완료: " + accessToken);
-        log.info("리프레시 토큰 재생성 완료: " + refreshToken);
 
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), refreshToken,
@@ -148,8 +143,7 @@ public class UserAuthService {
 
             return Integer.toString(randomNumber);
         } catch (NoSuchAlgorithmException e) {
-            log.debug("이메일 인증 코드 생성 오류");
-            throw new Exception500("서버 에러 #E1");
+            throw new Exception500("서버 에러: 이메일 인증 코드 생성 오류");
         }
     }
 
@@ -165,9 +159,6 @@ public class UserAuthService {
 
         String accessToken = jwtTokenProvider.createAccessToken(user);
         String refreshToken = jwtTokenProvider.createRefreshToken(user);
-
-        log.info("엑세스 토큰 생성 완료: " + accessToken);
-        log.info("리프레시 토큰 생성 완료: " + refreshToken);
 
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), refreshToken,

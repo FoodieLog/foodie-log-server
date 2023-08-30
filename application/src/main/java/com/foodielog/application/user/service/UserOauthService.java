@@ -14,7 +14,6 @@ import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.ProviderType;
 import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,6 @@ import javax.transaction.Transactional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserOauthService {
@@ -74,8 +72,7 @@ public class UserOauthService {
         ResponseEntity<String> userInfoResponse = ExternalUtil.kakaoUserInfoRequest(KAKAO_USER_INFO_URI, HttpMethod.POST, token);
 
         if (!userInfoResponse.getStatusCode().equals(HttpStatus.OK)) {
-            log.error("카카오 로그인: " + userInfoResponse.getBody());
-            throw new Exception500(userInfoResponse.getBody());
+            throw new Exception500("카카오 로그인: " + userInfoResponse.getBody());
         }
 
         return jsonConverter.jsonToObject(userInfoResponse.getBody(), KakaoLoginResp.kakaoApiResp.UserInfo.class);
