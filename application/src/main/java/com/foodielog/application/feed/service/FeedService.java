@@ -40,8 +40,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class FeedService {
     private final FeedRepository feedRepository;
     private final RestaurantRepository restaurantRepository;
