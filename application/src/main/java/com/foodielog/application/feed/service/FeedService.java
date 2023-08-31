@@ -246,7 +246,8 @@ public class FeedService {
 
         List<Media> mediaList = mediaRepository.findByFeed(feed);
         List<FeedDetailResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
-                .map(FeedDetailResp.FeedImageDTO::new).collect(Collectors.toList());
+                .map(FeedDetailResp.FeedImageDTO::new)
+                .collect(Collectors.toList());
 
         Long likeCount = feedLikeRepository.countByFeed(feed);
         Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
