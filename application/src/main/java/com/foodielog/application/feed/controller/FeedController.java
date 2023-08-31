@@ -4,6 +4,7 @@ import com.foodielog.application.feed.dto.request.FeedSaveReq;
 import com.foodielog.application.feed.dto.request.LikeFeedReq;
 import com.foodielog.application.feed.dto.request.ReportFeedReq;
 import com.foodielog.application.feed.dto.request.UpdateFeedReq;
+import com.foodielog.application.feed.dto.response.FeedDetailResp;
 import com.foodielog.application.feed.dto.response.MainFeedListResp;
 import com.foodielog.application.feed.service.FeedService;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
@@ -120,6 +121,14 @@ public class FeedController {
             @PageableDefault(size = 15) Pageable pageable
     ) {
         MainFeedListResp response = feedService.getMainFeed(principalDetails.getUser(), feedId, pageable);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/detail")
+    public ResponseEntity<ApiUtils.ApiResult<FeedDetailResp>> detail(
+            @RequestParam @Positive Long feedId
+    ) {
+        FeedDetailResp response = feedService.getFeedDetail(feedId);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
