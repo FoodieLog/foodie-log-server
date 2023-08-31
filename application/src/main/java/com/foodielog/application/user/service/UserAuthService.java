@@ -2,7 +2,6 @@ package com.foodielog.application.user.service;
 
 import com.foodielog.application._core.smtp.MailService;
 import com.foodielog.application.user.dto.request.LoginReq;
-import com.foodielog.application.user.dto.request.ReissueReq;
 import com.foodielog.application.user.dto.request.ResetPasswordReq;
 import com.foodielog.application.user.dto.request.SignUpReq;
 import com.foodielog.application.user.dto.response.*;
@@ -39,30 +38,31 @@ public class UserAuthService {
     private final UserRepository userRepository;
 
     /* 토큰 재발급 */
-    public ReissueResp reissue(ReissueReq request) {
+    public ReissueResp reissue(String accessToken, String refreshToken) {
         // Refresh Token 유효성 검사
-        jwtTokenProvider.isTokenValid(request.getRefreshToken());
+        jwtTokenProvider.isTokenValid(refreshToken);
 
         // Refresh Token 검증
-        Authentication authentication = jwtTokenProvider.getAuthentication(request.getAccessToken());
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         String redisRT = redisService.getObjectByKey(RedisService.REFRESH_TOKEN_PREFIX
                 + authentication.getName(), String.class);
-        if (!redisRT.equals(request.getRefreshToken())) {
+        if (!redisRT.equals(refreshToken)) {
             throw new Exception400("Refresh Token", "정보가 일치하지 않습니다.");
         }
 
-        // 재발급
+        // 유저 상태 검사
         User user = userRepository.findByEmailAndStatus(authentication.getName(), UserStatus.NORMAL)
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
-        String accessToken = jwtTokenProvider.createAccessToken(user);
-        String refreshToken = jwtTokenProvider.createRefreshToken(user);
+        // 재발급
+        String newAT = jwtTokenProvider.createAccessToken(user);
+        String newRT = jwtTokenProvider.createRefreshToken(user);
 
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
-        redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), refreshToken,
+        redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), newRT,
                 JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
-        return new ReissueResp(accessToken, refreshToken);
+        return new ReissueResp(newAT, newRT);
     }
 
     /* 회원 가입 */

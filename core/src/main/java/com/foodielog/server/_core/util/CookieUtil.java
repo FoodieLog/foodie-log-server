@@ -4,8 +4,10 @@ import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import org.springframework.http.ResponseCookie;
 
 public class CookieUtil {
+    public static final String NAME_REFRESH_TOKEN = "refreshToken";
+
     public static ResponseCookie getRefreshTokenCookie(String refreshToken) {
-        return ResponseCookie.from("refreshToken", refreshToken)
+        return ResponseCookie.from(NAME_REFRESH_TOKEN, refreshToken)
                 .maxAge(JwtTokenProvider.EXP_REFRESH)
                 .path("/")
                 .secure(true) // https 환경에서만 쿠키가 발동
