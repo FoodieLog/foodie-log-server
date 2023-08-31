@@ -1,13 +1,13 @@
 package com.foodielog.application.user.controller;
 
 import com.foodielog.application.user.dto.request.LoginReq;
-import com.foodielog.application.user.dto.request.ReissueReq;
 import com.foodielog.application.user.dto.request.ResetPasswordReq;
 import com.foodielog.application.user.dto.request.SignUpReq;
 import com.foodielog.application.user.dto.response.*;
 import com.foodielog.application.user.service.UserAuthService;
 import com.foodielog.application.user.service.UserOauthService;
 import com.foodielog.server._core.customValid.valid.ValidNickName;
+import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server._core.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +33,13 @@ public class UserAuthController {
     private final UserOauthService oauthUserService;
 
     /* 토큰 재발급*/
-    @PostMapping("/reissue")
+    @GetMapping("/reissue")
     public ResponseEntity<ApiUtils.ApiResult<ReissueResp>> reissue(
-            @RequestBody @Valid ReissueReq request,
-            Errors errors
+            @RequestHeader(JwtTokenProvider.HEADER) String accessToken,
+            @CookieValue(CookieUtil.NAME_REFRESH_TOKEN) String refreshToken
     ) {
-        ReissueResp response = userAuthService.reissue(request);
+        accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
+        ReissueResp response = userAuthService.reissue(accessToken, refreshToken);
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), headers, HttpStatus.CREATED);
     }
