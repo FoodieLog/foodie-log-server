@@ -3,6 +3,7 @@ package com.foodielog.application.feed.service;
 import com.foodielog.application.feed.dto.request.FeedSaveReq;
 import com.foodielog.application.feed.dto.request.ReportFeedReq;
 import com.foodielog.application.feed.dto.request.UpdateFeedReq;
+import com.foodielog.application.feed.dto.response.FeedDetailResp;
 import com.foodielog.application.feed.dto.response.MainFeedListResp;
 import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.error.exception.Exception404;
@@ -236,5 +237,20 @@ public class FeedService {
         return mediaList.stream()
                 .map(MainFeedListResp.FeedImageDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public FeedDetailResp getFeedDetail(Long feedId) {
+        Feed feed = feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
+                .orElseThrow(() -> new Exception404("해당 피드를 찾을 수 없습니다."));
+
+        List<Media> mediaList = mediaRepository.findByFeed(feed);
+        List<FeedDetailResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
+                .map(FeedDetailResp.FeedImageDTO::new).collect(Collectors.toList());
+
+        Long likeCount = feedLikeRepository.countByFeed(feed);
+        Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
+
+        return new FeedDetailResp(feed, feedImageDTOS, likeCount, replyCount);
     }
 }
