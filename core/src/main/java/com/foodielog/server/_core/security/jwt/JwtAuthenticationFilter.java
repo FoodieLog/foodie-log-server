@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = jwtTokenProvider.resolveToken(request);
+        String token = jwtTokenProvider.resolveToken(request.getHeader(JwtTokenProvider.HEADER));
 
         if (jwtTokenProvider.isTokenValid(token)) {
             if (redisService.hasKey(token)) {

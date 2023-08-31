@@ -24,6 +24,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/user/setting")
 @RestController
 public class UserSettingController {
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserSettingService userSettingService;
 
     @PutMapping("/notification")
@@ -70,7 +71,7 @@ public class UserSettingController {
     public ResponseEntity<ApiUtils.ApiResult<LogoutResp>> logout(
             @RequestHeader(JwtTokenProvider.HEADER) String accessToken
     ) {
-        accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
+        accessToken = jwtTokenProvider.resolveToken(accessToken);
         LogoutResp response = userSettingService.logout(accessToken);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
@@ -82,7 +83,7 @@ public class UserSettingController {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             Error error
     ) {
-        accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
+        accessToken = jwtTokenProvider.resolveToken(accessToken);
         User user = principalDetails.getUser();
         WithdrawResp response = userSettingService.withdraw(accessToken, user, request);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
