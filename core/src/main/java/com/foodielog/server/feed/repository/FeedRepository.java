@@ -15,8 +15,6 @@ import java.util.Optional;
 public interface FeedRepository extends JpaRepository<Feed, Long> {
     Long countByUser(User user);
 
-    List<Feed> findByUserId(Long userId);
-
     List<Feed> findByUserIdAndStatus(Long userId, ContentStatus status);
 
     @Query("SELECT f FROM Feed f " +
