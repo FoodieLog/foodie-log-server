@@ -68,4 +68,8 @@ public class Feed {
     public void updateFeed(String content) {
         this.content = content;
     }
+
+    public void restoreFeed() {
+        status = ContentStatus.NORMAL;
+    }
 }

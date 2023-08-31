@@ -41,4 +41,12 @@ public class BadgeApply {
 
         return badgeApply;
     }
+
+    public void approveBadge() {
+        this.status = ProcessedStatus.APPROVED;
+    }
+
+    public void rejectBadge() {
+        this.status = ProcessedStatus.REJECTED;
+    }
 }

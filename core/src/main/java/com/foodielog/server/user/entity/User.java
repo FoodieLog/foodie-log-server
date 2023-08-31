@@ -107,4 +107,12 @@ public class User {
     public void withdraw() {
         this.status = UserStatus.WITHDRAW;
     }
+
+    public void badgeApproved() {
+        this.badgeFlag = Flag.Y;
+    }
+
+    public void restore() {
+        this.status = UserStatus.NORMAL;
+    }
 }
