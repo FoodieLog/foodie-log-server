@@ -13,7 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
 
@@ -56,8 +55,7 @@ public class JwtTokenProvider {
     }
 
     // Request Header에서 token 값 추출
-    public String resolveToken(HttpServletRequest request) {
-        String header = request.getHeader(HEADER);
+    public String resolveToken(String header) {
         return header.replaceAll(TOKEN_PREFIX, "");
     }
 

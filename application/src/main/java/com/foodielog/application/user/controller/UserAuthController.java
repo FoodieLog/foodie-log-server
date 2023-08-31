@@ -29,6 +29,7 @@ import javax.validation.constraints.Size;
 @RequestMapping("/auth")
 @RestController
 public class UserAuthController {
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserAuthService userAuthService;
     private final UserOauthService oauthUserService;
 
@@ -38,7 +39,7 @@ public class UserAuthController {
             @RequestHeader(JwtTokenProvider.HEADER) String accessToken,
             @CookieValue(CookieUtil.NAME_REFRESH_TOKEN) String refreshToken
     ) {
-        accessToken = accessToken.replaceAll(JwtTokenProvider.TOKEN_PREFIX, "");
+        accessToken = jwtTokenProvider.resolveToken(accessToken);
         ReissueResp response = userAuthService.reissue(accessToken, refreshToken);
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), headers, HttpStatus.CREATED);
