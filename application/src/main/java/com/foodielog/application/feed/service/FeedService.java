@@ -239,7 +239,7 @@ public class FeedService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public FeedDetailResp getFeedDetail(Long feedId) {
         Feed feed = feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("해당 피드를 찾을 수 없습니다."));
