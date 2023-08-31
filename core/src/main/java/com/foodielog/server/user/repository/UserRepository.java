@@ -1,6 +1,7 @@
 package com.foodielog.server.user.repository;
 
 import com.foodielog.server.user.entity.User;
+import com.foodielog.server.user.type.Role;
 import com.foodielog.server.user.type.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,8 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndStatus(String email, UserStatus status);
+
+    Optional<User> findByEmailAndRole(String email, Role role);
 
     Optional<User> findByIdAndStatus(Long userId, UserStatus status);
 
