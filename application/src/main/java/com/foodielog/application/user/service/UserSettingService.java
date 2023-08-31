@@ -16,6 +16,7 @@ import com.foodielog.server.admin.repository.BadgeApplyRepository;
 import com.foodielog.server.admin.repository.WithdrawUserRepository;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.repository.FeedRepository;
+import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.user.entity.User;
@@ -102,10 +103,10 @@ public class UserSettingService {
         user.withdraw();
         userRepository.save(user);
 
-        List<Feed> feedList = feedRepository.findByUserId(user.getId());
+        List<Feed> feedList = feedRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
         feedList.forEach(Feed::deleteFeed);
 
-        List<Reply> replyList = replyRepository.findByUserId(user.getId());
+        List<Reply> replyList = replyRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
         replyList.forEach(Reply::deleteReply);
 
         // 토큰 무효화
