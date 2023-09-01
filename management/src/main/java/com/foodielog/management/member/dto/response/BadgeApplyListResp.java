@@ -17,6 +17,7 @@ public class BadgeApplyListResp {
 
     @Getter
     public static class BadgeApplyMemberDTO {
+        private final Long badgeApplyId;
         private final String nickName;
         private final String email;
         private final Long feedCount;
@@ -26,6 +27,7 @@ public class BadgeApplyListResp {
         private final ProcessedStatus processedStatus;
 
         public BadgeApplyMemberDTO(BadgeApply badgeApply, Long feedCount, Long replyCount, Long followerCount) {
+            this.badgeApplyId = badgeApply.getId();
             this.nickName = badgeApply.getUser().getNickName();
             this.email = badgeApply.getUser().getEmail();
             this.feedCount = feedCount;
