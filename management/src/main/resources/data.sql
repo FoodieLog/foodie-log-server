@@ -10,9 +10,17 @@ VALUES ('boo@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq
        ('boo3@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛3', NULL,
         NULL, 'Y', 'N', 'NORMAL', '2023-08-01', '2023-08-01'),
        ('boo4@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛4', NULL,
-        NULL, 'Y', 'N', 'NORMAL', '2023-08-01', '2023-08-01'),
+        NULL, 'Y', 'Y', 'NORMAL', '2023-08-01', '2023-08-01'),
        ('boo5@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛5', NULL,
-        NULL, 'Y', 'N', 'NORMAL', '2023-08-01', '2023-08-01'),
+        NULL, 'Y', 'Y', 'WITHDRAW', '2023-08-01', '2023-08-01'),
+       ('boo6@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛6', NULL,
+        NULL, 'Y', 'N', 'WITHDRAW', '2023-08-01', '2023-08-01'),
+       ('boo7@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛7', NULL,
+        NULL, 'Y', 'N', 'WITHDRAW', '2023-08-01', '2023-08-01'),
+       ('boo8@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛8', NULL,
+        NULL, 'Y', 'N', 'WITHDRAW', '2023-08-01', '2023-08-01'),
+       ('boo9@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛9', NULL,
+        NULL, 'Y', 'N', 'WITHDRAW', '2023-08-01', '2023-08-01'),
        ('admin@gmail.com', '$2a$12$G18OjisaPXaux8t7KH9bX.uECo8eiIx26hREWjpYG6dIxV6S18N4q', 'ME', 'ADMIN', '관리자', NULL,
         NULL, 'N', 'N', 'NORMAL', '2023-08-01', '2023-08-01');
 
@@ -45,7 +53,7 @@ VALUES (1, 1, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/55e8cfbc
        (4, 4, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/94d59641-dd4c-41d2-9e72-1d8616da7c6e.png',
         '부맛4의 맛집을 소개합니다.', 'NORMAL', '2023-08-03', '2023-08-03'),
        (5, 5, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/b65a31fc-9942-4117-9b3c-c8cd674bb88e.jpeg',
-        '부맛5의 맛집을 소개합니다.', 'NORMAL', '2023-08-03', '2023-08-03');
+        '부맛5의 맛집을 소개합니다.', 'DELETE', '2023-08-03', '2023-08-03');
 
 INSERT INTO restaurant_like_tb (restaurant_id, user_id, created_at)
 VALUES (1, 1, '2023-08-01'),
@@ -74,7 +82,7 @@ INSERT INTO reply_tb (user_id, feed_id, content, status, created_at, updated_at)
 VALUES (1, 2, '너무 맛있어 보여요!', 'NORMAL', '2023-08-10', '2023-08-10'),
        (3, 2, '저도 가봐야 겠어요!', 'NORMAL', '2023-08-10', '2023-08-10'),
        (2, 1, '저희 집 근처네요!', 'NORMAL', '2023-08-10', '2023-08-10'),
-       (5, 1, '카페가 너무 이뻐요!', 'NORMAL', '2023-08-10', '2023-08-10'),
+       (5, 1, '카페가 너무 이뻐요!', 'DELETE', '2023-08-10', '2023-08-10'),
        (4, 3, '빵이 맛있어 보여요!', 'NORMAL', '2023-08-10', '2023-08-10'),
        (2, 1, '@@ 오픈 이벤트 진행 중 입니다~ 프로필 상단 링크 확인 @@', 'NORMAL', '2023-08-10', '2023-08-10');
 
@@ -101,3 +109,16 @@ VALUES (2, 'REPLY', 1, 'N', '2023-08-10'),
        (3, 'LIKE', 3, 'N', '2023-08-12'),
        (4, 'LIKE', 4, 'N', '2023-08-12'),
        (5, 'LIKE', 5, 'N', '2023-08-12');
+
+INSERT INTO withdraw_user_tb (user_id, feed_count, reply_count, withdraw_reason, created_at)
+VALUES (5, 1, 1, 'ADVERTISEMENT', '2023-08-20'),
+       (6, 0, 0, 'INFREQUENTLY_USED', '2023-08-20'),
+       (7, 0, 0, 'USE_OTHER_SITES', '2023-08-20'),
+       (8, 0, 0, 'UNSATISFACTORY_SUPPORT', '2023-08-20'),
+       (9, 0, 0, 'ETC', '2023-08-20');
+
+INSERT INTO badge_apply_tb (user_id, status, created_at, updated_at)
+VALUES (1, 'UNPROCESSED', '2023-08-20', '2023-08-20'),
+       (2, 'UNPROCESSED', '2023-08-20', '2023-08-20'),
+       (3, 'REJECTED', '2023-08-20', '2023-08-20'),
+       (4, 'APPROVED', '2023-08-20', '2023-08-20');
