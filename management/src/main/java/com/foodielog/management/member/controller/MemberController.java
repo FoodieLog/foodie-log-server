@@ -16,7 +16,7 @@ import javax.validation.constraints.Positive;
 
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("api/member")
+@RequestMapping("admin/member")
 @RestController
 public class MemberController {
 
