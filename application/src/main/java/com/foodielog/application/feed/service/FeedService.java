@@ -252,6 +252,8 @@ public class FeedService {
         Long likeCount = feedLikeRepository.countByFeed(feed);
         Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
 
-        return new FeedDetailResp(feed, feedImageDTOS, likeCount, replyCount);
+        FeedDetailResp.RestaurantDTO restaurantDTO = new FeedDetailResp.RestaurantDTO(feed.getRestaurant());
+
+        return new FeedDetailResp(feed, feedImageDTOS, restaurantDTO, likeCount, replyCount);
     }
 }
