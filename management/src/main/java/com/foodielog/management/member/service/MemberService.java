@@ -75,7 +75,7 @@ public class MemberService {
 
             Long feedCount = feedRepository.countByUser(user);
             Long replyCount = replyRepository.countByUser(user);
-            Long followerCount = followRepository.countByFollowingId(user);
+            Long followerCount = followRepository.countByFollowedId(user);
 
             BadgeApplyListResp.BadgeApplyMemberDTO badgeApplyMemberDTO = new BadgeApplyListResp.BadgeApplyMemberDTO(badgeApply, feedCount, replyCount, followerCount);
             badgeApplyMemberDTOS.add(badgeApplyMemberDTO);
