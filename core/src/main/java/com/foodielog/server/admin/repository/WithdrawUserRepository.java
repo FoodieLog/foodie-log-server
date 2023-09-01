@@ -12,7 +12,7 @@ import java.util.List;
 public interface WithdrawUserRepository extends JpaRepository<WithdrawUser, Long> {
 
     @Query("SELECT w FROM WithdrawUser w " +
-            "WHERE (w.user.nickName LIKE %:nickName% OR :nickName IS NULL) " +
-            "AND (w.user.badgeFlag = :badgeFlag OR :badgeFlag IS NULL) ")
+            "WHERE (:nickName IS NULL OR w.user.nickName LIKE %:nickName%) " +
+            "AND (:badgeFlag IS NULL OR w.user.badgeFlag = :badgeFlag)")
     List<WithdrawUser> findByFlag(Pageable pageable, @Param("nickName") String nickName, @Param("badgeFlag") Flag flag);
 }
