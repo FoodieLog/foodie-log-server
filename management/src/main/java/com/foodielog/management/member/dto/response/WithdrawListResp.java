@@ -10,14 +10,15 @@ import java.util.List;
 
 @Getter
 public class WithdrawListResp {
-    private final List<WithDrawMemberDTO> content;
+    private final List<WithdrawMemberDTO> content;
 
-    public WithdrawListResp(List<WithDrawMemberDTO> content) {
+    public WithdrawListResp(List<WithdrawMemberDTO> content) {
         this.content = content;
     }
 
     @Getter
-    public static class WithDrawMemberDTO {
+    public static class WithdrawMemberDTO {
+        private final Long withdrawId;
         private final String nickName;
         private final String email;
         private final Flag flag;
@@ -27,7 +28,8 @@ public class WithdrawListResp {
         private final Timestamp withDrawAt;
         private final WithdrawReason withdrawReason;
 
-        public WithDrawMemberDTO(WithdrawUser withdrawUser) {
+        public WithdrawMemberDTO(WithdrawUser withdrawUser) {
+            this.withdrawId = withdrawUser.getId();
             this.nickName = withdrawUser.getUser().getNickName();
             this.email = withdrawUser.getUser().getEmail();
             this.flag = withdrawUser.getUser().getBadgeFlag();

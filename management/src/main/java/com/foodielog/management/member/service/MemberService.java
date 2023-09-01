@@ -41,11 +41,11 @@ public class MemberService {
     public WithdrawListResp getWithdrawList(String nickName, Flag badge, Pageable pageable) {
         List<WithdrawUser> withdrawUserList = withdrawUserRepository.findByFlag(pageable, nickName, badge);
 
-        List<WithdrawListResp.WithDrawMemberDTO> withDrawMemberDTOS = withdrawUserList.stream()
-                .map(WithdrawListResp.WithDrawMemberDTO::new)
+        List<WithdrawListResp.WithdrawMemberDTO> withdrawMemberDTOS = withdrawUserList.stream()
+                .map(WithdrawListResp.WithdrawMemberDTO::new)
                 .collect(Collectors.toList());
 
-        return new WithdrawListResp(withDrawMemberDTOS);
+        return new WithdrawListResp(withdrawMemberDTOS);
     }
 
     @Transactional
