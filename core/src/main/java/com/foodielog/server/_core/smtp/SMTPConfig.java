@@ -1,4 +1,4 @@
-package com.foodielog.application._core.smtp;
+package com.foodielog.server._core.smtp;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

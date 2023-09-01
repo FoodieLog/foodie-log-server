@@ -1,4 +1,4 @@
-package com.foodielog.application._core.smtp;
+package com.foodielog.server._core.smtp;
 
 import com.foodielog.server._core.error.exception.Exception500;
 import lombok.RequiredArgsConstructor;
