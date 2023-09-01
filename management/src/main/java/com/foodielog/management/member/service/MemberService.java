@@ -16,7 +16,6 @@ import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
-import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.Flag;
 import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,6 @@ public class MemberService {
     private final FeedRepository feedRepository;
     private final ReplyRepository replyRepository;
     private final FollowRepository followRepository;
-    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public WithdrawListResp getWithdrawList(String nickName, Flag badge, Pageable pageable) {
@@ -91,19 +89,25 @@ public class MemberService {
         BadgeApply badgeApply = badgeApplyRepository.findByIdAndStatus(badgeApplyId, ProcessedStatus.UNPROCESSED)
                 .orElseThrow(() -> new Exception404("해당 신청이 존재하지 않습니다."));
 
+        User user = badgeApply.getUser();
+        validateUserStatus(user);
+
         switch (process) {
             case "rejected":
                 badgeApply.rejectBadge();
                 break;
             case "approved":
                 badgeApply.approveBadge();
-                Long userId = badgeApply.getUser().getId();
-                User user = userRepository.findByIdAndStatus(userId, UserStatus.NORMAL)
-                        .orElseThrow(() -> new Exception404("해당 회원이 존재하지 않습니다."));
                 user.badgeApproved();
                 break;
             default:
                 throw new Exception400(process, "잘못된 요청값입니다.");
+        }
+    }
+
+    private void validateUserStatus(User user) {
+        if (user.getStatus() != UserStatus.NORMAL) {
+            throw new Exception404("해당 회원의 뱃지를 처리할 수 없습니다.");
         }
     }
 }
