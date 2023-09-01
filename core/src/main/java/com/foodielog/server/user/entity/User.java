@@ -115,4 +115,8 @@ public class User {
     public void restore() {
         this.status = UserStatus.NORMAL;
     }
+
+    public void block() {
+        this.status = UserStatus.BLOCK;
+    }
 }

@@ -61,4 +61,12 @@ public class Report {
         report.status = ProcessedStatus.UNPROCESSED;
         return report;
     }
+
+    public void approve() {
+        this.status = ProcessedStatus.APPROVED;
+    }
+
+    public void reject() {
+        this.status = ProcessedStatus.REJECTED;
+    }
 }

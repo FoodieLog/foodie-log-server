@@ -1,28 +1,14 @@
 package com.foodielog.server.admin.entity;
 
-import java.sql.Timestamp;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-
-import com.foodielog.server.admin.type.BlockReason;
 import com.foodielog.server.user.entity.User;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+
+import javax.persistence.*;
+import java.sql.Timestamp;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -30,23 +16,32 @@ import lombok.NoArgsConstructor;
 @Table(name = "blockUser_tb")
 @Entity
 public class BlockUser {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-	@Enumerated(EnumType.STRING)
-	private BlockReason reason;
+    private String reason;
 
-	@Column(name = "feed_count")
-	private Long feedCount;
+    @Column(name = "feed_count")
+    private Long feedCount;
 
-	@Column(name = "reply_count")
-	private Long replyCount;
+    @Column(name = "reply_count")
+    private Long replyCount;
 
-	@CreationTimestamp
-	private Timestamp createdAt;
+    @CreationTimestamp
+    private Timestamp createdAt;
+
+    public static BlockUser createBlockByReport(User user, Long feedCount, Long replyCount) {
+        BlockUser blockUser = new BlockUser();
+        blockUser.user = user;
+        blockUser.reason = "신고 승인 횟수 10번 초과";
+        blockUser.feedCount = feedCount;
+        blockUser.replyCount = replyCount;
+
+        return blockUser;
+    }
 }
