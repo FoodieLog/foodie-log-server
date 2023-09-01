@@ -3,7 +3,10 @@ package com.foodielog.management.member.controller;
 import com.foodielog.management.member.dto.response.BadgeApplyListResp;
 import com.foodielog.management.member.dto.response.WithdrawListResp;
 import com.foodielog.management.member.service.MemberService;
+import com.foodielog.server._core.customValid.valid.ValidEnum;
 import com.foodielog.server._core.util.ApiUtils;
+import com.foodielog.server.admin.type.ProcessedStatus;
+import com.foodielog.server.user.type.Flag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -25,7 +28,7 @@ public class MemberController {
     @GetMapping("/withdraw/list")
     public ResponseEntity<ApiUtils.ApiResult<WithdrawListResp>> withdrawMemberList(
             @RequestParam(required = false) String nickName,
-            @RequestParam(required = false) String badge,
+            @RequestParam(required = false) @ValidEnum(enumClass = Flag.class) Flag badge,
             @PageableDefault(size = 20) Pageable pageable
     ) {
         WithdrawListResp response = memberService.getWithdrawList(nickName, badge, pageable);
@@ -43,7 +46,7 @@ public class MemberController {
     @GetMapping("/badge/list")
     public ResponseEntity<ApiUtils.ApiResult<BadgeApplyListResp>> badgeApplyList(
             @RequestParam(required = false) String nickName,
-            @RequestParam(required = false) String processedStatus,
+            @RequestParam(required = false) @ValidEnum(enumClass = ProcessedStatus.class) ProcessedStatus processedStatus,
             @PageableDefault(size = 20) Pageable pageable
     ) {
         BadgeApplyListResp response = memberService.getBadgeApplyList(nickName, processedStatus, pageable);

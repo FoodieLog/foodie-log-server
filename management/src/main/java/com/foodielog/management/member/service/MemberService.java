@@ -40,9 +40,8 @@ public class MemberService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public WithdrawListResp getWithdrawList(String nickName, String badge, Pageable pageable) {
-        Flag flag = (badge == null) ? null : Flag.formString(badge);
-        List<WithdrawUser> withdrawUserList = withdrawUserRepository.findByFlag(pageable, nickName, flag);
+    public WithdrawListResp getWithdrawList(String nickName, Flag badge, Pageable pageable) {
+        List<WithdrawUser> withdrawUserList = withdrawUserRepository.findByFlag(pageable, nickName, badge);
 
         List<WithdrawListResp.WithDrawMemberDTO> withDrawMemberDTOS = withdrawUserList.stream()
                 .map(WithdrawListResp.WithDrawMemberDTO::new)
@@ -68,9 +67,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public BadgeApplyListResp getBadgeApplyList(String nickName, String processedStatus, Pageable pageable) {
-        ProcessedStatus status = (processedStatus == null) ? null : ProcessedStatus.formString(processedStatus);
-        List<BadgeApply> badgeApplyList = badgeApplyRepository.findByStatus(pageable, nickName, status);
+    public BadgeApplyListResp getBadgeApplyList(String nickName, ProcessedStatus processedStatus, Pageable pageable) {
+        List<BadgeApply> badgeApplyList = badgeApplyRepository.findByStatus(pageable, nickName, processedStatus);
 
         List<BadgeApplyListResp.BadgeApplyMemberDTO> badgeApplyMemberDTOS = new ArrayList<>();
 
