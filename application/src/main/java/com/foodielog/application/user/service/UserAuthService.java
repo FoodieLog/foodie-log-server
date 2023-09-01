@@ -1,6 +1,5 @@
 package com.foodielog.application.user.service;
 
-import com.foodielog.application._core.smtp.MailService;
 import com.foodielog.application.user.dto.request.LoginReq;
 import com.foodielog.application.user.dto.request.ResetPasswordReq;
 import com.foodielog.application.user.dto.request.SignUpReq;
@@ -11,6 +10,7 @@ import com.foodielog.server._core.error.exception.Exception500;
 import com.foodielog.server._core.redis.RedisService;
 import com.foodielog.server._core.s3.S3Uploader;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
+import com.foodielog.server._core.smtp.MailService;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.UserStatus;

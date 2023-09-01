@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -119,10 +118,7 @@ public class UserSettingService {
         Long expiration = jwtTokenProvider.getExpiration(accessToken);
         String email = jwtTokenProvider.getEmail(accessToken);
 
-        // 리프레시 토큰 삭제
-        redisService.deleteByKey(RedisService.REFRESH_TOKEN_PREFIX + email);
-        // 엑세스 토큰은 만료 시점까지 블랙리스트 등록
-        redisService.setObjectByKey(accessToken, RedisService.LOGOUT_VALUE_PREFIX, expiration, TimeUnit.MILLISECONDS);
+        redisService.addBlacklist(accessToken, email, expiration);
         return email;
     }
 

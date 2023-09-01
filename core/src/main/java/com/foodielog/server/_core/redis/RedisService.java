@@ -41,6 +41,13 @@ public class RedisService {
         log.info("redis set 성공 key: " + key);
     }
 
+    public void addBlacklist(String accessToken, String email, Long expiration) {
+        // 리프레시 토큰 삭제
+        deleteByKey(RedisService.REFRESH_TOKEN_PREFIX + email);
+        // 엑세스 토큰은 만료 시점까지 블랙리스트 등록
+        setObjectByKey(accessToken, RedisService.LOGOUT_VALUE_PREFIX, expiration, TimeUnit.MILLISECONDS);
+    }
+
     public boolean deleteByKey(String key) {
         return Boolean.TRUE.equals(redisTemplate.delete(key));
     }
