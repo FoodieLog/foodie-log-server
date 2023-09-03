@@ -42,7 +42,7 @@ public class UserService {
     public UserProfileResp getProfile(Long userId) {
         User user = validationUserId(userId);
 
-        Long feedCount = feedRepository.countByUser(user);
+        Long feedCount = feedRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
         Long follower = followRepository.countByFollowedId(user);
         Long following = followRepository.countByFollowingId(user);
 

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FeedRepository extends JpaRepository<Feed, Long> {
-    Long countByUser(User user);
+    Long countByUserAndStatus(User user, ContentStatus status);
 
     List<Feed> findByUserIdAndStatus(Long userId, ContentStatus status);
 

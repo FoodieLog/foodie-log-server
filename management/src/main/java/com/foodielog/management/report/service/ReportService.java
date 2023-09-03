@@ -77,8 +77,8 @@ public class ReportService {
 
     private void blockUser(User user) {
         // 차단 유저 정보 저장
-        Long feedCount = feedRepository.countByUser(user);
-        Long replyCount = replyRepository.countByUser(user);
+        Long feedCount = feedRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
+        Long replyCount = replyRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
 
         BlockUser blockUser = BlockUser.createBlockByReport(user, feedCount, replyCount);
         blockUserRepository.save(blockUser);

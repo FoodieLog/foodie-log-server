@@ -26,7 +26,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     Long countByFeedAndStatus(Feed feed, ContentStatus status);
 
-    Long countByUser(User user);
+    Long countByUserAndStatus(User user, ContentStatus status);
 
     List<Reply> findByFeedIdAndStatus(Long feedId, ContentStatus contentStatus);
 
