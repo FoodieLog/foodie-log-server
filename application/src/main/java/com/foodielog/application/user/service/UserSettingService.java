@@ -92,8 +92,8 @@ public class UserSettingService {
     @Transactional
     public WithdrawResp withdraw(String accessToken, User user, WithdrawReq request) {
         // 탈퇴 유저 저장
-        Long feedCount = feedRepository.countByUser(user);
-        Long replyCount = replyRepository.countByUser(user);
+        Long feedCount = feedRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
+        Long replyCount = replyRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
 
         WithdrawUser withdrawUser = WithdrawUser.createWithdrawUser(user, feedCount, replyCount, request.getWithdrawReason());
         withdrawUserRepository.save(withdrawUser);
