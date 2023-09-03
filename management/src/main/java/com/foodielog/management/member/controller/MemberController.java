@@ -1,12 +1,14 @@
 package com.foodielog.management.member.controller;
 
 import com.foodielog.management.member.dto.response.BadgeApplyListResp;
+import com.foodielog.management.member.dto.response.MemberListResp;
 import com.foodielog.management.member.dto.response.WithdrawListResp;
 import com.foodielog.management.member.service.MemberService;
 import com.foodielog.server._core.customValid.valid.ValidEnum;
 import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server.admin.type.ProcessedStatus;
 import com.foodielog.server.user.type.Flag;
+import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -60,5 +62,16 @@ public class MemberController {
     ) {
         memberService.badgeProcessed(badgeApplyId, process);
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<ApiUtils.ApiResult<MemberListResp>> memberList(
+            @RequestParam(required = false) String nickName,
+            @RequestParam(required = false) Flag badge,
+            @RequestParam(required = false) UserStatus userStatus,
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
+        MemberListResp response = memberService.getMemberList(nickName, badge, userStatus, pageable);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
