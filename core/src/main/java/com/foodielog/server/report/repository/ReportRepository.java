@@ -14,11 +14,9 @@ import java.util.Optional;
 public interface ReportRepository extends JpaRepository<Report, Long> {
     boolean existsByReporterIdAndTypeAndContentId(User reporterId, ReportType type, Long contentId);
 
-    @Query("SELECT COUNT(DISTINCT r) FROM Report r " +
-            "WHERE r.reportedId = :reportedId " +
-            "AND r.contentId = :contentId " +
-            "AND r.status = :status")
-    long countProcessedByStatus(@Param("reportedId") User reportedId, @Param("contentId") Long contentId, @Param("status") ProcessedStatus status);
+    @Query("SELECT COUNT(DISTINCT r.contentId) FROM Report r " +
+            "WHERE r.reportedId = :reportedId AND r.status = :status")
+    long countProcessedByStatus(@Param("reportedId") User reportedId, @Param("status") ProcessedStatus status);
 
     Optional<List<Report>> findAllByReportedIdAndContentId(User reportedId, Long contentId);
 }

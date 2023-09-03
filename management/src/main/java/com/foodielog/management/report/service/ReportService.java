@@ -50,9 +50,7 @@ public class ReportService {
                 sendProcessedMail(reportedUser, reportList);
 
                 // 10 회 초과 시 자동 차단
-                if (10L < reportRepository.countProcessedByStatus(
-                        reportedUser, request.getContentId(), ProcessedStatus.APPROVED)
-                ) {
+                if (10L < reportRepository.countProcessedByStatus(reportedUser, ProcessedStatus.APPROVED)) {
                     blockUser(reportedUser);
                 }
 
