@@ -38,7 +38,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             "LEFT JOIN Follow fo ON f.user = fo.followedId AND fo.followingId = :user " +
             "WHERE (fo.followedId IS NOT NULL " +
             "OR f.id IN (SELECT li.feed FROM FeedLike li WHERE li.feed.id > :feedId GROUP BY li.feed HAVING COUNT(li.feed) >= :likeCount)) " +
-            "AND f.status = 'NORMAL' AND f.createdAt >= :date ")
+            "AND f.status = 'NORMAL' AND f.createdAt >= :date AND f.user != :user")
     List<Feed> getMainFeed(@Param("user") User user, @Param("feedId") Long feedId,
                            @Param("likeCount") Long likeCount, @Param("date") Timestamp date, Pageable pageable);
 }
