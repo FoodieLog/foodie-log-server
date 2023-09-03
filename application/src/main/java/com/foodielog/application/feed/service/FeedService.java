@@ -213,8 +213,8 @@ public class FeedService {
             MainFeedListResp.FeedDTO feedDTO = getFeedDTO(mainFeed, feedImageDTO);
             MainFeedListResp.MainFeedRestaurantDTO mainFeedRestaurantDTO = getUserRestaurantDTO(mainFeed);
 
-            boolean isFollowed = followRepository.existsByFollowedId(user);
-            boolean isLiked = feedLikeRepository.existsByUser(user);
+            boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, mainFeed.getUser());
+            boolean isLiked = feedLikeRepository.existsByUserAndFeed(user, mainFeed);
 
             mainFeedDTOList.add(new MainFeedListResp.MainFeedsDTO(feedDTO, mainFeedRestaurantDTO, isFollowed, isLiked));
         }

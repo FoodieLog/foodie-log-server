@@ -77,8 +77,8 @@ public class UserService {
             UserFeedListResp.FeedDTO feedDTO = getFeedDTO(feed, feedImages);
             UserFeedListResp.UserRestaurantDTO userRestaurantDTO = getUserRestaurantDTO(feed);
 
-            boolean isFollowed = followRepository.existsByFollowedId(user);
-            boolean isLiked = feedLikeRepository.existsByUser(user);
+            boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, feed.getUser());
+            boolean isLiked = feedLikeRepository.existsByUserAndFeed(user, feed);
 
             userFeedsDTOList.add(new UserFeedListResp.UserFeedsDTO(feedDTO, userRestaurantDTO, isFollowed, isLiked));
         }
