@@ -1,13 +1,16 @@
 package com.foodielog.management.member.service;
 
+import com.foodielog.management.member.dto.request.BlockReq;
 import com.foodielog.management.member.dto.response.BadgeApplyListResp;
 import com.foodielog.management.member.dto.response.MemberListResp;
 import com.foodielog.management.member.dto.response.WithdrawListResp;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.admin.entity.BadgeApply;
+import com.foodielog.server.admin.entity.BlockUser;
 import com.foodielog.server.admin.entity.WithdrawUser;
 import com.foodielog.server.admin.repository.BadgeApplyRepository;
+import com.foodielog.server.admin.repository.BlockUserRepository;
 import com.foodielog.server.admin.repository.WithdrawUserRepository;
 import com.foodielog.server.admin.type.ProcessedStatus;
 import com.foodielog.server.feed.entity.Feed;
@@ -41,6 +44,7 @@ public class MemberService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
+    private final BlockUserRepository blockUserRepository;
 
     @Transactional(readOnly = true)
     public WithdrawListResp getWithdrawList(String nickName, Flag badge, Pageable pageable) {
@@ -116,6 +120,7 @@ public class MemberService {
         }
     }
 
+    @Transactional(readOnly = true)
     public MemberListResp getMemberList(String nickName, Flag badge, UserStatus userStatus, Pageable pageable) {
         List<User> memberList = userRepository.findAllByFlagAndStatus(nickName, badge, userStatus, pageable);
 
@@ -132,5 +137,20 @@ public class MemberService {
         }
 
         return new MemberListResp(memberDTOList);
+    }
+
+    @Transactional
+    public void blockProcessed(BlockReq request) {
+        User user = userRepository.findByIdAndStatus(request.getUserId(), UserStatus.NORMAL)
+                .orElseThrow(() -> new Exception404("해당 회원이 존재 하지 않습니다."));
+
+        Long feedCount = feedRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
+        Long replyCount = replyRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
+
+        BlockUser blockUser = BlockUser.createBlock(user, request.getReason(), feedCount, replyCount);
+
+        user.block();
+
+        blockUserRepository.save(blockUser);
     }
 }
