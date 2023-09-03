@@ -147,7 +147,7 @@ public class RestaurantService {
             Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
 
             boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, feed.getUser());
-            boolean isLiked = feedLikeRepository.existsByUser(user);
+            boolean isLiked = feedLikeRepository.existsByUserAndFeed(user, feed);
 
             RestaurantFeedListResp.FeedDTO feedDTO =
                     new RestaurantFeedListResp.FeedDTO(feed, feedImageDTOS, likeCount, replyCount);
