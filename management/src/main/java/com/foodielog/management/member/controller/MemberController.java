@@ -1,5 +1,6 @@
 package com.foodielog.management.member.controller;
 
+import com.foodielog.management.member.dto.request.BlockReq;
 import com.foodielog.management.member.dto.response.BadgeApplyListResp;
 import com.foodielog.management.member.dto.response.MemberListResp;
 import com.foodielog.management.member.dto.response.WithdrawListResp;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
 @RequiredArgsConstructor
@@ -73,5 +75,13 @@ public class MemberController {
     ) {
         MemberListResp response = memberService.getMemberList(nickName, badge, userStatus, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @PostMapping("/block")
+    public ResponseEntity<ApiUtils.ApiResult<String>> block(
+            @RequestBody @Valid BlockReq request
+    ) {
+        memberService.blockProcessed(request);
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 }

@@ -24,6 +24,7 @@ public class BlockUser {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(length = 100)
     private String reason;
 
     @Column(name = "feed_count")
@@ -39,6 +40,16 @@ public class BlockUser {
         BlockUser blockUser = new BlockUser();
         blockUser.user = user;
         blockUser.reason = "신고 승인 횟수 10번 초과";
+        blockUser.feedCount = feedCount;
+        blockUser.replyCount = replyCount;
+
+        return blockUser;
+    }
+
+    public static BlockUser createBlock(User user, String reason, Long feedCount, Long replyCount) {
+        BlockUser blockUser = new BlockUser();
+        blockUser.user = user;
+        blockUser.reason = reason;
         blockUser.feedCount = feedCount;
         blockUser.replyCount = replyCount;
 
