@@ -67,8 +67,8 @@ public class MemberController {
     @GetMapping("/list")
     public ResponseEntity<ApiUtils.ApiResult<MemberListResp>> memberList(
             @RequestParam(required = false) String nickName,
-            @RequestParam(required = false) Flag badge,
-            @RequestParam(required = false) UserStatus userStatus,
+            @RequestParam(required = false) @ValidEnum(enumClass = Flag.class, nullable = true) Flag badge,
+            @RequestParam(required = false) @ValidEnum(enumClass = UserStatus.class, nullable = true) UserStatus userStatus,
             @PageableDefault(size = 20) Pageable pageable
     ) {
         MemberListResp response = memberService.getMemberList(nickName, badge, userStatus, pageable);
