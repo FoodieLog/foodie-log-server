@@ -1,6 +1,7 @@
 package com.foodielog.management.member.service;
 
 import com.foodielog.management.member.dto.response.BadgeApplyListResp;
+import com.foodielog.management.member.dto.response.MemberListResp;
 import com.foodielog.management.member.dto.response.WithdrawListResp;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception404;
@@ -14,8 +15,10 @@ import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
+import com.foodielog.server.report.repository.ReportRepository;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
+import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.Flag;
 import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +39,8 @@ public class MemberService {
     private final FeedRepository feedRepository;
     private final ReplyRepository replyRepository;
     private final FollowRepository followRepository;
+    private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
 
     @Transactional(readOnly = true)
     public WithdrawListResp getWithdrawList(String nickName, Flag badge, Pageable pageable) {
@@ -109,5 +114,23 @@ public class MemberService {
         if (user.getStatus() != UserStatus.NORMAL) {
             throw new Exception404("해당 회원의 뱃지를 처리할 수 없습니다.");
         }
+    }
+
+    public MemberListResp getMemberList(String nickName, Flag badge, UserStatus userStatus, Pageable pageable) {
+        List<User> memberList = userRepository.findAllByFlagAndStatus(nickName, badge, userStatus, pageable);
+
+        List<MemberListResp.memberDTO> memberDTOList = new ArrayList<>();
+
+        for (User member : memberList) {
+            Long feedCount = feedRepository.countByUserAndStatus(member, ContentStatus.NORMAL);
+            Long replyCount = replyRepository.countByUserAndStatus(member, ContentStatus.NORMAL);
+
+            long approveCount = reportRepository.countProcessedByStatus(member, ProcessedStatus.APPROVED);
+
+            MemberListResp.memberDTO memberDTO = new MemberListResp.memberDTO(member, feedCount, replyCount, approveCount);
+            memberDTOList.add(memberDTO);
+        }
+
+        return new MemberListResp(memberDTOList);
     }
 }
