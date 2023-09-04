@@ -1,6 +1,7 @@
 package com.foodielog.management.report.service;
 
 import com.foodielog.management.report.dto.request.ProcessReq;
+import com.foodielog.management.report.dto.response.ReportListResp;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server._core.smtp.MailService;
@@ -8,30 +9,36 @@ import com.foodielog.server.admin.entity.BlockUser;
 import com.foodielog.server.admin.repository.BlockUserRepository;
 import com.foodielog.server.admin.type.ProcessedStatus;
 import com.foodielog.server.feed.entity.Feed;
+import com.foodielog.server.feed.entity.Media;
 import com.foodielog.server.feed.repository.FeedRepository;
+import com.foodielog.server.feed.repository.MediaRepository;
 import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.report.entity.Report;
 import com.foodielog.server.report.repository.ReportRepository;
+import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class ReportService {
     private final MailService mailService;
-    private final ReportRepository reportRepository;
+    private final UserRepository userRepository;
     private final FeedRepository feedRepository;
     private final ReplyRepository replyRepository;
+    private final MediaRepository mediaRepository;
+    private final ReportRepository reportRepository;
     private final BlockUserRepository blockUserRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     public void process(ProcessReq request) {
@@ -90,5 +97,42 @@ public class ReportService {
 
         List<Reply> replyList = replyRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
         replyList.forEach(Reply::deleteReply);
+    }
+
+    @Transactional(readOnly = true)
+    public ReportListResp getreportList(String nickName, ReportType type, ContentStatus status, Pageable pageable) {
+        List<ReportListResp.ReportDTO<?>> respContent = new ArrayList<>();
+
+        List<Report> reportList = reportRepository.findAllByParam(nickName, type, status, pageable);
+        for (Report report : reportList) {
+            switch (report.getType()) {
+                case FEED:
+                    ReportListResp.FeedDetail feedDetail = createFeedDetail(report.getContentId());
+                    ReportListResp.ReportDTO feedReportDTO = new ReportListResp.ReportDTO(report, feedDetail);
+                    respContent.add(feedReportDTO);
+                    break;
+                case REPLY:
+                    ReportListResp.ReplyDetail replyDetail = createReplyDetail(report.getContentId());
+                    ReportListResp.ReportDTO replyReportDTO = new ReportListResp.ReportDTO(report, replyDetail);
+                    respContent.add(replyReportDTO);
+                    break;
+            }
+
+        }
+
+        return new ReportListResp(respContent);
+    }
+
+    private ReportListResp.FeedDetail createFeedDetail(Long contentId) {
+        Feed feed = feedRepository.findById(contentId)
+                .orElseThrow(() -> new Exception404("해당 피드를 찾을 수 없습니다."));
+        List<Media> mediaList = mediaRepository.findByFeed(feed);
+        return new ReportListResp.FeedDetail(feed, mediaList);
+    }
+
+    private ReportListResp.ReplyDetail createReplyDetail(Long contentId) {
+        Reply reply = replyRepository.findById(contentId)
+                .orElseThrow(() -> new Exception404("해당 댓글을 찾을 수 없습니다."));
+        return new ReportListResp.ReplyDetail(reply);
     }
 }

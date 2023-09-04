@@ -75,8 +75,12 @@ VALUES (1, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/55e8cfbc-59
         '2023-08-03');
 
 INSERT INTO report_tb (reporter_id, reported_id, type, content_id, report_reason, status, created_at, updated_at)
-VALUES (1, 2, 'FEED', 2, '광고', 'UNPROCESSED', '2023-08-10', '2023-08-10'),
-       (1, 2, 'REPLY', 6, '광고', 'UNPROCESSED', '2023-08-10', '2023-08-10');
+VALUES (1, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-10', '2023-08-10'),
+       (3, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-10', '2023-08-10'),
+       (2, 1, 'FEED', 1, 'SWEARING', 'APPROVED', '2023-08-11', '2023-08-11'),
+       (4, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-12', '2023-08-12'),
+       (5, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-12', '2023-08-12'),
+       (1, 2, 'REPLY', 6, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-12', '2023-08-12');
 
 INSERT INTO reply_tb (user_id, feed_id, content, status, created_at, updated_at)
 VALUES (1, 2, '너무 맛있어 보여요!', 'NORMAL', '2023-08-10', '2023-08-10'),
