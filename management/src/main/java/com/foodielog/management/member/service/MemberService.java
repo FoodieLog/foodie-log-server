@@ -6,6 +6,7 @@ import com.foodielog.management.member.dto.response.MemberListResp;
 import com.foodielog.management.member.dto.response.WithdrawListResp;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception404;
+import com.foodielog.server._core.smtp.MailService;
 import com.foodielog.server.admin.entity.BadgeApply;
 import com.foodielog.server.admin.entity.BlockUser;
 import com.foodielog.server.admin.entity.WithdrawUser;
@@ -18,6 +19,7 @@ import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
+import com.foodielog.server.report.entity.Report;
 import com.foodielog.server.report.repository.ReportRepository;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
@@ -45,6 +47,8 @@ public class MemberService {
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
     private final BlockUserRepository blockUserRepository;
+
+    private final MailService mailService;
 
     @Transactional(readOnly = true)
     public WithdrawListResp getWithdrawList(String nickName, Flag badge, Pageable pageable) {
@@ -148,9 +152,20 @@ public class MemberService {
         Long replyCount = replyRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
 
         BlockUser blockUser = BlockUser.createBlock(user, request.getReason(), feedCount, replyCount);
+        blockUserRepository.save(blockUser);
 
         user.block();
 
-        blockUserRepository.save(blockUser);
+        List<Feed> feedList = feedRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
+        feedList.forEach(Feed::deleteFeed);
+
+        List<Reply> replyList = replyRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
+        replyList.forEach(Reply::deleteReply);
+
+        sendBlockProcessedMail(user);
+    }
+
+    private void sendBlockProcessedMail(User blockUser) {
+        mailService.sendEmail(blockUser.getEmail(), "[Foodielog] 영구 차단 내역", "님 차단 ㅅㄱ");
     }
 }
