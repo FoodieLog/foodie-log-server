@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public class KakaoLoginResp {
     private final Long id;
+    private final String email;
     private final String nickName;
     private final String profileImageUrl;
     private final String accessToken;
@@ -17,6 +18,7 @@ public class KakaoLoginResp {
 
     public KakaoLoginResp(User user, String accessToken, String refreshToken, String kakaoAccessToken) {
         this.id = user.getId();
+        this.email = user.getEmail();
         this.nickName = user.getNickName();
         this.profileImageUrl = user.getProfileImageUrl();
         this.accessToken = accessToken;

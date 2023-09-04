@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public class LoginResp {
     private final Long id;
+    private final String email;
     private final String nickName;
     private final String profileImageUrl;
     private final String accessToken;
@@ -16,6 +17,7 @@ public class LoginResp {
 
     public LoginResp(User user, String accessToken, String refreshToken) {
         this.id = user.getId();
+        this.email = user.getEmail();
         this.nickName = user.getNickName();
         this.profileImageUrl = user.getProfileImageUrl();
         this.accessToken = accessToken;
