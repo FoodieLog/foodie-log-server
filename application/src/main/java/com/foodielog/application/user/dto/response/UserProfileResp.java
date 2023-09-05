@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 public class UserProfileResp {
     private final Long userId;
+    private final String nickName;
     private final String profileImageUrl;
     private final String aboutMe;
     private final Long feedCount;
@@ -14,6 +15,7 @@ public class UserProfileResp {
 
     public UserProfileResp(User user, Long feedCount, Long follower, Long following) {
         this.userId = user.getId();
+        this.nickName = user.getNickName();
         this.profileImageUrl = user.getProfileImageUrl();
         this.aboutMe = user.getAboutMe();
         this.feedCount = feedCount;
