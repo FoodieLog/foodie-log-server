@@ -33,6 +33,7 @@ public class MainFeedListResp {
 
     @Getter
     public static class FeedDTO {
+        private final Long userId;
         private final String nickName;
         private final String profileImageUrl;
         private final Long feedId;
@@ -44,6 +45,7 @@ public class MainFeedListResp {
         private final Long replyCount;
 
         public FeedDTO(Feed feed, List<FeedImageDTO> feedImages, Long likeCount, Long replyCount) {
+            this.userId = feed.getUser().getId();
             this.nickName = feed.getUser().getNickName();
             this.profileImageUrl = feed.getUser().getProfileImageUrl();
             this.feedId = feed.getId();
