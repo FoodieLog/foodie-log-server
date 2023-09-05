@@ -10,6 +10,7 @@ import java.util.List;
 
 @Getter
 public class FeedDetailResp {
+    private final Long userId;
     private final String nickName;
     private final String profileImageUrl;
     private final Long feedId;
@@ -22,6 +23,7 @@ public class FeedDetailResp {
     private final Long replyCount;
 
     public FeedDetailResp(Feed feed, List<FeedImageDTO> feedImages, RestaurantDTO restaurant, Long likeCount, Long replyCount) {
+        this.userId = feed.getUser().getId();
         this.nickName = feed.getUser().getNickName();
         this.profileImageUrl = feed.getUser().getProfileImageUrl();
         this.feedId = feed.getId();

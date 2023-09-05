@@ -81,6 +81,7 @@ public class RestaurantFeedListResp {
     @Getter
     public static class FeedDTO {
         private final Long feedId;
+        private final Long userId;
         private final String nickName;
         private final String profileImageUrl;
         private final Timestamp createdAt;
@@ -92,6 +93,7 @@ public class RestaurantFeedListResp {
 
         public FeedDTO(Feed feed, List<FeedImageDTO> feedImages, Long likeCount, Long replyCount) {
             this.feedId = feed.getId();
+            this.userId = feed.getUser().getId();
             this.nickName = feed.getUser().getNickName();
             this.profileImageUrl = feed.getUser().getProfileImageUrl();
             this.createdAt = feed.getCreatedAt();

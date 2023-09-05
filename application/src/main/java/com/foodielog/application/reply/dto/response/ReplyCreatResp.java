@@ -25,6 +25,7 @@ public class ReplyCreatResp {
 
     @Getter
     public static class ListDTO {
+        private final Long userId;
         private final String nickName;
         private final String profileImageUrl;
         private final String content;
@@ -32,6 +33,7 @@ public class ReplyCreatResp {
         private final List<ReplyDTO> replyList;
 
         public ListDTO(Feed feed, List<ReplyDTO> replyListDTO) {
+            this.userId = feed.getUser().getId();
             this.nickName = feed.getUser().getNickName();
             this.profileImageUrl = feed.getUser().getProfileImageUrl();
             this.content = feed.getContent();
@@ -43,6 +45,7 @@ public class ReplyCreatResp {
     @Getter
     public static class ReplyDTO {
         private final Long id;
+        private final Long userId;
         private final String nickName;
         private final String profileImageUrl;
         private final String content;
@@ -50,6 +53,7 @@ public class ReplyCreatResp {
 
         public ReplyDTO(Reply reply) {
             this.id = reply.getId();
+            this.userId = reply.getUser().getId();
             this.nickName = reply.getUser().getNickName();
             this.profileImageUrl = reply.getUser().getProfileImageUrl();
             this.content = reply.getContent();
