@@ -36,7 +36,7 @@ public class ReportController {
             @RequestParam(required = false) @ValidEnum(enumClass = ContentStatus.class) ContentStatus status,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        ReportListResp response = reportService.getreportList(nickName, type, status, pageable);
+        ReportListResp response = reportService.getReportList(nickName, type, status, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }
