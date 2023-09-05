@@ -33,6 +33,11 @@ public class UserAuthController {
     private final UserAuthService userAuthService;
     private final UserOauthService oauthUserService;
 
+    @RequestMapping("/healthcheck")
+    public ResponseEntity<ApiUtils.ApiResult<Object>> healthcheck() {
+        return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
+    }
+
     /* 토큰 재발급*/
     @GetMapping("/reissue")
     public ResponseEntity<ApiUtils.ApiResult<ReissueResp>> reissue(
