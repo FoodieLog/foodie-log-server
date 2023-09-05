@@ -20,7 +20,7 @@ import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/auth")
+@RequestMapping("/admin/auth")
 @RestController
 public class UserAuthController {
     private final JwtTokenProvider jwtTokenProvider;

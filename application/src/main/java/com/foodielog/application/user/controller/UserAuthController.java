@@ -26,7 +26,7 @@ import javax.validation.constraints.Size;
 
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RestController
 public class UserAuthController {
     private final JwtTokenProvider jwtTokenProvider;
