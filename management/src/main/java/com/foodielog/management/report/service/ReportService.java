@@ -50,8 +50,10 @@ public class ReportService {
 
         switch (request.getStatus()) {
             case APPROVED:
-                // 승인 처리
-                reportList.forEach(Report::approve);
+                for (Report r : reportList) {
+                    r.approve(); // 승인 처리
+                    deleteContent(r.getType(), r.getContentId()); // 컨텐츠 삭제 처리
+                }
 
                 // 이메일 전송
                 sendProcessedMail(reportedUser, reportList);
@@ -67,6 +69,21 @@ public class ReportService {
                 break;
             default:
                 throw new Exception400(request.getStatus().name(), "잘못된 요청입니다.");
+        }
+    }
+
+    private void deleteContent(ReportType reportType, Long contentId) {
+        switch (reportType) {
+            case FEED:
+                Feed feed = feedRepository.findById(contentId)
+                        .orElseThrow(() -> new Exception404("해당 피드를 찾을 수 없습니다."));
+                feed.deleteFeed();
+                break;
+            case REPLY:
+                Reply reply = replyRepository.findById(contentId)
+                        .orElseThrow(() -> new Exception404("해당 댓글을 찾을 수 없습니다."));
+                reply.deleteReply();
+                break;
         }
     }
 
