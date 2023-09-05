@@ -117,20 +117,18 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public ReportListResp getreportList(String nickName, ReportType type, ContentStatus status, Pageable pageable) {
+    public ReportListResp getReportList(String nickName, ReportType type, ContentStatus status, Pageable pageable) {
         List<ReportListResp.ReportDTO<?>> respContent = new ArrayList<>();
 
         List<Report> reportList = reportRepository.findAllByParam(nickName, type, status, pageable);
         for (Report report : reportList) {
             switch (report.getType()) {
                 case FEED:
-                    ReportListResp.FeedDetail feedDetail = createFeedDetail(report.getContentId());
-                    ReportListResp.ReportDTO feedReportDTO = new ReportListResp.ReportDTO(report, feedDetail);
+                    ReportListResp.ReportDTO feedReportDTO = createFeedReportDTO(report);
                     respContent.add(feedReportDTO);
                     break;
                 case REPLY:
-                    ReportListResp.ReplyDetail replyDetail = createReplyDetail(report.getContentId());
-                    ReportListResp.ReportDTO replyReportDTO = new ReportListResp.ReportDTO(report, replyDetail);
+                    ReportListResp.ReportDTO replyReportDTO = createReplyReportDTO(report);
                     respContent.add(replyReportDTO);
                     break;
             }
@@ -140,16 +138,19 @@ public class ReportService {
         return new ReportListResp(respContent);
     }
 
-    private ReportListResp.FeedDetail createFeedDetail(Long contentId) {
-        Feed feed = feedRepository.findById(contentId)
+    private ReportListResp.ReportDTO createFeedReportDTO(Report report) {
+        Feed feed = feedRepository.findById(report.getContentId())
                 .orElseThrow(() -> new Exception404("해당 피드를 찾을 수 없습니다."));
         List<Media> mediaList = mediaRepository.findByFeed(feed);
-        return new ReportListResp.FeedDetail(feed, mediaList);
+
+        ReportListResp.FeedDetail feedDetail = new ReportListResp.FeedDetail(feed, mediaList);
+        return new ReportListResp.ReportDTO(report, feedDetail);
     }
 
-    private ReportListResp.ReplyDetail createReplyDetail(Long contentId) {
-        Reply reply = replyRepository.findById(contentId)
+    private ReportListResp.ReportDTO createReplyReportDTO(Report report) {
+        Reply reply = replyRepository.findById(report.getContentId())
                 .orElseThrow(() -> new Exception404("해당 댓글을 찾을 수 없습니다."));
-        return new ReportListResp.ReplyDetail(reply);
+        ReportListResp.ReplyDetail replyDetail = new ReportListResp.ReplyDetail(reply);
+        return new ReportListResp.ReportDTO(report, replyDetail);
     }
 }
