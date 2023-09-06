@@ -21,6 +21,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
@@ -88,7 +90,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedHeader("*");
         config.addAllowedMethod("*"); // GET, POST, PUT, DELETE (+Javascript 요청 허용)
-        config.addAllowedOriginPattern("*"); // 모든 IP 주소 허용 (프론트앤드 IP만 허용 하도록 변경 필요)
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://foodie-log-client.vercel.app/"));
         config.setAllowCredentials(true); // 클라이언트에서 쿠키 요청 허용
         config.addExposedHeader("Authorization");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
