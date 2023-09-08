@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${FOODIE_SERVER_PORT}
   servlet:
     encoding:
       charset: UTF-8
@@ -9,10 +9,10 @@ spring:
   config:
     import: env.yml, application-api.yml
   datasource:
-    url: jdbc:h2:mem:test;MODE=MySQL
-    driver-class-name: org.h2.Driver
-    username: root
-    password:
+    url: ${FOODIE_DB_URL}
+    driver-class-name: ${FOODIE_DB_DRIVER}
+    username: ${FOODIE_DB_USERNAME}
+    password: ${FOODIE_DB_PASSWORD}
 
   h2:
     console:
