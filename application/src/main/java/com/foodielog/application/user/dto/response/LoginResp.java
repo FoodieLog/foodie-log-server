@@ -2,6 +2,7 @@ package com.foodielog.application.user.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.foodielog.server.user.entity.User;
+import com.foodielog.server.user.type.Flag;
 import lombok.Getter;
 
 @Getter
@@ -10,6 +11,7 @@ public class LoginResp {
     private final String email;
     private final String nickName;
     private final String profileImageUrl;
+    private final Flag notificationFlag;
     private final String accessToken;
 
     @JsonIgnore
@@ -20,6 +22,7 @@ public class LoginResp {
         this.email = user.getEmail();
         this.nickName = user.getNickName();
         this.profileImageUrl = user.getProfileImageUrl();
+        this.notificationFlag = user.getNotificationFlag();
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
