@@ -21,6 +21,12 @@ VALUES ('boo@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq
         NULL, 'Y', 'N', 'WITHDRAW', '2023-08-01', '2023-08-01'),
        ('boo9@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛9', NULL,
         NULL, 'Y', 'N', 'WITHDRAW', '2023-08-01', '2023-08-01'),
+       ('boo10@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛10', NULL,
+        NULL, 'Y', 'N', 'BLOCK', '2023-08-01', '2023-08-01'),
+       ('boo11@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛11', NULL,
+        NULL, 'Y', 'N', 'BLOCK', '2023-08-01', '2023-08-01'),
+       ('boo12@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛12', NULL,
+        NULL, 'Y', 'N', 'BLOCK', '2023-08-01', '2023-08-01'),
        ('admin@gmail.com', '$2a$12$G18OjisaPXaux8t7KH9bX.uECo8eiIx26hREWjpYG6dIxV6S18N4q', 'ME', 'ADMIN', '관리자', NULL,
         NULL, 'N', 'N', 'NORMAL', '2023-08-01', '2023-08-01');
 
@@ -126,3 +132,8 @@ VALUES (1, 'UNPROCESSED', '2023-08-20', '2023-08-20'),
        (2, 'UNPROCESSED', '2023-08-20', '2023-08-20'),
        (3, 'REJECTED', '2023-08-20', '2023-08-20'),
        (4, 'APPROVED', '2023-08-20', '2023-08-20');
+
+INSERT INTO block_user_tb (user_id, reason, feed_count, reply_count, created_at)
+VALUES (10, '광고충', 0, 0, '2023-08-20'),
+       (11, '음란함', 0, 0, '2023-08-24'),
+       (12, '유령계정', 0, 0, '2023-08-30');

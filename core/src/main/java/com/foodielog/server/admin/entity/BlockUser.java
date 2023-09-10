@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @DynamicInsert
-@Table(name = "blockUser_tb")
+@Table(name = "block_user_tb")
 @Entity
 public class BlockUser {
     @Id
