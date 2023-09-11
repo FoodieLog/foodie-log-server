@@ -1,5 +1,6 @@
 package com.foodielog.application.feed.service;
 
+import com.foodielog.application._core.fcm.FcmMessageProvider;
 import com.foodielog.application.feed.dto.request.FeedSaveReq;
 import com.foodielog.application.feed.dto.request.ReportFeedReq;
 import com.foodielog.application.feed.dto.request.UpdateFeedReq;
@@ -57,6 +58,8 @@ public class FeedService {
     private final ReportRepository reportRepository;
     private final FollowRepository followRepository;
     private final NotificationRepository notificationRepository;
+
+    private final FcmMessageProvider fcmMessageProvider;
 
     @Transactional
     public void save(FeedSaveReq request, List<MultipartFile> files, User user) {
@@ -129,6 +132,8 @@ public class FeedService {
         if (feed.getUser().getNotificationFlag() == Flag.Y) {
             Notification notification = Notification.createNotification(feed.getUser(), NotificationType.LIKE, feedLike.getId());
             notificationRepository.save(notification);
+
+            fcmMessageProvider.sendLikeMessage(feed.getUser().getEmail(), user.getEmail());
         }
     }
 

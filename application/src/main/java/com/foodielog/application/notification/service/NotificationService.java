@@ -1,7 +1,10 @@
 package com.foodielog.application.notification.service;
 
+import com.foodielog.application.notification.dto.request.NotificationTokenReq;
 import com.foodielog.application.notification.dto.response.NotificationListResp;
 import com.foodielog.server._core.error.exception.Exception404;
+import com.foodielog.server._core.redis.RedisService;
+import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server.feed.entity.FeedLike;
 import com.foodielog.server.feed.repository.FeedLikeRepository;
 import com.foodielog.server.feed.type.ContentStatus;
@@ -19,15 +22,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
 public class NotificationService {
-
     private final NotificationRepository notificationRepository;
     private final ReplyRepository replyRepository;
     private final FeedLikeRepository feedLikeRepository;
     private final FollowRepository followRepository;
+
+    private final RedisService redisService;
 
     @Transactional(readOnly = true)
     public NotificationListResp getNotificationList(User user) {
@@ -85,5 +90,10 @@ public class NotificationService {
 
     private NotificationListResp.ContentUser getContentUser(User user) {
         return new NotificationListResp.ContentUser(user);
+    }
+
+    public void registerFcmToken(User user, NotificationTokenReq notificationTokenReq) {
+        redisService.setObjectByKey(RedisService.FCM_TOKEN_PREFIX + user.getEmail(), notificationTokenReq.getFcmToken(),
+                JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
     }
 }
