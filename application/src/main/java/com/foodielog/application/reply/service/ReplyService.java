@@ -1,5 +1,6 @@
 package com.foodielog.application.reply.service;
 
+import com.foodielog.application._core.fcm.FcmMessageProvider;
 import com.foodielog.application.reply.dto.request.ReplyCreatReq;
 import com.foodielog.application.reply.dto.request.ReportReplyReq;
 import com.foodielog.application.reply.dto.response.ReplyCreatResp;
@@ -34,6 +35,8 @@ public class ReplyService {
     private final ReportRepository reportRepository;
     private final NotificationRepository notificationRepository;
 
+    private final FcmMessageProvider fcmMessageProvider;
+
     @Transactional
     public ReplyCreatResp createReply(User user, Long feedId, ReplyCreatReq createDTO) {
         Feed feed = getValidatedFeed(feedId);
@@ -44,6 +47,8 @@ public class ReplyService {
         if (feed.getUser().getNotificationFlag() == Flag.Y) {
             Notification notification = Notification.createNotification(feed.getUser(), NotificationType.REPLY, saveReply.getId());
             notificationRepository.save(notification);
+
+            fcmMessageProvider.sendReplyMessage(feed.getUser().getEmail(), user.getEmail());
         }
         return new ReplyCreatResp(saveReply);
     }

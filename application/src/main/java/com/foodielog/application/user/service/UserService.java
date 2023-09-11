@@ -1,5 +1,6 @@
 package com.foodielog.application.user.service;
 
+import com.foodielog.application._core.fcm.FcmMessageProvider;
 import com.foodielog.application.user.dto.response.*;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
@@ -19,6 +20,7 @@ import com.foodielog.server.user.entity.Follow;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
 import com.foodielog.server.user.repository.UserRepository;
+import com.foodielog.server.user.type.Flag;
 import com.foodielog.server.user.type.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +43,8 @@ public class UserService {
     private final RestaurantLikeRepository restaurantLikeRepository;
     private final ReplyRepository replyRepository;
     private final NotificationRepository notificationRepository;
+
+    private final FcmMessageProvider fcmMessageProvider;
 
     @Transactional(readOnly = true)
     public UserProfileResp getProfile(Long userId) {
@@ -153,8 +157,12 @@ public class UserService {
         Follow follow = Follow.createFollow(following, followed);
         followRepository.save(follow);
 
-        Notification notification = Notification.createNotification(followed, NotificationType.FOLLOW, follow.getId());
-        notificationRepository.save(notification);
+        if (followed.getNotificationFlag() == Flag.Y) {
+            Notification notification = Notification.createNotification(followed, NotificationType.FOLLOW, follow.getId());
+            notificationRepository.save(notification);
+
+            fcmMessageProvider.sendFollowMessage(followed.getEmail(), following.getEmail());
+        }
     }
 
     @Transactional

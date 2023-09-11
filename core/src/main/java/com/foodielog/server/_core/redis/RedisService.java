@@ -17,6 +17,7 @@ public class RedisService {
     public static final String EMAIL_AUTH_CODE_PREFIX = "AuthCode ";
     public static final String REFRESH_TOKEN_PREFIX = "RT ";
     public static final String LOGOUT_VALUE_PREFIX = "logout";
+    public static final String FCM_TOKEN_PREFIX = "FCM ";
 
     private final RedisTemplate<String, String> redisTemplate;
     private final JsonConverter jsonConverter;
@@ -44,6 +45,8 @@ public class RedisService {
     public void addBlacklist(String accessToken, String email, Long expiration) {
         // 리프레시 토큰 삭제
         deleteByKey(RedisService.REFRESH_TOKEN_PREFIX + email);
+        // Fcm 토큰 삭제
+        deleteByKey(RedisService.FCM_TOKEN_PREFIX + email);
         // 엑세스 토큰은 만료 시점까지 블랙리스트 등록
         setObjectByKey(accessToken, RedisService.LOGOUT_VALUE_PREFIX, expiration, TimeUnit.MILLISECONDS);
     }
