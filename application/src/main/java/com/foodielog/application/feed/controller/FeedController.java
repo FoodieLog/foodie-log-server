@@ -124,9 +124,9 @@ public class FeedController {
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @GetMapping("/detail")
+    @GetMapping("/detail/{feedId}")
     public ResponseEntity<ApiUtils.ApiResult<FeedDetailResp>> detail(
-            @RequestParam @Positive Long feedId
+            @PathVariable Long feedId
     ) {
         FeedDetailResp response = feedService.getFeedDetail(feedId);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
