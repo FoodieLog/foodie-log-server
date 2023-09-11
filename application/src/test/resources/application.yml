@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${FOODIE_SERVER_PORT}
   servlet:
     encoding:
       charset: UTF-8
@@ -9,17 +9,10 @@ spring:
   config:
     import: env.yml, application-api.yml
   datasource:
-    url: jdbc:h2:mem:test;MODE=MySQL
-    driver-class-name: org.h2.Driver
-    username: root
-    password:
-
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
-
+    url: ${FOODIE_DB_URL}
+    driver-class-name: ${FOODIE_DB_DRIVER}
+    username: ${FOODIE_DB_USERNAME}
+    password: ${FOODIE_DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -28,6 +21,7 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: true
     open-in-view: true
 
@@ -43,7 +37,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
-#  sql:
-#    init:
-#      mode: always
-#      data-locations: classpath:test/data.sql
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
