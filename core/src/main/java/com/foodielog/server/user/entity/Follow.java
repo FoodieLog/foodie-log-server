@@ -12,15 +12,15 @@ import java.sql.Timestamp;
 @Getter
 @Table(name = "follow_tb")
 @Entity
-@IdClass(FollowPK.class)
 public class Follow {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_id")
     private User followingId; // 나
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "followed_id")
     private User followedId; // 너

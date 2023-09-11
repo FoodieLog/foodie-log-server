@@ -8,6 +8,9 @@ import com.foodielog.server.feed.repository.FeedLikeRepository;
 import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.repository.MediaRepository;
 import com.foodielog.server.feed.type.ContentStatus;
+import com.foodielog.server.notification.entity.Notification;
+import com.foodielog.server.notification.repository.NotificationRepository;
+import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.restaurant.entity.RestaurantLike;
@@ -37,6 +40,7 @@ public class UserService {
     private final FeedLikeRepository feedLikeRepository;
     private final RestaurantLikeRepository restaurantLikeRepository;
     private final ReplyRepository replyRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional(readOnly = true)
     public UserProfileResp getProfile(Long userId) {
@@ -148,6 +152,9 @@ public class UserService {
 
         Follow follow = Follow.createFollow(following, followed);
         followRepository.save(follow);
+
+        Notification notification = Notification.createNotification(followed, NotificationType.FOLLOW, follow.getId());
+        notificationRepository.save(notification);
     }
 
     @Transactional

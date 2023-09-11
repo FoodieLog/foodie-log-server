@@ -7,12 +7,16 @@ import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.type.ContentStatus;
+import com.foodielog.server.notification.entity.Notification;
+import com.foodielog.server.notification.repository.NotificationRepository;
+import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.report.entity.Report;
 import com.foodielog.server.report.repository.ReportRepository;
 import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.user.entity.User;
+import com.foodielog.server.user.type.Flag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,7 @@ public class ReplyService {
     private final FeedRepository feedRepository;
     private final ReplyRepository replyRepository;
     private final ReportRepository reportRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     public ReplyCreatResp createReply(User user, Long feedId, ReplyCreatReq createDTO) {
@@ -36,6 +41,10 @@ public class ReplyService {
         Reply reply = Reply.createReply(user, feed, createDTO.getContent());
         Reply saveReply = replyRepository.save(reply);
 
+        if (feed.getUser().getNotificationFlag() == Flag.Y) {
+            Notification notification = Notification.createNotification(feed.getUser(), NotificationType.REPLY, saveReply.getId());
+            notificationRepository.save(notification);
+        }
         return new ReplyCreatResp(saveReply);
     }
 
