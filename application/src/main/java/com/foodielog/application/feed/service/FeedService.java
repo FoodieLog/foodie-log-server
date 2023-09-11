@@ -16,6 +16,9 @@ import com.foodielog.server.feed.repository.FeedLikeRepository;
 import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.repository.MediaRepository;
 import com.foodielog.server.feed.type.ContentStatus;
+import com.foodielog.server.notification.entity.Notification;
+import com.foodielog.server.notification.repository.NotificationRepository;
+import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.report.entity.Report;
@@ -27,6 +30,7 @@ import com.foodielog.server.restaurant.repository.RestaurantLikeRepository;
 import com.foodielog.server.restaurant.repository.RestaurantRepository;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
+import com.foodielog.server.user.type.Flag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,6 +56,7 @@ public class FeedService {
     private final ReplyRepository replyRepository;
     private final ReportRepository reportRepository;
     private final FollowRepository followRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     public void save(FeedSaveReq request, List<MultipartFile> files, User user) {
@@ -120,6 +125,11 @@ public class FeedService {
 
         FeedLike feedLike = FeedLike.createFeedLike(feed, user);
         feedLikeRepository.save(feedLike);
+
+        if (feed.getUser().getNotificationFlag() == Flag.Y) {
+            Notification notification = Notification.createNotification(feed.getUser(), NotificationType.LIKE, feedLike.getId());
+            notificationRepository.save(notification);
+        }
     }
 
     @Transactional

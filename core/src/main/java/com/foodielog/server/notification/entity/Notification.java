@@ -1,5 +1,7 @@
 package com.foodielog.server.notification.entity;
 
+import com.foodielog.server.feed.entity.Feed;
+import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
@@ -39,4 +41,13 @@ public class Notification {
 
     @CreationTimestamp
     private Timestamp createdAt;
+
+    public static Notification createNotification(User user, NotificationType type, Long contentId) {
+        Notification notification = new Notification();
+        notification.user = user;
+        notification.type = type;
+        notification.contentId = contentId;
+        notification.checkFlag = Flag.N;
+        return notification;
+    }
 }
