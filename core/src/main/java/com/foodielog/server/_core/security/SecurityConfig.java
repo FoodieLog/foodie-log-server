@@ -76,7 +76,7 @@ public class SecurityConfig {
         http.authorizeRequests(
                 // '/api' 로 시작 하는 url 은 로그인 필요제
                 // @Todo "/h2-console/**" 접근은 개발 시에만 열어 두고 배포시 제거
-                authorize -> authorize.antMatchers("/api/auth/**", "/admin/auth/**", "/h2-console/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()    // 누구나 접근 가능
+                authorize -> authorize.antMatchers("/api/auth/**", "/admin/auth/**", "/h2-console/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/api/feed/detail/**").permitAll()    // 누구나 접근 가능
                         .antMatchers("/api/**").hasAnyAuthority("USER", "ADMIN")
                         .antMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
