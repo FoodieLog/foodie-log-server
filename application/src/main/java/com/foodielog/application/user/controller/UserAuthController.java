@@ -63,7 +63,7 @@ public class UserAuthController {
     @PostMapping("/signup")
     public ResponseEntity<ApiUtils.ApiResult<SignUpResp>> signUp(
             @RequestPart(value = "content") @Valid SignUpReq request,
-            @RequestPart(value = "file") MultipartFile file,
+            @RequestPart(value = "file", required = false) MultipartFile file,
             Errors errors
     ) {
         SignUpResp response = userAuthService.signUp(request, file);

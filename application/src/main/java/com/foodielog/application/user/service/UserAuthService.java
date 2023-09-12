@@ -83,7 +83,7 @@ public class UserAuthService {
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        String storedFileUrl = s3Uploader.saveFile(file);
+        String storedFileUrl = (file.isEmpty()) ? null : s3Uploader.saveFile(file);
         User user = User.createUser(request.getEmail(), encodedPassword, request.getNickName(),
                 storedFileUrl, request.getAboutMe());
 
@@ -91,7 +91,6 @@ public class UserAuthService {
 
         return new SignUpResp(user.getEmail(), user.getNickName(), user.getProfileImageUrl());
     }
-
 
     /* 이메일 인증 */
     @Transactional
