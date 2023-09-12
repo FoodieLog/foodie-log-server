@@ -90,8 +90,9 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedHeader("*");
         config.addAllowedMethod("*"); // GET, POST, PUT, DELETE (+Javascript 요청 허용)
-        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://192.168.0.3:3000"
-                , "https://foodie-log-client.vercel.app", "https://www.foodielog.shop"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://localhost:3001",
+                "http://192.168.0.3:3000", "https://192.168.0.3:3001", "https://172.30.1.55:3001",
+                "https://foodie-log-client.vercel.app", "https://www.foodielog.shop"));
         config.setAllowCredentials(true); // 클라이언트에서 쿠키 요청 허용
         config.addExposedHeader("Authorization");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
