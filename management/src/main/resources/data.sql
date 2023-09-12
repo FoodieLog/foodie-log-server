@@ -1,6 +1,3 @@
--- 부맛 비번 - mrboo123!
--- 관리자 비번 - admin123!
-
 INSERT INTO user_tb (email, password, provider, role, nick_name, profile_image_url,
                      about_me, notification_flag, badge_flag, status, created_at, updated_at)
 VALUES ('boo@gmail.com', '$2y$12$LY3/pPv/tmfIRLiIccK51.SlwTnVQJqIwR40RAYafDRWqvq40e3XS', 'ME', 'USER', '부맛', NULL,
@@ -50,75 +47,75 @@ VALUES ('1849914946', '뻘다방', '032-889-8300', '음식점 > 카페 > 커피�
         '126.982601390472', '37.5623324834706', '서울 중구 명동2가 105', '서울 중구 명동2길 22');
 
 INSERT INTO feed_tb (restaurant_id, user_id, thumbnail_url, content, status, created_at, updated_at)
-VALUES (1, 1, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/55e8cfbc-5988-48ec-a843-a90869f9ee71.jpg',
-        '부맛의 맛집을 소개합니다.', 'NORMAL', '2023-08-03', '2023-08-03'),
-       (2, 2, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/cf0939f2-6041-4153-b9de-5033c82746b3.jpg',
-        '부맛2의 맛집을 소개합니다.', 'NORMAL', '2023-08-03', '2023-08-03'),
-       (3, 3, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/855d02df-f73c-4c66-92d6-b135a8e58246.jpg',
-        '부맛3의 맛집을 소개합니다.', 'NORMAL', '2023-08-03', '2023-08-03'),
-       (4, 4, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/94d59641-dd4c-41d2-9e72-1d8616da7c6e.png',
-        '부맛4의 맛집을 소개합니다.', 'NORMAL', '2023-08-03', '2023-08-03'),
-       (5, 5, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/b65a31fc-9942-4117-9b3c-c8cd674bb88e.jpeg',
-        '부맛5의 맛집을 소개합니다.', 'DELETE', '2023-08-03', '2023-08-03');
+VALUES (1, 1, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/008d49a7-b781-464a-b5ad-a9e93fb86e43.png',
+        '부맛의 맛집을 소개합니다.', 'NORMAL', '2023-09-03', '2023-09-03'),
+       (2, 2, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/03909958-80ce-462f-b025-390dd8c49866.jpg',
+        '부맛2의 맛집을 소개합니다.', 'NORMAL', '2023-09-03', '2023-09-03'),
+       (3, 3, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/04526891-519d-45c7-a8c4-b9dba3af8620.jpeg',
+        '부맛3의 맛집을 소개합니다.', 'NORMAL', '2023-09-03', '2023-09-03'),
+       (4, 4, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/0816f4ac-fb07-4419-ae8c-be9f0664e881.png',
+        '부맛4의 맛집을 소개합니다.', 'NORMAL', '2023-09-03', '2023-09-03'),
+       (5, 5, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/0895f5a6-5381-48df-b16e-7b5abd6d9409.png',
+        '부맛5의 맛집을 소개합니다.', 'DELETE', '2023-09-03', '2023-09-03');
 
 INSERT INTO restaurant_like_tb (restaurant_id, user_id, created_at)
-VALUES (1, 1, '2023-08-01'),
-       (2, 2, '2023-08-02'),
-       (3, 3, '2023-08-03'),
-       (4, 4, '2023-08-04'),
-       (5, 5, '2023-08-04');
+VALUES (1, 1, '2023-09-03'),
+       (2, 2, '2023-09-03'),
+       (3, 3, '2023-09-03'),
+       (4, 4, '2023-09-03'),
+       (5, 5, '2023-09-03');
 
 INSERT INTO media_tb (feed_id, image_url, created_at)
-VALUES (1, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/55e8cfbc-5988-48ec-a843-a90869f9ee71.jpg',
-        '2023-08-03'),
-       (2, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/cf0939f2-6041-4153-b9de-5033c82746b3.jpg',
-        '2023-08-03'),
-       (3, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/855d02df-f73c-4c66-92d6-b135a8e58246.jpg',
-        '2023-08-03'),
-       (4, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/94d59641-dd4c-41d2-9e72-1d8616da7c6e.png',
-        '2023-08-03'),
-       (5, 'https://foodielog-bucket.s3.ap-northeast-2.amazonaws.com/b65a31fc-9942-4117-9b3c-c8cd674bb88e.jpeg',
-        '2023-08-03');
+VALUES (1, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/008d49a7-b781-464a-b5ad-a9e93fb86e43.png',
+        '2023-09-03'),
+       (2, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/03909958-80ce-462f-b025-390dd8c49866.jpg',
+        '2023-09-03'),
+       (3, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/04526891-519d-45c7-a8c4-b9dba3af8620.jpeg',
+        '2023-09-03'),
+       (4, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/0816f4ac-fb07-4419-ae8c-be9f0664e881.png',
+        '2023-09-03'),
+       (5, 'https://foodie-log-bucket.s3.ap-northeast-2.amazonaws.com/0895f5a6-5381-48df-b16e-7b5abd6d9409.png',
+        '2023-09-03');
 
 INSERT INTO report_tb (reporter_id, reported_id, type, content_id, report_reason, status, created_at, updated_at)
-VALUES (1, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-10', '2023-08-10'),
-       (3, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-10', '2023-08-10'),
-       (2, 1, 'FEED', 1, 'SWEARING', 'APPROVED', '2023-08-11', '2023-08-11'),
-       (4, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-12', '2023-08-12'),
-       (5, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-12', '2023-08-12'),
-       (1, 2, 'REPLY', 6, 'ADVERTISEMENT', 'UNPROCESSED', '2023-08-12', '2023-08-12');
+VALUES (1, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-09-10', '2023-09-10'),
+       (3, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-09-10', '2023-09-10'),
+       (2, 1, 'FEED', 1, 'SWEARING', 'APPROVED', '2023-09-11', '2023-09-11'),
+       (4, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-09-12', '2023-09-12'),
+       (5, 2, 'FEED', 2, 'ADVERTISEMENT', 'UNPROCESSED', '2023-09-12', '2023-09-12'),
+       (1, 2, 'REPLY', 6, 'ADVERTISEMENT', 'UNPROCESSED', '2023-09-12', '2023-09-12');
 
 INSERT INTO reply_tb (user_id, feed_id, content, status, created_at, updated_at)
-VALUES (1, 2, '너무 맛있어 보여요!', 'NORMAL', '2023-08-10', '2023-08-10'),
-       (3, 2, '저도 가봐야 겠어요!', 'NORMAL', '2023-08-10', '2023-08-10'),
-       (2, 1, '저희 집 근처네요!', 'NORMAL', '2023-08-10', '2023-08-10'),
-       (5, 1, '카페가 너무 이뻐요!', 'DELETE', '2023-08-10', '2023-08-10'),
-       (4, 3, '빵이 맛있어 보여요!', 'NORMAL', '2023-08-10', '2023-08-10'),
-       (2, 1, '@@ 오픈 이벤트 진행 중 입니다~ 프로필 상단 링크 확인 @@', 'NORMAL', '2023-08-10', '2023-08-10');
+VALUES (1, 2, '너무 맛있어 보여요!', 'NORMAL', '2023-09-10', '2023-09-10'),
+       (3, 2, '저도 가봐야 겠어요!', 'NORMAL', '2023-09-10', '2023-09-10'),
+       (2, 1, '저희 집 근처네요!', 'NORMAL', '2023-09-10', '2023-09-10'),
+       (5, 1, '카페가 너무 이뻐요!', 'DELETE', '2023-09-10', '2023-09-10'),
+       (4, 3, '빵이 맛있어 보여요!', 'NORMAL', '2023-09-10', '2023-09-10'),
+       (2, 1, '@@ 오픈 이벤트 진행 중 입니다~ 프로필 상단 링크 확인 @@', 'NORMAL', '2023-09-10', '2023-09-10');
 
 INSERT INTO feed_like_tb (feed_id, user_id, created_at)
-VALUES (1, 2, '2023-08-12'),
-       (2, 3, '2023-08-12'),
-       (3, 4, '2023-08-12'),
-       (4, 5, '2023-08-12'),
-       (5, 1, '2023-08-12');
+VALUES (1, 2, '2023-09-12'),
+       (2, 3, '2023-09-12'),
+       (3, 4, '2023-09-12'),
+       (4, 5, '2023-09-12'),
+       (5, 1, '2023-09-12');
 
 INSERT INTO notification_tb (user_id, type, content_id, check_flag, created_at)
-VALUES (2, 'REPLY', 1, 'N', '2023-08-10'),
-       (2, 'REPLY', 2, 'N', '2023-08-10'),
-       (1, 'REPLY', 3, 'N', '2023-08-10'),
-       (1, 'REPLY', 4, 'N', '2023-08-10'),
-       (3, 'REPLY', 5, 'N', '2023-08-10'),
+VALUES (2, 'REPLY', 1, 'N', '2023-09-10'),
+       (2, 'REPLY', 2, 'N', '2023-09-10'),
+       (1, 'REPLY', 3, 'N', '2023-09-10'),
+       (1, 'REPLY', 4, 'N', '2023-09-10'),
+       (3, 'REPLY', 5, 'N', '2023-09-10'),
        (2, 'FOLLOW', 1, 'N', '2023-08-02'),
        (3, 'FOLLOW', 2, 'N', '2023-08-02'),
        (3, 'FOLLOW', 3, 'N', '2023-08-02'),
        (4, 'FOLLOW', 4, 'N', '2023-08-02'),
        (5, 'FOLLOW', 5, 'N', '2023-08-02'),
-       (1, 'LIKE', 1, 'N', '2023-08-12'),
-       (2, 'LIKE', 2, 'N', '2023-08-12'),
-       (3, 'LIKE', 3, 'N', '2023-08-12'),
-       (4, 'LIKE', 4, 'N', '2023-08-12'),
-       (5, 'LIKE', 5, 'N', '2023-08-12');
+       (1, 'LIKE', 1, 'N', '2023-09-12'),
+       (2, 'LIKE', 2, 'N', '2023-09-12'),
+       (3, 'LIKE', 3, 'N', '2023-09-12'),
+       (4, 'LIKE', 4, 'N', '2023-09-12'),
+       (5, 'LIKE', 5, 'N', '2023-09-12');
 
 INSERT INTO withdraw_user_tb (user_id, feed_count, reply_count, withdraw_reason, created_at)
 VALUES (5, 1, 1, 'ADVERTISEMENT', '2023-08-20'),
