@@ -47,14 +47,16 @@ public class UserService {
     private final FcmMessageProvider fcmMessageProvider;
 
     @Transactional(readOnly = true)
-    public UserProfileResp getProfile(Long userId) {
-        User user = validationUserId(userId);
+    public UserProfileResp getProfile(User user, Long userId) {
+        User currentPageUser = validationUserId(userId);
 
-        Long feedCount = feedRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
-        Long follower = followRepository.countByFollowedId(user);
-        Long following = followRepository.countByFollowingId(user);
+        Long feedCount = feedRepository.countByUserAndStatus(currentPageUser, ContentStatus.NORMAL);
+        Long follower = followRepository.countByFollowedId(currentPageUser);
+        Long following = followRepository.countByFollowingId(currentPageUser);
 
-        return new UserProfileResp(user, feedCount, follower, following);
+        boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, currentPageUser);
+
+        return new UserProfileResp(user, feedCount, follower, following, isFollowed);
     }
 
     @Transactional(readOnly = true)

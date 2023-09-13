@@ -6,6 +6,7 @@ import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -27,9 +28,11 @@ public class UserController {
 
     @GetMapping("/{userId}/profile")
     public ResponseEntity<ApiUtils.ApiResult<UserProfileResp>> getProfile(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long userId
     ) {
-        UserProfileResp response = userService.getProfile(userId);
+        User user = principalDetails.getUser();
+        UserProfileResp response = userService.getProfile(user, userId);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
