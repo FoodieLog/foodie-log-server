@@ -83,7 +83,7 @@ public class UserAuthService {
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        String storedFileUrl = (file.isEmpty()) ? null : s3Uploader.saveFile(file);
+        String storedFileUrl = (file == null) ? null : s3Uploader.saveFile(file);
         User user = User.createUser(request.getEmail(), encodedPassword, request.getNickName(),
                 storedFileUrl, request.getAboutMe());
 

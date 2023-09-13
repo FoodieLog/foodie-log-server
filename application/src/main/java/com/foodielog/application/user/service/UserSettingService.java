@@ -142,7 +142,7 @@ public class UserSettingService {
     private String getStoredFileUrl(String userProfileImageUrl, MultipartFile file) {
         String storedFileUrl = userProfileImageUrl;
 
-        if (!file.isEmpty()) {
+        if ((file != null)) {
             storedFileUrl = s3Uploader.saveFile(file);
 
             // 기존 이미지 삭제
