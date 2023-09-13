@@ -19,12 +19,14 @@ public class RecommendedRestaurantResp {
         private final Long restaurantId;
         private final String name;
         private final String roadAddress;
+        private final String category;
         private final List<FeedsDTO> feedList;
 
         public RestaurantsDTO(Restaurant restaurant, List<FeedsDTO> feedList) {
             this.restaurantId = restaurant.getId();
             this.name = restaurant.getName();
             this.roadAddress = restaurant.getRoadAddress();
+            this.category = restaurant.getCategory();
             this.feedList = feedList;
         }
     }
