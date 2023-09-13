@@ -80,16 +80,14 @@ public class S3Uploader {
         return Long.parseLong(numericValue) * 1024 * 1024;
     }
 
-    private void checkFileSize(MultipartFile multipartFile) {
-        long maxSize = parseMaxSize(maxSizeString);
-
-        if (multipartFile.getSize() > maxSize) {
-            throw new Exception400("file : ", ErrorMessage.EXCEED_IMAGE_SIZE);
+    private void isValid(MultipartFile multipartFile) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            throw new Exception400("image", "사진을 선택해주세요.");
         }
     }
 
     public String saveFile(MultipartFile file) {
-        checkFileSize(file);
+        isValid(file);
 
         String randomFilename = generateRandomFilename(file);
 
