@@ -12,8 +12,9 @@ public class UserProfileResp {
     private final Long feedCount;
     private final Long follower;
     private final Long following;
+    private final boolean isFollowed;
 
-    public UserProfileResp(User user, Long feedCount, Long follower, Long following) {
+    public UserProfileResp(User user, Long feedCount, Long follower, Long following, boolean isFollowed) {
         this.userId = user.getId();
         this.nickName = user.getNickName();
         this.profileImageUrl = user.getProfileImageUrl();
@@ -21,5 +22,6 @@ public class UserProfileResp {
         this.feedCount = feedCount;
         this.follower = follower;
         this.following = following;
+        this.isFollowed = isFollowed;
     }
 }
