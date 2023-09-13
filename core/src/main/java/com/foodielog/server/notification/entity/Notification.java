@@ -50,4 +50,8 @@ public class Notification {
         notification.checkFlag = Flag.N;
         return notification;
     }
+
+    public void readNotification() {
+        this.checkFlag = Flag.Y;
+    }
 }
