@@ -18,7 +18,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
     List<Feed> findByUserIdAndStatus(Long userId, ContentStatus status);
 
     @Query("SELECT f FROM Feed f " +
-            "WHERE f.user = :user AND f.id > :feedId AND f.status = :status")
+            "WHERE f.user = :user AND (:feedId IS NULL OR f.id < :feedId) AND f.status = :status")
     List<Feed> getFeeds(@Param("user") User user, @Param("feedId") Long feedId, @Param("status") ContentStatus status, Pageable pageable);
 
     List<Feed> findAllByRestaurantIdAndStatus(Long restaurantId, ContentStatus status);
@@ -37,7 +37,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
     @Query("SELECT f FROM Feed f " +
             "LEFT JOIN Follow fo ON f.user = fo.followedId AND fo.followingId = :user " +
             "WHERE (fo.followedId IS NOT NULL " +
-            "OR f.id IN (SELECT li.feed FROM FeedLike li WHERE li.feed.id > :feedId GROUP BY li.feed HAVING COUNT(li.feed) >= :likeCount)) " +
+            "OR f.id IN (SELECT li.feed FROM FeedLike li WHERE (:feedId IS NULL OR li.feed.id < :feedId) GROUP BY li.feed HAVING COUNT(li.feed) >= :likeCount)) " +
             "AND f.status = 'NORMAL' AND f.createdAt >= :date AND f.user != :user")
     List<Feed> getMainFeed(@Param("user") User user, @Param("feedId") Long feedId,
                            @Param("likeCount") Long likeCount, @Param("date") Timestamp date, Pageable pageable);
