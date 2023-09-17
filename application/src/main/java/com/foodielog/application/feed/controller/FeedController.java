@@ -15,6 +15,7 @@ import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -117,8 +118,8 @@ public class FeedController {
     @GetMapping("/list")
     public ResponseEntity<ApiUtils.ApiResult<MainFeedListResp>> list(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam @PositiveOrZero Long feedId,
-            @PageableDefault(size = 15) Pageable pageable
+            @RequestParam(required = false) @Positive Long feedId,
+            @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         MainFeedListResp response = feedService.getMainFeed(principalDetails.getUser(), feedId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
