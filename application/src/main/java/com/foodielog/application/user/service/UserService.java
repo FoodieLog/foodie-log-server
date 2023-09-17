@@ -1,7 +1,10 @@
 package com.foodielog.application.user.service;
 
 import com.foodielog.application._core.fcm.FcmMessageProvider;
-import com.foodielog.application.user.dto.response.*;
+import com.foodielog.application.user.dto.response.UserFeedResp;
+import com.foodielog.application.user.dto.response.UserProfileResp;
+import com.foodielog.application.user.dto.response.UserRestaurantListResp;
+import com.foodielog.application.user.dto.response.UserSearchResp;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -60,40 +63,27 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserThumbnailResp getThumbnail(Long userId, Long feedId, Pageable pageable) {
+    public UserFeedResp getFeeds(Long userId, Long feedId, Pageable pageable) {
         User user = validationUserId(userId);
 
         List<Feed> feeds = feedRepository.getFeeds(user, feedId, ContentStatus.NORMAL, pageable);
 
-        List<UserThumbnailResp.ThumbnailDTO> thumbnailDTO = feeds.stream()
-                .map(UserThumbnailResp.ThumbnailDTO::new)
-                .collect(Collectors.toList());
-
-        return new UserThumbnailResp(thumbnailDTO);
-    }
-
-    @Transactional(readOnly = true)
-    public UserFeedListResp getFeeds(Long userId, Long feedId, Pageable pageable) {
-        User user = validationUserId(userId);
-
-        List<Feed> feeds = feedRepository.getFeeds(user, feedId, ContentStatus.NORMAL, pageable);
-
-        List<UserFeedListResp.UserFeedsDTO> userFeedsDTOList = new ArrayList<>();
+        List<UserFeedResp.UserFeedsDTO> userFeedsDTOList = new ArrayList<>();
 
         for (Feed feed : feeds) {
             List<Media> mediaList = mediaRepository.findByFeed(feed);
 
-            List<UserFeedListResp.FeedImageDTO> feedImages = getFeedImageDTO(mediaList);
-            UserFeedListResp.FeedDTO feedDTO = getFeedDTO(feed, feedImages);
-            UserFeedListResp.UserRestaurantDTO userRestaurantDTO = getUserRestaurantDTO(feed);
+            List<UserFeedResp.FeedImageDTO> feedImages = getFeedImageDTO(mediaList);
+            UserFeedResp.FeedDTO feedDTO = getFeedDTO(feed, feedImages);
+            UserFeedResp.UserRestaurantDTO userRestaurantDTO = getUserRestaurantDTO(feed);
 
             boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, feed.getUser());
             boolean isLiked = feedLikeRepository.existsByUserAndFeed(user, feed);
 
-            userFeedsDTOList.add(new UserFeedListResp.UserFeedsDTO(feedDTO, userRestaurantDTO, isFollowed, isLiked));
+            userFeedsDTOList.add(new UserFeedResp.UserFeedsDTO(feedDTO, userRestaurantDTO, isFollowed, isLiked));
         }
 
-        return new UserFeedListResp(userFeedsDTOList);
+        return new UserFeedResp(userFeedsDTOList);
     }
 
     @Transactional(readOnly = true)
@@ -121,21 +111,21 @@ public class UserService {
         return new UserRestaurantListResp(restaurantListDTOList);
     }
 
-    private UserFeedListResp.UserRestaurantDTO getUserRestaurantDTO(Feed feed) {
+    private UserFeedResp.UserRestaurantDTO getUserRestaurantDTO(Feed feed) {
         Restaurant restaurant = feed.getRestaurant();
-        return new UserFeedListResp.UserRestaurantDTO(restaurant);
+        return new UserFeedResp.UserRestaurantDTO(restaurant);
     }
 
-    private UserFeedListResp.FeedDTO getFeedDTO(Feed feed, List<UserFeedListResp.FeedImageDTO> feedImages) {
+    private UserFeedResp.FeedDTO getFeedDTO(Feed feed, List<UserFeedResp.FeedImageDTO> feedImages) {
         Long likeCount = feedLikeRepository.countByFeed(feed);
         Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
 
-        return new UserFeedListResp.FeedDTO(feed, feedImages, likeCount, replyCount);
+        return new UserFeedResp.FeedDTO(feed, feedImages, likeCount, replyCount);
     }
 
-    private List<UserFeedListResp.FeedImageDTO> getFeedImageDTO(List<Media> mediaList) {
+    private List<UserFeedResp.FeedImageDTO> getFeedImageDTO(List<Media> mediaList) {
         return mediaList.stream()
-                .map(UserFeedListResp.FeedImageDTO::new)
+                .map(UserFeedResp.FeedImageDTO::new)
                 .collect(Collectors.toList());
     }
 

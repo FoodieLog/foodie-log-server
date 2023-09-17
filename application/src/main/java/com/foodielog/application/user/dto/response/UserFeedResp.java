@@ -9,10 +9,10 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
-public class UserFeedListResp {
+public class UserFeedResp {
     private final List<UserFeedsDTO> content;
 
-    public UserFeedListResp(List<UserFeedsDTO> content) {
+    public UserFeedResp(List<UserFeedsDTO> content) {
         this.content = content;
     }
 
@@ -37,6 +37,7 @@ public class UserFeedListResp {
         private final String nickName;
         private final String profileImageUrl;
         private final Long feedId;
+        private final String thumbnailUrl;
         private final Timestamp createdAt;
         private final Timestamp updatedAt;
         private final List<FeedImageDTO> feedImages;
@@ -49,6 +50,7 @@ public class UserFeedListResp {
             this.nickName = feed.getUser().getNickName();
             this.profileImageUrl = feed.getUser().getProfileImageUrl();
             this.feedId = feed.getId();
+            this.thumbnailUrl = feed.getThumbnailUrl();
             this.createdAt = feed.getCreatedAt();
             this.updatedAt = feed.getUpdatedAt();
             this.feedImages = feedImages;
