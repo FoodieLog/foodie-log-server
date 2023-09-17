@@ -7,6 +7,7 @@ import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 @RequiredArgsConstructor
 @Validated
@@ -35,23 +35,13 @@ public class UserController {
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}/feed/thumbnail")
-    public ResponseEntity<ApiUtils.ApiResult<UserThumbnailResp>> getThumbnail(
+    @GetMapping("/{userId}/feed")
+    public ResponseEntity<ApiUtils.ApiResult<UserFeedResp>> getFeeds(
             @PathVariable Long userId,
-            @RequestParam @PositiveOrZero Long feedId,
-            @PageableDefault(size = 15) Pageable pageable
+            @RequestParam(required = false) @Positive Long feedId,
+            @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        UserThumbnailResp response = userService.getThumbnail(userId, feedId, pageable);
-        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
-    }
-
-    @GetMapping("/{userId}/feed/list")
-    public ResponseEntity<ApiUtils.ApiResult<UserFeedListResp>> getFeeds(
-            @PathVariable Long userId,
-            @RequestParam @PositiveOrZero Long feedId,
-            @PageableDefault(size = 15) Pageable pageable
-    ) {
-        UserFeedListResp response = userService.getFeeds(userId, feedId, pageable);
+        UserFeedResp response = userService.getFeeds(userId, feedId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
