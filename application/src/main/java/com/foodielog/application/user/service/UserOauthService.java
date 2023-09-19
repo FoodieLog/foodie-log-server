@@ -1,5 +1,6 @@
 package com.foodielog.application.user.service;
 
+import com.foodielog.application.user.dto.response.ExistsKakaoResp;
 import com.foodielog.application.user.dto.response.KakaoLoginResp;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
@@ -20,8 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +37,15 @@ public class UserOauthService {
     private final RedisService redisService;
     private final JsonConverter jsonConverter;
     private final UserRepository userRepository;
+
+    @Transactional(readOnly = true)
+    public ExistsKakaoResp checkExistsKakao(String token) {
+        KakaoLoginResp.kakaoApiResp.UserInfo kakaoUserInfo = getKakaoUserInfo(token);
+        KakaoLoginResp.kakaoApiResp.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
+
+        Boolean isExists = userRepository.existsByEmail(kakaoAccount.getEmail());
+        return new ExistsKakaoResp(token, isExists);
+    }
 
     @Transactional
     public KakaoLoginResp kakaoLogin(String token) {
