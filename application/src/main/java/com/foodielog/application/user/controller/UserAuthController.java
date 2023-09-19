@@ -31,7 +31,7 @@ import javax.validation.constraints.Size;
 public class UserAuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserAuthService userAuthService;
-    private final UserOauthService oauthUserService;
+    private final UserOauthService userOauthService;
 
     @RequestMapping("/healthcheck")
     public ResponseEntity<ApiUtils.ApiResult<Object>> healthcheck() {
@@ -50,7 +50,7 @@ public class UserAuthController {
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), headers, HttpStatus.CREATED);
     }
 
-    /* 회원 가입 */
+    /* 중복 체크 */
     @GetMapping("/exists/email")
     public ResponseEntity<ApiUtils.ApiResult<ExistsEmailResp>> checkExistsEmail(
             @RequestParam @Email String input
@@ -60,6 +60,16 @@ public class UserAuthController {
         return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
     }
 
+    @GetMapping("/exists/kakao")
+    public ResponseEntity<ApiUtils.ApiResult<ExistsKakaoResp>> checkExistsKakao(
+            @RequestParam String token
+    ) {
+        ExistsKakaoResp response = userOauthService.checkExistsKakao(token);
+        HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
+        return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
+    }
+
+    /* 회원 가입 */
     @PostMapping("/signup")
     public ResponseEntity<ApiUtils.ApiResult<SignUpResp>> signUp(
             @RequestPart(value = "content") @Valid SignUpReq request,
@@ -112,7 +122,7 @@ public class UserAuthController {
     public ResponseEntity<ApiUtils.ApiResult<KakaoLoginResp>> kakaoLogin(
             @RequestParam String token
     ) {
-        KakaoLoginResp response = oauthUserService.kakaoLogin(token);
+        KakaoLoginResp response = userOauthService.kakaoLogin(token);
         HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), headers, HttpStatus.OK);
     }
