@@ -65,8 +65,7 @@ public class UserAuthController {
             @RequestParam String token
     ) {
         ExistsKakaoResp response = userOauthService.checkExistsKakao(token);
-        HttpStatus httpStatus = response.getIsExists() ? HttpStatus.CONFLICT : HttpStatus.OK;
-        return new ResponseEntity<>(ApiUtils.success(response, httpStatus), httpStatus);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
     /* 회원 가입 */
