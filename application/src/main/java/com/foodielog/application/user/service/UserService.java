@@ -59,7 +59,7 @@ public class UserService {
 
         boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, currentPageUser);
 
-        return new UserProfileResp(user, feedCount, follower, following, isFollowed);
+        return new UserProfileResp(currentPageUser, feedCount, follower, following, isFollowed);
     }
 
     @Transactional(readOnly = true)
