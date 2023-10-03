@@ -5,6 +5,7 @@ import com.foodielog.application.feed.dto.request.LikeFeedReq;
 import com.foodielog.application.feed.dto.request.ReportFeedReq;
 import com.foodielog.application.feed.dto.request.UpdateFeedReq;
 import com.foodielog.application.feed.dto.response.FeedDetailResp;
+import com.foodielog.application.feed.dto.response.GetFeedResp;
 import com.foodielog.application.feed.dto.response.MainFeedListResp;
 import com.foodielog.application.feed.service.FeedService;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
@@ -28,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -130,6 +130,16 @@ public class FeedController {
             @PathVariable Long feedId
     ) {
         FeedDetailResp response = feedService.getFeedDetail(feedId);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/{feedId}")
+    public ResponseEntity<ApiUtils.ApiResult<GetFeedResp>> singleFeed(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Long feedId
+    ) {
+        User user = principalDetails.getUser();
+        GetFeedResp response = feedService.getSingleFeed(user, feedId);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 }

@@ -5,6 +5,7 @@ import com.foodielog.application.feed.dto.request.FeedSaveReq;
 import com.foodielog.application.feed.dto.request.ReportFeedReq;
 import com.foodielog.application.feed.dto.request.UpdateFeedReq;
 import com.foodielog.application.feed.dto.response.FeedDetailResp;
+import com.foodielog.application.feed.dto.response.GetFeedResp;
 import com.foodielog.application.feed.dto.response.MainFeedListResp;
 import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.error.exception.Exception404;
@@ -270,5 +271,28 @@ public class FeedService {
         FeedDetailResp.RestaurantDTO restaurantDTO = new FeedDetailResp.RestaurantDTO(feed.getRestaurant());
 
         return new FeedDetailResp(feed, feedImageDTOS, restaurantDTO, likeCount, replyCount);
+    }
+
+    @Transactional(readOnly = true)
+    public GetFeedResp getSingleFeed(User user, Long feedId) {
+        Feed feed = getFeed(feedId);
+
+        List<Media> mediaList = mediaRepository.findByFeed(feed);
+        List<GetFeedResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
+                .map(GetFeedResp.FeedImageDTO::new)
+                .collect(Collectors.toList());
+
+        Long likeCount = feedLikeRepository.countByFeed(feed);
+        Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
+
+        boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, feed.getUser());
+        boolean isLiked = feedLikeRepository.existsByUserAndFeed(user, feed);
+
+        GetFeedResp.FeedDTO feedDTO = new GetFeedResp.FeedDTO(feed, feedImageDTOS, likeCount, replyCount);
+
+        GetFeedResp.RestaurantDTO restaurantDTO = new GetFeedResp.RestaurantDTO(feed.getRestaurant());
+        GetFeedResp.GetFeedDTO getFeedDTO = new GetFeedResp.GetFeedDTO(feedDTO, restaurantDTO, isFollowed, isLiked);
+
+        return new GetFeedResp(getFeedDTO);
     }
 }
