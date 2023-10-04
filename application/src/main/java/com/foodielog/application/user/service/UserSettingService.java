@@ -84,7 +84,7 @@ public class UserSettingService {
 
     @Transactional
     public LogoutResp logout(String accessToken) {
-        String email = invalidatedToken(accessToken);
+        String email = jwtTokenProvider.invalidatedToken(accessToken);
 
         return new LogoutResp(email, Boolean.TRUE);
     }
@@ -109,18 +109,11 @@ public class UserSettingService {
         replyList.forEach(Reply::deleteReply);
 
         // 토큰 무효화
-        invalidatedToken(accessToken);
+        jwtTokenProvider.invalidatedToken(accessToken);
 
         return new WithdrawResp(user.getEmail(), Boolean.TRUE);
     }
 
-    private String invalidatedToken(String accessToken) {
-        Long expiration = jwtTokenProvider.getExpiration(accessToken);
-        String email = jwtTokenProvider.getEmail(accessToken);
-
-        redisService.addBlacklist(accessToken, email, expiration);
-        return email;
-    }
 
     @Transactional
     public ChangeProfileResp ChangeProfile(User user, ChangeProfileReq request, MultipartFile file) {
