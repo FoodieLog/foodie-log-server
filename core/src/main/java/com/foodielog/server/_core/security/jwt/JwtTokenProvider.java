@@ -1,5 +1,6 @@
 package com.foodielog.server._core.security.jwt;
 
+import com.foodielog.server._core.redis.RedisService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.security.auth.PrincipalDetailsService;
 import com.foodielog.server.user.entity.User;
@@ -24,15 +25,17 @@ public class JwtTokenProvider {
     public static final String HEADER = "Authorization";
 
     private final PrincipalDetailsService principalDetailsService;
+    private final RedisService redisService;
 
     private Key JWT_KEY;
 
     @Autowired
-    public JwtTokenProvider(@Value("${jwt.key}") String secretKey, PrincipalDetailsService principalDetailsService) {
+    public JwtTokenProvider(@Value("${jwt.key}") String secretKey, PrincipalDetailsService principalDetailsService, RedisService redisService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         JWT_KEY = Keys.hmacShaKeyFor(keyBytes);
 
         this.principalDetailsService = principalDetailsService;
+        this.redisService = redisService;
     }
 
     public String createAccessToken(User user) {
@@ -78,6 +81,15 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException ex) {
             throw new JwtException("JWT claims string is empty.");
         }
+    }
+
+    public String invalidatedToken(String accessToken) {
+        Long expiration = getExpiration(accessToken);
+        String email = getEmail(accessToken);
+
+        redisService.addBlacklist(accessToken, email, expiration);
+
+        return email;
     }
 
     // 토큰으로 Authentication 객체 생성

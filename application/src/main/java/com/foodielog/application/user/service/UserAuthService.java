@@ -54,6 +54,9 @@ public class UserAuthService {
         User user = userRepository.findByEmailAndStatus(authentication.getName(), UserStatus.NORMAL)
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
+        // 기존 토큰 무효화
+        jwtTokenProvider.invalidatedToken(accessToken);
+
         // 재발급
         String newAT = jwtTokenProvider.createAccessToken(user);
         String newRT = jwtTokenProvider.createRefreshToken(user);
