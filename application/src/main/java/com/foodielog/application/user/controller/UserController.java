@@ -82,4 +82,24 @@ public class UserController {
         UserSearchResp response = userService.search(keyword);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
+
+    @GetMapping("/follower/list")
+    public ResponseEntity<ApiUtils.ApiResult<FollowerListResp>> followerList(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam @Positive Long userId
+    ) {
+        User user = principalDetails.getUser();
+        FollowerListResp response = userService.getFollower(user, userId);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/follow/list")
+    public ResponseEntity<ApiUtils.ApiResult<FollowListResp>> followList(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam @Positive Long userId
+    ) {
+        User user = principalDetails.getUser();
+        FollowListResp response = userService.getFollow(user, userId);
+        return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
+    }
 }

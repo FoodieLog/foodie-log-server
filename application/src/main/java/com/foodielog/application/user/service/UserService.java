@@ -1,10 +1,7 @@
 package com.foodielog.application.user.service;
 
 import com.foodielog.application._core.fcm.FcmMessageProvider;
-import com.foodielog.application.user.dto.response.UserFeedResp;
-import com.foodielog.application.user.dto.response.UserProfileResp;
-import com.foodielog.application.user.dto.response.UserRestaurantListResp;
-import com.foodielog.application.user.dto.response.UserSearchResp;
+import com.foodielog.application.user.dto.response.*;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
@@ -131,7 +128,7 @@ public class UserService {
 
     private User validationUserId(Long userId) {
         return userRepository.findByIdAndStatus(userId, UserStatus.NORMAL)
-                .orElseThrow(() -> new Exception404("에러"));
+                .orElseThrow(() -> new Exception404("해당 유저를 찾을 수 없습니다."));
     }
 
     @Transactional
@@ -183,5 +180,39 @@ public class UserService {
                 .collect(Collectors.toList());
 
         return new UserSearchResp(userDTOList);
+    }
+
+    @Transactional(readOnly = true)
+    public FollowerListResp getFollower(User user, Long userId) {
+        User owner = validationUserId(userId);
+        List<Follow> followerList = followRepository.findByFollowedId(owner);
+
+        List<FollowerListResp.FollowerDTO> followerDTOS = followerList.stream()
+                .map(follower -> {
+                    boolean isFollowed = isFollowedByUser(user, follower.getFollowingId());
+                    return new FollowerListResp.FollowerDTO(follower.getFollowingId(), isFollowed);
+                })
+                .collect(Collectors.toList());
+
+        return new FollowerListResp(followerDTOS);
+    }
+
+    @Transactional(readOnly = true)
+    public FollowListResp getFollow(User user, Long userId) {
+        User owner = validationUserId(userId);
+        List<Follow> followList = followRepository.findByFollowingId(owner);
+
+        List<FollowListResp.FollowDTO> followDTOS = followList.stream()
+                .map(follow -> {
+                    boolean isFollowed = isFollowedByUser(user, follow.getFollowedId());
+                    return new FollowListResp.FollowDTO(follow.getFollowedId(), isFollowed);
+                })
+                .collect(Collectors.toList());
+
+        return new FollowListResp(followDTOS);
+    }
+
+    private boolean isFollowedByUser(User user, User follow) {
+        return followRepository.existsByFollowingIdAndFollowedId(user, follow);
     }
 }
