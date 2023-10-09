@@ -105,7 +105,7 @@ public class UserService {
             restaurantListDTOList.add(new UserRestaurantListResp.RestaurantListDTO(restaurantDTO, isLikedDTO));
         }
 
-        return new UserRestaurantListResp(restaurantListDTOList);
+        return new UserRestaurantListResp(restaurantListDTOList, feedOwner);
     }
 
     private UserFeedResp.UserRestaurantDTO getUserRestaurantDTO(Feed feed) {
