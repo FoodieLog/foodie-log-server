@@ -1,6 +1,7 @@
 package com.foodielog.application.user.dto.response;
 
 import com.foodielog.server.restaurant.entity.Restaurant;
+import com.foodielog.server.user.entity.User;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
@@ -8,10 +9,12 @@ import java.util.List;
 
 @Getter
 public class UserRestaurantListResp {
+    private final String nickName;
     private final List<RestaurantListDTO> content;
 
-    public UserRestaurantListResp(List<RestaurantListDTO> content) {
+    public UserRestaurantListResp(List<RestaurantListDTO> content, User user) {
         this.content = content;
+        this.nickName = user.getNickName();
     }
 
     @Getter
