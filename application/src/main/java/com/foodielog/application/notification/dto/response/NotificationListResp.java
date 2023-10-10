@@ -8,6 +8,7 @@ import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
 import lombok.Getter;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
@@ -25,6 +26,7 @@ public class NotificationListResp {
         private final Flag checkFlag;
         private final ContentUser user;
         private final ContentReply reply;
+        private final Timestamp createdAt;
 
         public ReplyNotification(Notification notification, ContentUser user, ContentReply reply) {
             this.id = notification.getId();
@@ -32,6 +34,7 @@ public class NotificationListResp {
             this.checkFlag = notification.getCheckFlag();
             this.user = user;
             this.reply = reply;
+            this.createdAt = notification.getCreatedAt();
         }
     }
 
@@ -42,6 +45,7 @@ public class NotificationListResp {
         private final Flag checkFlag;
         private final ContentUser user;
         private final ContentFeed feed;
+        private final Timestamp createdAt;
 
         public LikeNotification(Notification notification, ContentUser user, ContentFeed feed) {
             this.id = notification.getId();
@@ -49,6 +53,7 @@ public class NotificationListResp {
             this.checkFlag = notification.getCheckFlag();
             this.user = user;
             this.feed = feed;
+            this.createdAt = notification.getCreatedAt();
         }
     }
 
@@ -59,6 +64,7 @@ public class NotificationListResp {
         private final Flag checkFlag;
         private final ContentUser user;
         private final Boolean isFollowed;
+        private final Timestamp createdAt;
 
         public FollowNotification(Notification notification, ContentUser user, Boolean isFollowed) {
             this.id = notification.getId();
@@ -66,6 +72,7 @@ public class NotificationListResp {
             this.checkFlag = notification.getCheckFlag();
             this.user = user;
             this.isFollowed = isFollowed;
+            this.createdAt = notification.getCreatedAt();
         }
     }
 
