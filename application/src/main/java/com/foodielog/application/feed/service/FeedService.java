@@ -174,8 +174,7 @@ public class FeedService {
     }
 
     @Transactional
-    public void updateFeed(User user, UpdateFeedReq request) {
-        Long feedId = request.getFeedId();
+    public void updateFeed(User user, UpdateFeedReq request, Long feedId) {
         Feed feed = getFeed(feedId);
         checkAccess(feed, user);
 
