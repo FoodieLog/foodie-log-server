@@ -51,7 +51,7 @@ public class FeedController {
         return new ResponseEntity<>(ApiUtils.success(kakaoApiResponse, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @PostMapping("/save")
+    @PostMapping
     public ResponseEntity<ApiUtils.ApiResult<String>> feedSave(
             @RequestPart(value = "content") @Valid FeedSaveReq request,
             @RequestPart(value = "files") List<MultipartFile> files,
@@ -83,24 +83,25 @@ public class FeedController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/{feedId}")
     public ResponseEntity<ApiUtils.ApiResult<String>> delete(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam @Positive Long feedId
+            @PathVariable @Positive Long feedId
     ) {
         User user = principalDetails.getUser();
         feedService.deleteFeed(user, feedId);
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 
-    @PatchMapping("/update")
+    @PatchMapping("/{feedId}")
     public ResponseEntity<ApiUtils.ApiResult<String>> update(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable @Positive Long feedId,
             @RequestBody @Valid UpdateFeedReq request,
             Errors errors
     ) {
         User user = principalDetails.getUser();
-        feedService.updateFeed(user, request);
+        feedService.updateFeed(user, request, feedId);
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 
