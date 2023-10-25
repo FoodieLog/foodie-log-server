@@ -1,7 +1,5 @@
 package com.foodielog.server.notification.entity;
 
-import com.foodielog.server.feed.entity.Feed;
-import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
@@ -10,11 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
 @Table(name = "notification_tb")
 @Getter
 @Entity
