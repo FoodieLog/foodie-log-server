@@ -32,8 +32,8 @@ public class ReportController {
     @GetMapping("/list")
     public ResponseEntity<ApiUtils.ApiResult<ReportListResp>> reportList(
             @RequestParam(required = false) String nickName,
-            @RequestParam(required = false) @ValidEnum(enumClass = ReportType.class) ReportType type,
-            @RequestParam(required = false) @ValidEnum(enumClass = ContentStatus.class) ContentStatus status,
+            @RequestParam(required = false) @ValidEnum(enumClass = ReportType.class, nullable = true) ReportType type,
+            @RequestParam(required = false) @ValidEnum(enumClass = ContentStatus.class, nullable = true) ContentStatus status,
             @PageableDefault(size = 10) Pageable pageable
     ) {
         ReportListResp response = reportService.getReportList(nickName, type, status, pageable);
