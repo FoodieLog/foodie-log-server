@@ -16,7 +16,8 @@ public interface BadgeApplyRepository extends JpaRepository<BadgeApply, Long> {
 
     @Query("SELECT b FROM BadgeApply b " +
             "WHERE (:nickName IS NULL OR b.user.nickName LIKE %:nickName%) " +
-            "AND (:status IS NULL OR b.status = :status) ")
+            "AND (:status IS NULL OR b.status = :status) " +
+            "AND b.user.status = 'NORMAL'")
     List<BadgeApply> findByStatus(Pageable pageable, @Param("nickName") String nickName, @Param("status") ProcessedStatus status);
 
     Optional<BadgeApply> findByIdAndStatus(Long badgeApplyId, ProcessedStatus processedStatus);
