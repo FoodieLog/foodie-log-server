@@ -32,7 +32,7 @@ public class MemberController {
     @GetMapping("/withdraw/list")
     public ResponseEntity<ApiUtils.ApiResult<WithdrawListResp>> withdrawMemberList(
             @RequestParam(required = false) String nickName,
-            @RequestParam(required = false) @ValidEnum(enumClass = Flag.class) Flag badge,
+            @RequestParam(required = false) @ValidEnum(enumClass = Flag.class, nullable = true) Flag badge,
             @PageableDefault(size = 20) Pageable pageable
     ) {
         WithdrawListResp response = memberService.getWithdrawList(nickName, badge, pageable);
@@ -50,7 +50,7 @@ public class MemberController {
     @GetMapping("/badge/list")
     public ResponseEntity<ApiUtils.ApiResult<BadgeApplyListResp>> badgeApplyList(
             @RequestParam(required = false) String nickName,
-            @RequestParam(required = false) @ValidEnum(enumClass = ProcessedStatus.class) ProcessedStatus processedStatus,
+            @RequestParam(required = false) @ValidEnum(enumClass = ProcessedStatus.class, nullable = true) ProcessedStatus processedStatus,
             @PageableDefault(size = 20) Pageable pageable
     ) {
         BadgeApplyListResp response = memberService.getBadgeApplyList(nickName, processedStatus, pageable);
