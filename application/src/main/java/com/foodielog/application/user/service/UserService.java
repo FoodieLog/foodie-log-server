@@ -27,7 +27,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -86,17 +88,14 @@ public class UserService {
         User feedOwner = validationUserId(userId);
         List<Feed> feeds = feedRepository.findByUserIdAndStatus(feedOwner.getId(), ContentStatus.NORMAL);
 
-        Set<Restaurant> uniqueRestaurantList = new HashSet<>();
+        List<Restaurant> RestaurantList = feeds.stream()
+                .map(Feed::getRestaurant)
+                .distinct()
+                .collect(Collectors.toList());
+
         List<UserRestaurantListResp.RestaurantListDTO> restaurantListDTOList = new ArrayList<>();
 
-        for (Feed feed : feeds) {
-            Restaurant restaurant = feed.getRestaurant();
-
-            if (uniqueRestaurantList.contains(restaurant)) {
-                continue;
-            }
-            uniqueRestaurantList.add(restaurant);
-
+        for (Restaurant restaurant : RestaurantList) {
             UserRestaurantListResp.RestaurantDTO restaurantDTO =
                     new UserRestaurantListResp.RestaurantDTO(restaurant);
 
