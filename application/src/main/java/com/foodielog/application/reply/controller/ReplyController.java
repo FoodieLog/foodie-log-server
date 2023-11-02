@@ -1,8 +1,8 @@
 package com.foodielog.application.reply.controller;
 
-import com.foodielog.application.reply.dto.request.ReplyCreatReq;
+import com.foodielog.application.reply.dto.request.ReplyCreateReq;
 import com.foodielog.application.reply.dto.request.ReportReplyReq;
-import com.foodielog.application.reply.dto.response.ReplyCreatResp;
+import com.foodielog.application.reply.dto.response.ReplyCreateResp;
 import com.foodielog.application.reply.service.ReplyService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
@@ -26,13 +26,13 @@ public class ReplyController {
     private final ReplyService replyService;
 
     @PostMapping("/{feedId}")
-    public ResponseEntity<ApiUtils.ApiResult<ReplyCreatResp>> saveReply(
+    public ResponseEntity<ApiUtils.ApiResult<ReplyCreateResp>> saveReply(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long feedId,
-            @Valid @RequestBody ReplyCreatReq createDTO,
+            @Valid @RequestBody ReplyCreateReq createDTO,
             Errors errors
     ) {
-        ReplyCreatResp response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
+        ReplyCreateResp response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
@@ -46,12 +46,12 @@ public class ReplyController {
     }
 
     @GetMapping("/{feedId}")
-    public ResponseEntity<ApiUtils.ApiResult<ReplyCreatResp.ListDTO>> getReplyList(
+    public ResponseEntity<ApiUtils.ApiResult<ReplyCreateResp.ListDTO>> getReplyList(
             @PathVariable Long feedId,
             @RequestParam @PositiveOrZero Long replyId,
             @PageableDefault(size = 15) Pageable pageable
     ) {
-        ReplyCreatResp.ListDTO response = replyService.getListReply(feedId, replyId, pageable);
+        ReplyCreateResp.ListDTO response = replyService.getListReply(feedId, replyId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
