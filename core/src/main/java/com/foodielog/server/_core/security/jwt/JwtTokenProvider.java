@@ -49,7 +49,7 @@ public class JwtTokenProvider {
         return jwt;
     }
 
-    public String createRefreshToken(User user) {
+    public String createRefreshToken() {
         String jwt = Jwts.builder()
                 .setExpiration(new Date(System.currentTimeMillis() + EXP_REFRESH))
                 .signWith(JWT_KEY, SignatureAlgorithm.HS256)

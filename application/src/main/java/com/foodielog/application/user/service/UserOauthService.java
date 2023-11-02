@@ -69,7 +69,7 @@ public class UserOauthService {
                 .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 
         String accessToken = jwtTokenProvider.createAccessToken(loginUser);
-        String refreshToken = jwtTokenProvider.createRefreshToken(loginUser);
+        String refreshToken = jwtTokenProvider.createRefreshToken();
 
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + loginUser.getEmail(), refreshToken,

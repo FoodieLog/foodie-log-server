@@ -46,7 +46,7 @@ public class UserAuthService {
 
         // 재발급
         String newAT = jwtTokenProvider.createAccessToken(user);
-        String newRT = jwtTokenProvider.createRefreshToken(user);
+        String newRT = jwtTokenProvider.createRefreshToken();
 
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), newRT,
@@ -65,7 +65,7 @@ public class UserAuthService {
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(user);
-        String refreshToken = jwtTokenProvider.createRefreshToken(user);
+        String refreshToken = jwtTokenProvider.createRefreshToken();
 
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), refreshToken,
