@@ -38,7 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getHeader(HttpHeaders.AUTHORIZATION) == null || request.getRequestURI().equals("/api/auth/reissue")) {
+        if (request.getHeader(HttpHeaders.AUTHORIZATION) == null || request.getRequestURI().equals("/api/auth/reissue")
+                || request.getRequestURI().equals("/admin/auth/reissue")) {
             filterChain.doFilter(request, response);
             return;
         }
