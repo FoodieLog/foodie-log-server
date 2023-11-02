@@ -8,14 +8,14 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
-public class ReplyCreatResp {
+public class ReplyCreateResp {
     private final Long id;
     private final String nickName;
     private final String content;
     private final String profileImageUrl;
     private final Timestamp createdAt;
 
-    public ReplyCreatResp(Reply reply) {
+    public ReplyCreateResp(Reply reply) {
         this.id = reply.getId();
         this.nickName = reply.getUser().getNickName();
         this.content = reply.getContent();

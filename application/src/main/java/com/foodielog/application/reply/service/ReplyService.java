@@ -1,9 +1,9 @@
 package com.foodielog.application.reply.service;
 
 import com.foodielog.application._core.fcm.FcmMessageProvider;
-import com.foodielog.application.reply.dto.request.ReplyCreatReq;
+import com.foodielog.application.reply.dto.request.ReplyCreateReq;
 import com.foodielog.application.reply.dto.request.ReportReplyReq;
-import com.foodielog.application.reply.dto.response.ReplyCreatResp;
+import com.foodielog.application.reply.dto.response.ReplyCreateResp;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.repository.FeedRepository;
@@ -38,7 +38,7 @@ public class ReplyService {
     private final FcmMessageProvider fcmMessageProvider;
 
     @Transactional
-    public ReplyCreatResp createReply(User user, Long feedId, ReplyCreatReq createDTO) {
+    public ReplyCreateResp createReply(User user, Long feedId, ReplyCreateReq createDTO) {
         Feed feed = getValidatedFeed(feedId);
 
         Reply reply = Reply.createReply(user, feed, createDTO.getContent());
@@ -50,7 +50,7 @@ public class ReplyService {
 
             fcmMessageProvider.sendReplyMessage(feed.getUser().getEmail(), user.getEmail());
         }
-        return new ReplyCreatResp(saveReply);
+        return new ReplyCreateResp(saveReply);
     }
 
     @Transactional
@@ -62,16 +62,16 @@ public class ReplyService {
     }
 
     @Transactional(readOnly = true)
-    public ReplyCreatResp.ListDTO getListReply(Long feedId, Long replyId, Pageable pageable) {
+    public ReplyCreateResp.ListDTO getListReply(Long feedId, Long replyId, Pageable pageable) {
         Feed feed = getValidatedFeed(feedId);
 
         List<Reply> replyList = replyRepository.getReplyList(feedId, replyId, pageable);
 
-        List<ReplyCreatResp.ReplyDTO> replyListDTO = replyList.stream()
-                .map(ReplyCreatResp.ReplyDTO::new)
+        List<ReplyCreateResp.ReplyDTO> replyListDTO = replyList.stream()
+                .map(ReplyCreateResp.ReplyDTO::new)
                 .collect(Collectors.toList());
 
-        return new ReplyCreatResp.ListDTO(feed, replyListDTO);
+        return new ReplyCreateResp.ListDTO(feed, replyListDTO);
     }
 
     @Transactional
