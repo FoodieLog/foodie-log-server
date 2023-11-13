@@ -9,7 +9,7 @@ public class CookieUtil {
     public static ResponseCookie getRefreshTokenCookie(String refreshToken) {
         return ResponseCookie.from(NAME_REFRESH_TOKEN, refreshToken)
                 .maxAge(JwtTokenProvider.EXP_REFRESH)
-                .domain("https://www.foodielog.shop")
+                .domain("www.foodielog.shop")
                 .path("/")
                 .secure(true) // https 환경에서만 쿠키가 발동
                 .sameSite("None") // 크로스 사이트에도 전송 가능
