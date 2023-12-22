@@ -1,9 +1,13 @@
-![foodie-log-상세이미지](https://github.com/FoodieLog/foodie-log-server/assets/65496092/89f52bbb-6ddc-4773-b4de-ba16ca61c620)
-
 <div align=center><h1> 🍽️ FOODIE LOG (푸디로그 - 나만의 작은 맛집 지도) </h1></div>
 
-<div align=center><a href="https://www.foodielog.shop"><img src="https://github.com/FoodieLog/foodie-log-server/assets/65496092/15aafdd5-9000-4940-a69f-2c4258b179d1"></a></div>
+![푸디로그-1](https://github.com/FoodieLog/foodie-log-server/assets/65496092/07c50a19-4e13-40d8-a644-faf0db9ca3cc)
 <div align=center>🔼 QR 코드 스캔해서 다운받기 </div>
+
+![푸디로그-2](https://github.com/FoodieLog/foodie-log-server/assets/65496092/4d56472a-06e9-42ee-951c-a7a91911133f)
+![푸디로그-3](https://github.com/FoodieLog/foodie-log-server/assets/65496092/a6444321-57fe-4e74-be79-886ba5413a49)
+![푸디로그-4](https://github.com/FoodieLog/foodie-log-server/assets/65496092/1d2283bc-b1f7-4fe4-9ac1-8562de8950f5)
+![푸디로그-5](https://github.com/FoodieLog/foodie-log-server/assets/65496092/396d6204-0922-494c-8cc1-ec251000bae0)
+
 
 > **프로젝트 기간** : 2023.7.5. ~ 2023.10.10 <br>
 > **배포 주소** : [푸디로그](https://www.foodielog.shop)<br>
