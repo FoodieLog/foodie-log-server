@@ -72,10 +72,62 @@
 
 ## 🧑‍💻 백엔드 개발팀
 
-| ![](https://avatars.githubusercontent.com/u/65496092?v=4)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | ![](https://avatars.githubusercontent.com/u/84082544?v=4) | ![](https://avatars.githubusercontent.com/u/86757234?v=4)                                                                                                                                                                                                                                                                                                             |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [엄채원](https://github.com/chaewon12)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | [손영준](https://github.com/sohn919)                         | [황인영](https://github.com/inyoung0215)                                                                                                                                                                                                                                                                                                                                 |
-| - PL(Project Leader)<br/>- Project 초기 setting<br/>- 인증/인가 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Spring Security 설정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- JWT 토큰 기반 인증 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 자체 회원가입(이메일 인증) 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 카카오 로그인 연동<br/>- 회원 API 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 알림 설정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 뱃지 신청<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 프로필, 비밀번호 수정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 로그아웃, 탈퇴<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 회원 검색<br/>- 관리자 서버 신고 관리 API 구현<br/>- EC2 + Docker 서버 환경 구축<br/>- CI/CD 파이프라인 구축<br/>&nbsp;&nbsp;&nbsp;&nbsp;- GitHub Actions 를 이용한 CI 테스트 자동화<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Jenkins 를 이용한 배포 자동화 | - 내용1<br/> - 내용2                                          | - Project 멀티모듈 setting<br/>- Kakao 검색 API 구현<br/>- AWS setting<br/>&nbsp;&nbsp;&nbsp;&nbsp;- AWS EC2 설정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- AWS S3 설정 및 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Redis 설치<br/>- 회원 피드, 맛집 API 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 피드 업로드<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 맛집 검색, 추천<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 맛집 추천<br/>- 관리자 서버 탈퇴 회원 관리 API 구현<br/> |
+[//]: # ()
+[//]: # (| ![]&#40;https://avatars.githubusercontent.com/u/65496092?v=4&#41;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | ![]&#40;https://avatars.githubusercontent.com/u/84082544?v=4&#41; | ![]&#40;https://avatars.githubusercontent.com/u/86757234?v=4&#41;                                                                                                                                                                                                                                                                                                             |)
 
+[//]: # (|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|)
 
+[//]: # (| [엄채원]&#40;https://github.com/chaewon12&#41;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | [손영준]&#40;https://github.com/sohn919&#41;                         | [황인영]&#40;https://github.com/inyoung0215&#41;                                                                                                                                                                                                                                                                                                                                 |)
+
+[//]: # (| - PL&#40;Project Leader&#41;<br/>- Project 초기 setting<br/>- 인증/인가 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Spring Security 설정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- JWT 토큰 기반 인증 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 자체 회원가입&#40;이메일 인증&#41; 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 카카오 로그인 연동<br/>- 회원 API 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 알림 설정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 뱃지 신청<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 프로필, 비밀번호 수정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 로그아웃, 탈퇴<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 회원 검색<br/>- 관리자 서버 신고 관리 API 구현<br/>- EC2 + Docker 서버 환경 구축<br/>- CI/CD 파이프라인 구축<br/>&nbsp;&nbsp;&nbsp;&nbsp;- GitHub Actions 를 이용한 CI 테스트 자동화<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Jenkins 를 이용한 배포 자동화 | - 내용1<br/> - 내용2                                          | - Project 멀티모듈 setting<br/>- Kakao 검색 API 구현<br/>- AWS setting<br/>&nbsp;&nbsp;&nbsp;&nbsp;- AWS EC2 설정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- AWS S3 설정 및 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Redis 설치<br/>- 회원 피드, 맛집 API 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 피드 업로드<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 맛집 검색, 추천<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 맛집 추천<br/>- 관리자 서버 탈퇴 회원 관리 API 구현<br/> |)
+
+<table>
+    <tbody>
+      <tr>
+        <td align="center">
+            <a href="https://github.com/chaewon12">
+                <img src="https://avatars.githubusercontent.com/u/65496092?v=4" width="100%"  alt=""/>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/sohn919">
+                <img src="https://avatars.githubusercontent.com/u/84082544?v=4" width="100%"  alt=""/>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/inyoung0215">
+                <img src="https://avatars.githubusercontent.com/u/86757234?v=4" width="100%"  alt=""/>
+            </a>
+        </td>
+      </tr>
+      <tr>
+        <td align="center">
+            <a href="https://github.com/chaewon12">
+                <img src="https://img.shields.io/badge/엄채원-6e34bf?style=flat-round&logo=GitHub&logoColor=white"/>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/sohn919">
+                <img src="https://img.shields.io/badge/손영준-345ebf?style=flat-round&logo=GitHub&logoColor=white"/>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/inyoung0215">
+                <img src="https://img.shields.io/badge/황인영-ff5e5e?style=flat-round&logo=GitHub&logoColor=white"/>
+            </a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+           - PL(Project Leader)<br/>- Project 초기 setting<br/>- 인증/인가 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Spring Security 설정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- JWT 토큰 기반 인증 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 자체 회원가입(이메일 인증) 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 카카오 로그인 연동<br/>- 회원 API 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 알림 설정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 뱃지 신청<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 프로필, 비밀번호 수정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 로그아웃, 탈퇴<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 회원 검색<br/>- 관리자 서버 신고 관리 API 구현<br/>- EC2 + Docker 서버 환경 구축<br/>- CI/CD 파이프라인 구축<br/>&nbsp;&nbsp;&nbsp;&nbsp;- GitHub Actions 를 이용한 CI 테스트 자동화<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Jenkins 를 이용한 배포 자동화
+        </td>
+        <td>
+          - 피드, 댓글 API 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 메인 피드 구현 <br/>&nbsp;&nbsp;&nbsp;&nbsp;- 댓글 추가 및 삭제 구현 <br/>&nbsp;&nbsp;&nbsp;&nbsp;- 댓글 및 피드 신고 기능 구현 <br/>- 마이 페이지 API 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 유저 프로필 및 유저 피드 리스트 구현 <br/>&nbsp;&nbsp;&nbsp;&nbsp;- 팔로우 기능 구현  <br/>- 관리자 서버 전체 회원 관리 API 구현<br/>
+        </td>
+        <td>
+           - Project 멀티모듈 setting<br/>- Kakao 검색 API 구현<br/>- AWS setting<br/>&nbsp;&nbsp;&nbsp;&nbsp;- AWS EC2 설정<br/>&nbsp;&nbsp;&nbsp;&nbsp;- AWS S3 설정 및 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Redis 설치<br/>- 회원 피드, 맛집 API 구현<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 피드 업로드<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 맛집 검색, 추천<br/>&nbsp;&nbsp;&nbsp;&nbsp;- 맛집 추천<br/>- 관리자 서버 탈퇴 회원 관리 API 구현<br/> 
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
