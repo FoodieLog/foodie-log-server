@@ -1,0 +1,43 @@
+server:
+  port: ${FOODIE_SERVER_MANAGE_PORT}
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  config:
+    import: env.yml, application-api.yml
+  datasource:
+    url: ${FOODIE_DB_URL}
+    driver-class-name: ${FOODIE_DB_DRIVER}
+    username: ${FOODIE_DB_USERNAME}
+    password: ${FOODIE_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    defer-datasource-initialization: true
+    open-in-view: true
+
+  output:
+    ansi:
+      enabled: always
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: classpath:data.sql
