@@ -16,13 +16,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.foodielog.application.user.dto.request.ChangeNotificationParam;
 import com.foodielog.application.user.dto.request.ChangeNotificationReq;
-import com.foodielog.application.user.dto.request.ChangePasswordParam;
 import com.foodielog.application.user.dto.request.ChangePasswordReq;
-import com.foodielog.application.user.dto.request.ChangeProfileParam;
 import com.foodielog.application.user.dto.request.ChangeProfileReq;
-import com.foodielog.application.user.dto.request.WithdrawParam;
 import com.foodielog.application.user.dto.request.WithdrawReq;
 import com.foodielog.application.user.dto.response.ChangeNotificationResp;
 import com.foodielog.application.user.dto.response.ChangePasswordResp;
@@ -52,11 +48,8 @@ public class UserSettingController {
 		@AuthenticationPrincipal PrincipalDetails principalDetails,
 		Error error
 	) {
-		ChangeNotificationParam parameter = ChangeNotificationParam.builder()
-			.user(principalDetails.getUser())
-			.flag(request.getFlag())
-			.build();
-		ChangeNotificationResp response = userSettingService.changeNotification(parameter);
+		User user = principalDetails.getUser();
+		ChangeNotificationResp response = userSettingService.changeNotification(request.toParamWith(user));
 		return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
 	}
 
@@ -84,37 +77,30 @@ public class UserSettingController {
 		@AuthenticationPrincipal PrincipalDetails principalDetails,
 		Error error
 	) {
-		ChangePasswordParam parameter = ChangePasswordParam.builder().
-			user(principalDetails.getUser())
-			.oldPassword(request.getOldPassword())
-			.newPassword(request.getNewPassword())
-			.build();
-		ChangePasswordResp response = userSettingService.changePassword(parameter);
+		User user = principalDetails.getUser();
+		ChangePasswordResp response = userSettingService.changePassword(request.toParamWith(user));
 		return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
 	}
 
 	@PostMapping("/logout")
 	public ResponseEntity<ApiUtils.ApiResult<LogoutResp>> logout(
-		@RequestHeader(JwtTokenProvider.HEADER) String accessToken
+		@RequestHeader(JwtTokenProvider.HEADER) String header
 	) {
-		accessToken = jwtTokenProvider.resolveToken(accessToken);
+		String accessToken = jwtTokenProvider.resolveToken(header);
 		LogoutResp response = userSettingService.logout(accessToken);
 		return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
 	}
 
 	@PostMapping("/withdraw")
 	public ResponseEntity<ApiUtils.ApiResult<WithdrawResp>> withdraw(
-		@RequestHeader(JwtTokenProvider.HEADER) String accessToken,
+		@RequestHeader(JwtTokenProvider.HEADER) String header,
 		@RequestBody @Valid WithdrawReq request,
 		@AuthenticationPrincipal PrincipalDetails principalDetails,
 		Error error
 	) {
-		WithdrawParam parameter = WithdrawParam.builder()
-			.accessToken(jwtTokenProvider.resolveToken(accessToken))
-			.user(principalDetails.getUser())
-			.withdrawReason(request.getWithdrawReason())
-			.build();
-		WithdrawResp response = userSettingService.withdraw(parameter);
+		String accessToken = jwtTokenProvider.resolveToken(header);
+		User user = principalDetails.getUser();
+		WithdrawResp response = userSettingService.withdraw(request.toParamWith(accessToken, user));
 		return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
 	}
 
@@ -125,13 +111,8 @@ public class UserSettingController {
 		@AuthenticationPrincipal PrincipalDetails principalDetails,
 		Errors errors
 	) {
-		ChangeProfileParam parameter = ChangeProfileParam.builder()
-			.user(principalDetails.getUser())
-			.nickName(request.getNickName())
-			.aboutMe(request.getAboutMe())
-			.file(file)
-			.build();
-		ChangeProfileResp response = userSettingService.ChangeProfile(parameter);
+		User user = principalDetails.getUser();
+		ChangeProfileResp response = userSettingService.ChangeProfile(request.toParamWith(user, file));
 		return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
 	}
 }

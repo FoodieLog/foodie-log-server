@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.foodielog.application.user.dto.request.LoginReq;
 import com.foodielog.application.user.dto.request.ResetPasswordReq;
-import com.foodielog.application.user.dto.request.SignUpParam;
 import com.foodielog.application.user.dto.request.SignUpReq;
 import com.foodielog.application.user.dto.response.ExistsEmailResp;
 import com.foodielog.application.user.dto.response.ExistsKakaoResp;
@@ -63,10 +62,10 @@ public class UserAuthController {
 	/* 토큰 재발급*/
 	@GetMapping("/reissue")
 	public ResponseEntity<ApiUtils.ApiResult<ReissueResp>> reissue(
-		@RequestHeader(JwtTokenProvider.HEADER) String accessToken,
+		@RequestHeader(JwtTokenProvider.HEADER) String header,
 		@CookieValue(CookieUtil.NAME_REFRESH_TOKEN) String refreshToken
 	) {
-		accessToken = jwtTokenProvider.resolveToken(accessToken);
+		String accessToken = jwtTokenProvider.resolveToken(header);
 		ReissueResp response = userAuthService.reissue(accessToken, refreshToken);
 		HttpHeaders headers = getCookieHeaders(response.getRefreshToken());
 		return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), headers, HttpStatus.CREATED);
@@ -97,14 +96,7 @@ public class UserAuthController {
 		@RequestPart(value = "file", required = false) MultipartFile file,
 		Errors errors
 	) {
-		SignUpParam parameter = SignUpParam.builder()
-			.email(request.getEmail())
-			.password(request.getPassword())
-			.nickName(request.getNickName())
-			.aboutMe(request.getAboutMe())
-			.file(file)
-			.build();
-		SignUpResp response = userAuthService.signUp(parameter);
+		SignUpResp response = userAuthService.signUp(request.toParamWith(file));
 		return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
 	}
 
