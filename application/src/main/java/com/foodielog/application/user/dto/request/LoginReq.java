@@ -12,4 +12,11 @@ public class LoginReq {
 
     @ValidPassword
     private String password;
+
+    public LoginParam toParam(){
+        return LoginParam.builder()
+            .email(email)
+            .password(password)
+            .build();
+    }
 }

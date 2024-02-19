@@ -12,4 +12,11 @@ public class ResetPasswordReq {
 
     @ValidPassword
     private String password;
+
+    public ResetPasswordParam toParam(){
+        return ResetPasswordParam.builder()
+            .email(email)
+            .password(password)
+            .build();
+    }
 }

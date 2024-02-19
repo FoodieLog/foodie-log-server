@@ -1,13 +1,14 @@
 package com.foodielog.application.user.dto.request;
 
-import com.foodielog.server._core.customValid.valid.ValidEnum;
 import com.foodielog.server.admin.type.WithdrawReason;
+import com.foodielog.server.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
 @Builder
 @Getter
-public class WithdrawReq {
-    @ValidEnum(enumClass = WithdrawReason.class)
+public class WithdrawParam {
+    private String accessToken;
+    private User user;
     private WithdrawReason withdrawReason;
 }
