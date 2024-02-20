@@ -1,13 +1,13 @@
 package com.foodielog.application.feed.controller;
 
-import com.foodielog.application.feed.dto.request.FeedSaveReq;
-import com.foodielog.application.feed.dto.request.LikeFeedReq;
-import com.foodielog.application.feed.dto.request.ReportFeedReq;
-import com.foodielog.application.feed.dto.request.UpdateFeedReq;
-import com.foodielog.application.feed.dto.response.FeedDetailResp;
-import com.foodielog.application.feed.dto.response.GetFeedResp;
-import com.foodielog.application.feed.dto.response.MainFeedListResp;
+import com.foodielog.application.feed.dto.FeedSaveReq;
+import com.foodielog.application.feed.dto.LikeFeedReq;
+import com.foodielog.application.feed.dto.ReportFeedReq;
+import com.foodielog.application.feed.dto.UpdateFeedReq;
 import com.foodielog.application.feed.service.FeedService;
+import com.foodielog.application.feed.service.dto.FeedDetailResp;
+import com.foodielog.application.feed.service.dto.GetFeedResp;
+import com.foodielog.application.feed.service.dto.MainFeedListResp;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
 import com.foodielog.server._core.kakaoApi.KakaoApiService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
@@ -59,7 +59,7 @@ public class FeedController {
             Errors errors
     ) {
         User user = principalDetails.getUser();
-        feedService.save(request, files, user);
+        feedService.save(request.toParamWith(user, files));
 
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
@@ -70,7 +70,8 @@ public class FeedController {
             @RequestBody @Valid LikeFeedReq request,
             Errors errors
     ) {
-        feedService.likeFeed(principalDetails.getUser(), request.getFeedId());
+        User user = principalDetails.getUser();
+        feedService.likeFeed(request.toParamWith(user));
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
@@ -101,7 +102,7 @@ public class FeedController {
             Errors errors
     ) {
         User user = principalDetails.getUser();
-        feedService.updateFeed(user, request, feedId);
+        feedService.updateFeed(request.toParamWith(user, feedId));
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -112,7 +113,7 @@ public class FeedController {
             Errors errors
     ) {
         User user = principalDetails.getUser();
-        feedService.reportFeed(user, request);
+        feedService.reportFeed(request.toParamWith(user));
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
