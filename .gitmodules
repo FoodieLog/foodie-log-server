@@ -1,0 +1,3 @@
+[submodule "core-web"]
+	path = core-web
+	url = https://github.com/FoodieLog/core-web.git
