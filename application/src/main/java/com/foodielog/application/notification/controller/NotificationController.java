@@ -1,7 +1,7 @@
 package com.foodielog.application.notification.controller;
 
-import com.foodielog.application.notification.dto.request.NotificationTokenReq;
-import com.foodielog.application.notification.dto.response.NotificationListResp;
+import com.foodielog.application.notification.dto.NotificationTokenReq;
+import com.foodielog.application.notification.service.dto.NotificationListResp;
 import com.foodielog.application.notification.service.NotificationService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
@@ -34,10 +34,10 @@ public class NotificationController {
     @PostMapping("/push")
     public ResponseEntity<?> notificationPush(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody @Valid NotificationTokenReq notificationTokenReq
+            @RequestBody @Valid NotificationTokenReq request
     ) {
         User user = principalDetails.getUser();
-        notificationService.registerFcmToken(user, notificationTokenReq);
+        notificationService.registerFcmToken(request.toParamWith(user));
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 }

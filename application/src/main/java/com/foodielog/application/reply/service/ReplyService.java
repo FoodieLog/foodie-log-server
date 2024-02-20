@@ -2,9 +2,7 @@ package com.foodielog.application.reply.service;
 
 import com.foodielog.application._core.fcm.FcmMessageProvider;
 import com.foodielog.application.reply.dto.ReplyCreateParam;
-import com.foodielog.application.reply.dto.ReplyCreateReq;
 import com.foodielog.application.reply.dto.ReportReplyParam;
-import com.foodielog.application.reply.dto.ReportReplyReq;
 import com.foodielog.application.reply.service.dto.ReplyCreateResp;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;

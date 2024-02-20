@@ -1,4 +1,4 @@
-package com.foodielog.application.notification.dto.response;
+package com.foodielog.application.notification.service.dto;
 
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.notification.entity.Notification;
