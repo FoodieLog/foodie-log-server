@@ -1,7 +1,7 @@
 package com.foodielog.application.notification.service;
 
-import com.foodielog.application.notification.dto.request.NotificationTokenReq;
-import com.foodielog.application.notification.dto.response.NotificationListResp;
+import com.foodielog.application.notification.dto.NotificationTokenParam;
+import com.foodielog.application.notification.service.dto.NotificationListResp;
 import com.foodielog.server._core.redis.RedisService;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server.feed.repository.FeedLikeRepository;
@@ -89,8 +89,9 @@ public class NotificationService {
         return new NotificationListResp.ContentUser(user);
     }
 
-    public void registerFcmToken(User user, NotificationTokenReq notificationTokenReq) {
-        redisService.setObjectByKey(RedisService.FCM_TOKEN_PREFIX + user.getEmail(), notificationTokenReq.getFcmToken(),
+    public void registerFcmToken(NotificationTokenParam parameter) {
+        User user = parameter.getUser();
+        redisService.setObjectByKey(RedisService.FCM_TOKEN_PREFIX + user.getEmail(), parameter.getFcmToken(),
                 JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
     }
 }
