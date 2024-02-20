@@ -1,7 +1,8 @@
-package com.foodielog.application.feed.dto.request;
+package com.foodielog.application.feed.dto;
 
 import com.foodielog.server._core.customValid.valid.ValidEnum;
 import com.foodielog.server.report.type.ReportReason;
+import com.foodielog.server.user.entity.User;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
@@ -15,4 +16,12 @@ public class ReportFeedReq {
 
     @ValidEnum(enumClass = ReportReason.class)
     private ReportReason reportReason;
+
+    public ReportFeedParam toParamWith(User user) {
+        return ReportFeedParam.builder()
+                .user(user)
+                .feedId(feedId)
+                .reportReason(reportReason)
+                .build();
+    }
 }
