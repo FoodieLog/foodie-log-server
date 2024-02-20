@@ -1,9 +1,11 @@
 package com.foodielog.application.reply.service;
 
 import com.foodielog.application._core.fcm.FcmMessageProvider;
-import com.foodielog.application.reply.dto.request.ReplyCreateReq;
-import com.foodielog.application.reply.dto.request.ReportReplyReq;
-import com.foodielog.application.reply.dto.response.ReplyCreateResp;
+import com.foodielog.application.reply.dto.ReplyCreateParam;
+import com.foodielog.application.reply.dto.ReplyCreateReq;
+import com.foodielog.application.reply.dto.ReportReplyParam;
+import com.foodielog.application.reply.dto.ReportReplyReq;
+import com.foodielog.application.reply.service.dto.ReplyCreateResp;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.repository.FeedRepository;
@@ -38,10 +40,11 @@ public class ReplyService {
     private final FcmMessageProvider fcmMessageProvider;
 
     @Transactional
-    public ReplyCreateResp createReply(User user, Long feedId, ReplyCreateReq createDTO) {
-        Feed feed = getValidatedFeed(feedId);
+    public ReplyCreateResp createReply(ReplyCreateParam parameter) {
+        Feed feed = getValidatedFeed(parameter.getFeedId());
+        User user = parameter.getUser();
 
-        Reply reply = Reply.createReply(user, feed, createDTO.getContent());
+        Reply reply = Reply.createReply(user, feed, parameter.getContent());
         Reply saveReply = replyRepository.save(reply);
 
         if (feed.getUser().getNotificationFlag() == Flag.Y) {
@@ -75,11 +78,12 @@ public class ReplyService {
     }
 
     @Transactional
-    public void reportReply(User user, ReportReplyReq request) {
-        Reply reply = replyRepository.findByIdAndStatus(request.getReplyId(), ContentStatus.NORMAL)
+    public void reportReply(ReportReplyParam parameter) {
+        Reply reply = replyRepository.findByIdAndStatus(parameter.getReplyId(), ContentStatus.NORMAL)
                 .orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
 
         User reported = reply.getUser();
+        User user = parameter.getUser();
 
         if (user.getId().equals(reported.getId())) {
             throw new Exception404("자신의 댓글은 신고 할 수 없습니다.");
@@ -87,7 +91,7 @@ public class ReplyService {
 
         checkReportedReply(user, reply);
 
-        Report report = Report.createReport(user, reported, ReportType.REPLY, reply.getId(), request.getReportReason());
+        Report report = Report.createReport(user, reported, ReportType.REPLY, reply.getId(), parameter.getReportReason());
         reportRepository.save(report);
     }
 
