@@ -1,4 +1,4 @@
-package com.foodielog.application.reply.dto.response;
+package com.foodielog.application.reply.service.dto;
 
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.reply.entity.Reply;
