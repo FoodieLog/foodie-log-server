@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.foodielog.application.user.dto.response.FollowListResp;
-import com.foodielog.application.user.dto.response.FollowerListResp;
-import com.foodielog.application.user.dto.response.UserFeedResp;
-import com.foodielog.application.user.dto.response.UserProfileResp;
-import com.foodielog.application.user.dto.response.UserRestaurantListResp;
-import com.foodielog.application.user.dto.response.UserSearchResp;
+import com.foodielog.application.user.service.dto.FollowListResp;
+import com.foodielog.application.user.service.dto.FollowerListResp;
+import com.foodielog.application.user.service.dto.UserFeedResp;
+import com.foodielog.application.user.service.dto.UserProfileResp;
+import com.foodielog.application.user.service.dto.UserRestaurantListResp;
+import com.foodielog.application.user.service.dto.UserSearchResp;
 import com.foodielog.application.user.service.UserService;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;

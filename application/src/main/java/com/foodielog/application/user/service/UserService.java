@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foodielog.application._core.fcm.FcmMessageProvider;
-import com.foodielog.application.user.dto.response.FollowListResp;
-import com.foodielog.application.user.dto.response.FollowerListResp;
-import com.foodielog.application.user.dto.response.UserFeedResp;
-import com.foodielog.application.user.dto.response.UserProfileResp;
-import com.foodielog.application.user.dto.response.UserRestaurantListResp;
-import com.foodielog.application.user.dto.response.UserSearchResp;
+import com.foodielog.application.user.service.dto.FollowListResp;
+import com.foodielog.application.user.service.dto.FollowerListResp;
+import com.foodielog.application.user.service.dto.UserFeedResp;
+import com.foodielog.application.user.service.dto.UserProfileResp;
+import com.foodielog.application.user.service.dto.UserRestaurantListResp;
+import com.foodielog.application.user.service.dto.UserSearchResp;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.Media;
