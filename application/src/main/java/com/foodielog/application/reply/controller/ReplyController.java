@@ -1,11 +1,12 @@
 package com.foodielog.application.reply.controller;
 
-import com.foodielog.application.reply.dto.request.ReplyCreateReq;
-import com.foodielog.application.reply.dto.request.ReportReplyReq;
-import com.foodielog.application.reply.dto.response.ReplyCreateResp;
+import com.foodielog.application.reply.dto.ReplyCreateReq;
+import com.foodielog.application.reply.dto.ReportReplyReq;
 import com.foodielog.application.reply.service.ReplyService;
+import com.foodielog.application.reply.service.dto.ReplyCreateResp;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
+import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -29,10 +30,11 @@ public class ReplyController {
     public ResponseEntity<ApiUtils.ApiResult<ReplyCreateResp>> saveReply(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long feedId,
-            @Valid @RequestBody ReplyCreateReq createDTO,
+            @Valid @RequestBody ReplyCreateReq request,
             Errors errors
     ) {
-        ReplyCreateResp response = replyService.createReply(principalDetails.getUser(), feedId, createDTO);
+        User user = principalDetails.getUser();
+        ReplyCreateResp response = replyService.createReply(request.toParamWith(user, feedId));
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
@@ -61,7 +63,8 @@ public class ReplyController {
             @RequestBody @Valid ReportReplyReq request,
             Errors errors
     ) {
-        replyService.reportReply(principalDetails.getUser(), request);
+        User user = principalDetails.getUser();
+        replyService.reportReply(request.toParamWith(user));
         return new ResponseEntity<>(ApiUtils.success(null, HttpStatus.CREATED), HttpStatus.CREATED);
     }
 }

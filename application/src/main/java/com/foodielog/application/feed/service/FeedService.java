@@ -1,12 +1,13 @@
 package com.foodielog.application.feed.service;
 
 import com.foodielog.application._core.fcm.FcmMessageProvider;
-import com.foodielog.application.feed.dto.request.FeedSaveReq;
-import com.foodielog.application.feed.dto.request.ReportFeedReq;
-import com.foodielog.application.feed.dto.request.UpdateFeedReq;
-import com.foodielog.application.feed.dto.response.FeedDetailResp;
-import com.foodielog.application.feed.dto.response.GetFeedResp;
-import com.foodielog.application.feed.dto.response.MainFeedListResp;
+import com.foodielog.application.feed.dto.FeedSaveParam;
+import com.foodielog.application.feed.dto.LikeFeedParam;
+import com.foodielog.application.feed.dto.ReportFeedParam;
+import com.foodielog.application.feed.dto.UpdateFeedParam;
+import com.foodielog.application.feed.service.dto.FeedDetailResp;
+import com.foodielog.application.feed.service.dto.GetFeedResp;
+import com.foodielog.application.feed.service.dto.MainFeedListResp;
 import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
@@ -37,7 +38,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -63,15 +63,16 @@ public class FeedService {
     private final FcmMessageProvider fcmMessageProvider;
 
     @Transactional
-    public void save(FeedSaveReq request, List<MultipartFile> files, User user) {
-        Restaurant restaurant = dtoToRestaurant(request.getSelectedSearchPlace());
+    public void save(FeedSaveParam parameter) {
+        Restaurant restaurant = dtoToRestaurant(parameter.getSelectedSearchPlace());
         Restaurant savedRestaurant = saveRestaurant(restaurant);
+        User user = parameter.getUser();
 
-        checkIsLiked(user, savedRestaurant, request);
+        checkIsLiked(user, savedRestaurant, parameter.getIsLiked());
 
-        List<String> filesUrl = s3Uploader.saveFiles(files);
+        List<String> filesUrl = s3Uploader.saveFiles(parameter.getFiles());
 
-        Feed feed = Feed.createFeed(savedRestaurant, user, request.getContent(), filesUrl.get(0));
+        Feed feed = Feed.createFeed(savedRestaurant, user, parameter.getContent(), filesUrl.get(0));
         feedRepository.save(feed);
 
         for (String fileUrl : filesUrl) {
@@ -80,12 +81,12 @@ public class FeedService {
         }
     }
 
-    private void checkIsLiked(User user, Restaurant restaurant, FeedSaveReq request) {
+    private void checkIsLiked(User user, Restaurant restaurant, boolean isLiked) {
         if (restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant)) {
             return;
         }
 
-        if (!request.getIsLiked()) {
+        if (!isLiked) {
             return;
         }
 
@@ -115,10 +116,11 @@ public class FeedService {
     }
 
     @Transactional
-    public void likeFeed(User user, Long feedId) {
-        Feed feed = getFeed(feedId);
+    public void likeFeed(LikeFeedParam parameter) {
+        Feed feed = getFeed(parameter.getFeedId());
 
         Restaurant restaurant = feed.getRestaurant();
+        User user = parameter.getUser();
         likeRestaurantIfNotExists(user, restaurant);
 
         boolean isFeedLike = feedLikeRepository.existsByUserAndFeed(user, feed);
@@ -174,11 +176,11 @@ public class FeedService {
     }
 
     @Transactional
-    public void updateFeed(User user, UpdateFeedReq request, Long feedId) {
-        Feed feed = getFeed(feedId);
-        checkAccess(feed, user);
+    public void updateFeed(UpdateFeedParam parameter) {
+        Feed feed = getFeed(parameter.getFeedId());
+        checkAccess(feed, parameter.getUser());
 
-        String contents = request.getContent();
+        String contents = parameter.getContent();
         feed.updateFeed(contents);
     }
 
@@ -191,9 +193,10 @@ public class FeedService {
     }
 
     @Transactional
-    public void reportFeed(User user, ReportFeedReq request) {
-        Feed feed = getFeed(request.getFeedId());
+    public void reportFeed(ReportFeedParam parameter) {
+        Feed feed = getFeed(parameter.getFeedId());
         User reported = feed.getUser();
+        User user = parameter.getUser();
 
         if (user.getId().equals(reported.getId())) {
             throw new Exception404("자신의 피드는 신고할 수 없습니다.");
@@ -201,7 +204,7 @@ public class FeedService {
 
         checkReportedFeed(user, feed);
 
-        Report report = Report.createReport(user, reported, ReportType.FEED, feed.getId(), request.getReportReason());
+        Report report = Report.createReport(user, reported, ReportType.FEED, feed.getId(), parameter.getReportReason());
         reportRepository.save(report);
     }
 
