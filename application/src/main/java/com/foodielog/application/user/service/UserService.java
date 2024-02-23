@@ -54,7 +54,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public UserProfileResp getProfile(User user, Long userId) {
-		User currentPageUser = userModuleService.getUser(userId);
+		User currentPageUser = userModuleService.get(userId);
 
 		Long feedCount = feedRepository.countByUserAndStatus(currentPageUser, ContentStatus.NORMAL);
 		Long follower = followRepository.countByFollowedId(currentPageUser);
@@ -67,7 +67,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public UserFeedResp getFeeds(Long userId, Long feedId, Pageable pageable) {
-		User user = userModuleService.getUser(userId);
+		User user = userModuleService.get(userId);
 
 		List<Feed> feeds = feedRepository.getFeeds(user, feedId, ContentStatus.NORMAL, pageable);
 
@@ -91,7 +91,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public UserRestaurantListResp getRestaurantList(Long userId, User user) {
-		User feedOwner = userModuleService.getUser(userId);
+		User feedOwner = userModuleService.get(userId);
 		List<Feed> feeds = feedRepository.findByUserIdAndStatus(feedOwner.getId(), ContentStatus.NORMAL);
 
 		List<Restaurant> RestaurantList = feeds.stream()
@@ -141,7 +141,7 @@ public class UserService {
 		if (following.getId().equals(followedId)) {
 			throw new Exception404("자신한테 팔로우 할 수 없습니다.");
 		}
-		User followed = userModuleService.getUser(followedId);
+		User followed = userModuleService.get(followedId);
 
 		boolean isFollow = getOptionalFollow(following, followed).isPresent();
 		if (isFollow) {
@@ -165,7 +165,7 @@ public class UserService {
 		if (following.getId().equals(followedId)) {
 			throw new Exception404("자신을 언팔로우 할 수 없습니다.");
 		}
-		User followed = userModuleService.getUser(followedId);
+		User followed = userModuleService.get(followedId);
 
 		Follow follow = getOptionalFollow(following, followed)
 			.orElseThrow(() -> new Exception404("팔로우 되지 않은 유저입니다."));
@@ -190,7 +190,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public FollowerListResp getFollower(User user, Long userId) {
-		User owner = userModuleService.getUser(userId);
+		User owner = userModuleService.get(userId);
 		List<Follow> followerList = followRepository.findByFollowedId(owner);
 
 		List<FollowerListResp.FollowerDTO> followerDTOS = followerList.stream()
@@ -205,7 +205,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public FollowListResp getFollow(User user, Long userId) {
-		User owner = userModuleService.getUser(userId);
+		User owner = userModuleService.get(userId);
 		List<Follow> followList = followRepository.findByFollowingId(owner);
 
 		List<FollowListResp.FollowDTO> followDTOS = followList.stream()
