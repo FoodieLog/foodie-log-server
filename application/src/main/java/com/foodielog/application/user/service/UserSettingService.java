@@ -95,7 +95,7 @@ public class UserSettingService {
 
 	@Transactional
 	public LogoutResp logout(String accessToken) {
-		String email = jwtTokenProvider.invalidatedToken(accessToken);
+		String email = jwtTokenProvider.invalidateToken(accessToken);
 
 		return new LogoutResp(email, Boolean.TRUE);
 	}
@@ -122,7 +122,7 @@ public class UserSettingService {
 		replyList.forEach(Reply::deleteReply);
 
 		// 토큰 무효화
-		jwtTokenProvider.invalidatedToken(parameter.getAccessToken());
+		jwtTokenProvider.invalidateToken(parameter.getAccessToken());
 
 		return new WithdrawResp(user.getEmail(), Boolean.TRUE);
 	}
