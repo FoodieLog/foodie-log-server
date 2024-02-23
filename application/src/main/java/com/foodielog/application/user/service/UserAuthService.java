@@ -24,14 +24,11 @@ import com.foodielog.application.user.service.dto.SignUpResp;
 import com.foodielog.application.user.service.dto.VerifiedCodeResp;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
-import com.foodielog.server._core.error.exception.Exception500;
 import com.foodielog.server._core.redis.RedisService;
 import com.foodielog.server._core.s3.S3Uploader;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server._core.smtp.MailService;
 import com.foodielog.server.user.entity.User;
-import com.foodielog.server.user.repository.UserRepository;
-import com.foodielog.server.user.type.UserStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,9 +41,10 @@ public class UserAuthService {
 	private final RedisService redisService;
 	private final S3Uploader s3Uploader;
 
-	private final UserRepository userRepository;
+	private final UserModuleService userModuleService;
 
 	/* 토큰 재발급 */
+	@Transactional(readOnly = true)
 	public ReissueResp reissue(String accessToken, String refreshToken) {
 		// Refresh Token 유효성 검사
 		jwtTokenProvider.isTokenValid(refreshToken);
@@ -60,8 +58,7 @@ public class UserAuthService {
 		}
 
 		// 유저 상태 검사
-		User user = userRepository.findByEmailAndStatus(authentication.getName(), UserStatus.NORMAL)
-			.orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
+		User user = userModuleService.getUser(authentication.getName());
 
 		// 기존 토큰 무효화
 		jwtTokenProvider.invalidatedToken(accessToken);
@@ -80,26 +77,21 @@ public class UserAuthService {
 	/* 회원 가입 */
 	@Transactional(readOnly = true)
 	public ExistsEmailResp checkExistsEmail(String email) {
-		Boolean isExists = userRepository.existsByEmail(email);
+		Boolean isExists = userModuleService.isEmailExists(email);
 		return new ExistsEmailResp(email, isExists);
 	}
 
 	@Transactional
 	public SignUpResp signUp(SignUpParam parameter) {
-		if (userRepository.existsByEmail(parameter.getEmail())) {
-			throw new Exception400("email", "이미 가입된 이메일 입니다");
-		}
-
-		if (userRepository.existsByNickName(parameter.getNickName())) {
-			throw new Exception400("nickName", "이미 사용 중인 닉네임 입니다");
-		}
+		userModuleService.validNewEmail(parameter.getEmail());
+		userModuleService.validNickName(parameter.getNickName());
 
 		String encodedPassword = passwordEncoder.encode(parameter.getPassword());
 		String storedFileUrl = (parameter.getFile() == null) ? null : s3Uploader.saveFile(parameter.getFile());
 		User user = User.createUser(parameter.getEmail(), encodedPassword, parameter.getNickName(),
 			storedFileUrl, parameter.getAboutMe());
 
-		userRepository.save(user);
+		user = userModuleService.save(user);
 
 		return new SignUpResp(user.getEmail(), user.getNickName(), user.getProfileImageUrl());
 	}
@@ -107,9 +99,7 @@ public class UserAuthService {
 	/* 이메일 인증 */
 	@Transactional
 	public SendCodeForSignupResp sendCodeForSignUp(String email) {
-		if (userRepository.existsByEmail(email)) {
-			throw new Exception400("email", "이미 가입된 이메일 입니다");
-		}
+		userModuleService.validNewEmail(email);
 
 		// 이메일 전송
 		String title = "[FoodieLog] 회원 가입 이메일 인증 번호";
@@ -124,9 +114,7 @@ public class UserAuthService {
 
 	@Transactional
 	public SendCodeForPasswordResp sendCodeForPassword(String email) {
-		if (!userRepository.existsByEmail(email)) {
-			throw new Exception400("email", "해당 이메일 주소가 없습니다.");
-		}
+		userModuleService.validEmail(email);
 
 		// 이메일 전송
 		String title = "[FoodieLog] 비밀번호 찾기 이메일 인증 번호";
@@ -161,8 +149,7 @@ public class UserAuthService {
 	/* 로그인 */
 	@Transactional(readOnly = true)
 	public LoginResp login(LoginParam parameter) {
-		User user = userRepository.findByEmailAndStatus(parameter.getEmail(), UserStatus.NORMAL)
-			.orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
+		User user = userModuleService.getUser(parameter.getEmail());
 
 		if (!passwordEncoder.matches(parameter.getPassword(), user.getPassword())) {
 			throw new Exception400("password", ErrorMessage.PASSWORD_NOT_MATCH);
@@ -181,18 +168,15 @@ public class UserAuthService {
 	/* 프로필 설정 */
 	@Transactional(readOnly = true)
 	public ExistsNickNameResp checkExistsNickName(String nickName) {
-		Boolean isExists = userRepository.existsByNickName(nickName);
+		Boolean isExists = userModuleService.isNickNameExists(nickName);
 		return new ExistsNickNameResp(nickName, isExists);
 	}
 
 	/* 비밀번호 변경 */
 	@Transactional
 	public ResetPasswordResp resetPassword(ResetPasswordParam parameter) {
-		User user = userRepository.findByEmailAndStatus(parameter.getEmail(), UserStatus.NORMAL)
-			.orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
-
+		User user = userModuleService.getUser(parameter.getEmail());
 		user.resetPassword(passwordEncoder.encode(parameter.getPassword()));
-
 		return new ResetPasswordResp(parameter.getEmail());
 	}
 }
