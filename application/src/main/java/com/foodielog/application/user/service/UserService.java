@@ -33,16 +33,13 @@ import com.foodielog.server.restaurant.repository.RestaurantLikeRepository;
 import com.foodielog.server.user.entity.Follow;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.FollowRepository;
-import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.Flag;
-import com.foodielog.server.user.type.UserStatus;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
-	private final UserRepository userRepository;
 	private final FollowRepository followRepository;
 	private final FeedRepository feedRepository;
 	private final MediaRepository mediaRepository;
@@ -53,9 +50,11 @@ public class UserService {
 
 	private final FcmMessageProvider fcmMessageProvider;
 
+	private final UserModuleService userModuleService;
+
 	@Transactional(readOnly = true)
 	public UserProfileResp getProfile(User user, Long userId) {
-		User currentPageUser = validationUserId(userId);
+		User currentPageUser = userModuleService.getUser(userId);
 
 		Long feedCount = feedRepository.countByUserAndStatus(currentPageUser, ContentStatus.NORMAL);
 		Long follower = followRepository.countByFollowedId(currentPageUser);
@@ -68,7 +67,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public UserFeedResp getFeeds(Long userId, Long feedId, Pageable pageable) {
-		User user = validationUserId(userId);
+		User user = userModuleService.getUser(userId);
 
 		List<Feed> feeds = feedRepository.getFeeds(user, feedId, ContentStatus.NORMAL, pageable);
 
@@ -92,7 +91,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public UserRestaurantListResp getRestaurantList(Long userId, User user) {
-		User feedOwner = validationUserId(userId);
+		User feedOwner = userModuleService.getUser(userId);
 		List<Feed> feeds = feedRepository.findByUserIdAndStatus(feedOwner.getId(), ContentStatus.NORMAL);
 
 		List<Restaurant> RestaurantList = feeds.stream()
@@ -137,17 +136,12 @@ public class UserService {
 			.collect(Collectors.toList());
 	}
 
-	private User validationUserId(Long userId) {
-		return userRepository.findByIdAndStatus(userId, UserStatus.NORMAL)
-			.orElseThrow(() -> new Exception404("해당 유저를 찾을 수 없습니다."));
-	}
-
 	@Transactional
 	public void follow(User following, Long followedId) {
 		if (following.getId().equals(followedId)) {
 			throw new Exception404("자신한테 팔로우 할 수 없습니다.");
 		}
-		User followed = validationUserId(followedId);
+		User followed = userModuleService.getUser(followedId);
 
 		boolean isFollow = getOptionalFollow(following, followed).isPresent();
 		if (isFollow) {
@@ -171,7 +165,7 @@ public class UserService {
 		if (following.getId().equals(followedId)) {
 			throw new Exception404("자신을 언팔로우 할 수 없습니다.");
 		}
-		User followed = validationUserId(followedId);
+		User followed = userModuleService.getUser(followedId);
 
 		Follow follow = getOptionalFollow(following, followed)
 			.orElseThrow(() -> new Exception404("팔로우 되지 않은 유저입니다."));
@@ -185,7 +179,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public UserSearchResp search(String keyword) {
-		List<User> userList = userRepository.searchUserOrderByFollowedIdDesc(keyword);
+		List<User> userList = userModuleService.searchUsers(keyword);
 
 		List<UserSearchResp.UserDTO> userDTOList = userList.stream()
 			.map(UserSearchResp.UserDTO::new)
@@ -196,7 +190,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public FollowerListResp getFollower(User user, Long userId) {
-		User owner = validationUserId(userId);
+		User owner = userModuleService.getUser(userId);
 		List<Follow> followerList = followRepository.findByFollowedId(owner);
 
 		List<FollowerListResp.FollowerDTO> followerDTOS = followerList.stream()
@@ -211,7 +205,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public FollowListResp getFollow(User user, Long userId) {
-		User owner = validationUserId(userId);
+		User owner = userModuleService.getUser(userId);
 		List<Follow> followList = followRepository.findByFollowingId(owner);
 
 		List<FollowListResp.FollowDTO> followDTOS = followList.stream()

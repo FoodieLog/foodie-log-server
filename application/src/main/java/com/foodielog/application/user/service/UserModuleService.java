@@ -1,5 +1,7 @@
 package com.foodielog.application.user.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.foodielog.server._core.error.ErrorMessage;
@@ -18,6 +20,11 @@ public class UserModuleService {
 	public User getUser(String email) {
 		return userRepository.findByEmailAndStatus(email, UserStatus.NORMAL)
 			.orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
+	}
+
+	public User getUser(Long id) {
+		return userRepository.findByIdAndStatus(id, UserStatus.NORMAL)
+			.orElseThrow(() -> new Exception400("id", ErrorMessage.USER_NOT_FOUND));
 	}
 
 	public Boolean isEmailExists(String email) {
@@ -48,5 +55,9 @@ public class UserModuleService {
 
 	public User save(User user) {
 		return userRepository.save(user);
+	}
+
+	public List<User> searchUsers(String keyword) {
+		return userRepository.searchUserOrderByFollowedIdDesc(keyword);
 	}
 }
