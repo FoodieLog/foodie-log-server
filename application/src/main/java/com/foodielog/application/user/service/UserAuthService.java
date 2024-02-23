@@ -1,11 +1,7 @@
 package com.foodielog.application.user.service;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,21 +45,14 @@ public class UserAuthService {
 		// Refresh Token 유효성 검사
 		jwtTokenProvider.isTokenValid(refreshToken);
 
-		// Refresh Token 검증
-		Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-		String redisRT = redisService.getObjectByKey(RedisService.REFRESH_TOKEN_PREFIX
-			+ authentication.getName(), String.class);
-		if (!redisRT.equals(refreshToken)) {
-			throw new Exception400("Refresh Token", "정보가 일치하지 않습니다.");
-		}
-
-		// 유저 상태 검사
-		User user = userModuleService.getUser(authentication.getName());
+		// Access - Refresh 쌍 검증
+		jwtTokenProvider.checkPair(accessToken, refreshToken);
 
 		// 기존 토큰 무효화
-		jwtTokenProvider.invalidatedToken(accessToken);
+		jwtTokenProvider.invalidateToken(accessToken);
 
 		// 재발급
+		User user = userModuleService.getUser(jwtTokenProvider.getEmail(accessToken));
 		String newAT = jwtTokenProvider.createAccessToken(user);
 		String newRT = jwtTokenProvider.createRefreshToken();
 
@@ -83,13 +72,14 @@ public class UserAuthService {
 
 	@Transactional
 	public SignUpResp signUp(SignUpParam parameter) {
-		userModuleService.validNewEmail(parameter.getEmail());
-		userModuleService.validNickName(parameter.getNickName());
+		userModuleService.checkNewEmail(parameter.getEmail());
+		userModuleService.checkNewNickName(parameter.getNickName());
 
 		String encodedPassword = passwordEncoder.encode(parameter.getPassword());
 		String storedFileUrl = (parameter.getFile() == null) ? null : s3Uploader.saveFile(parameter.getFile());
-		User user = User.createUser(parameter.getEmail(), encodedPassword, parameter.getNickName(),
-			storedFileUrl, parameter.getAboutMe());
+		User user = User.createUser(
+			parameter.getEmail(), encodedPassword, parameter.getNickName(), storedFileUrl, parameter.getAboutMe()
+		);
 
 		user = userModuleService.save(user);
 
@@ -99,51 +89,46 @@ public class UserAuthService {
 	/* 이메일 인증 */
 	@Transactional
 	public SendCodeForSignupResp sendCodeForSignUp(String email) {
-		userModuleService.validNewEmail(email);
+		userModuleService.checkNewEmail(email);
 
 		// 이메일 전송
 		String title = "[FoodieLog] 회원 가입 이메일 인증 번호";
-		String authCode = this.createCode();
-		mailService.sendEmail(email, title, authCode);
+		String verificationCode = mailService.createVerificationCode();
+		mailService.sendEmail(email, title, verificationCode);
 
-		// 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
-		redisService.setObjectByKey(RedisService.EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
+		// 이메일 인증 번호 Redis에 저장 ( key = "VerificationCode " + Email / value = VerificationCode )
+		redisService.setObjectByKey(
+			RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L, TimeUnit.MINUTES
+		);
 
 		return new SendCodeForSignupResp(email);
 	}
 
 	@Transactional
 	public SendCodeForPasswordResp sendCodeForPassword(String email) {
-		userModuleService.validEmail(email);
+		userModuleService.checkEmailExists(email);
 
 		// 이메일 전송
 		String title = "[FoodieLog] 비밀번호 찾기 이메일 인증 번호";
-		String authCode = this.createCode();
-		mailService.sendEmail(email, title, authCode);
+		String verificationCode = mailService.createVerificationCode();
+		mailService.sendEmail(email, title, verificationCode);
 
-		// 이메일 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
-		redisService.setObjectByKey(RedisService.EMAIL_AUTH_CODE_PREFIX + email, authCode, 3L, TimeUnit.MINUTES);
+		// 이메일 인증 번호 Redis에 저장 ( key = "VerificationCode " + Email / value = VerificationCode )
+		redisService.setObjectByKey(
+			RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L, TimeUnit.MINUTES
+		);
 
 		return new SendCodeForPasswordResp(email);
 	}
 
 	@Transactional(readOnly = true)
 	public VerifiedCodeResp verifiedCode(String email, String code) {
-		String redisAuthCode = redisService.getObjectByKey(RedisService.EMAIL_AUTH_CODE_PREFIX + email, String.class);
-		Boolean isVerified = redisAuthCode.equals(code);
+		String redisValue = redisService.getObjectByKey(
+			RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, String.class
+		);
+		Boolean isVerified = redisValue.equals(code);
 
 		return new VerifiedCodeResp(email, code, isVerified);
-	}
-
-	private String createCode() {
-		try {
-			Random random = SecureRandom.getInstanceStrong();
-			int randomNumber = random.nextInt(9000) + 1000;
-
-			return Integer.toString(randomNumber);
-		} catch (NoSuchAlgorithmException e) {
-			throw new Exception500("서버 에러: 이메일 인증 코드 생성 오류");
-		}
 	}
 
 	/* 로그인 */
