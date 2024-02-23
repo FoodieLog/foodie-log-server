@@ -1,21 +1,7 @@
 package com.foodielog.application.user.service;
 
-import com.foodielog.application.user.service.dto.ExistsKakaoResp;
-import com.foodielog.application.user.service.dto.KakaoLoginResp;
-import com.foodielog.server._core.error.ErrorMessage;
-import com.foodielog.server._core.error.exception.Exception400;
-import com.foodielog.server._core.error.exception.Exception401;
-import com.foodielog.server._core.error.exception.Exception500;
-import com.foodielog.server._core.redis.RedisService;
-import com.foodielog.server._core.security.jwt.JwtTokenProvider;
-import com.foodielog.server._core.util.ExternalUtil;
-import com.foodielog.server._core.util.JsonConverter;
-import com.foodielog.server.user.entity.User;
-import com.foodielog.server.user.repository.UserRepository;
-import com.foodielog.server.user.type.ProviderType;
-import com.foodielog.server.user.type.UserStatus;
-
-import lombok.RequiredArgsConstructor;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -25,8 +11,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import com.foodielog.application.user.service.dto.ExistsKakaoResp;
+import com.foodielog.application.user.service.dto.KakaoLoginResp;
+import com.foodielog.server._core.error.exception.Exception401;
+import com.foodielog.server._core.error.exception.Exception500;
+import com.foodielog.server._core.redis.RedisService;
+import com.foodielog.server._core.security.jwt.JwtTokenProvider;
+import com.foodielog.server._core.util.ExternalUtil;
+import com.foodielog.server._core.util.JsonConverter;
+import com.foodielog.server.user.entity.User;
+import com.foodielog.server.user.type.ProviderType;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -38,14 +34,15 @@ public class UserOauthService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RedisService redisService;
 	private final JsonConverter jsonConverter;
-	private final UserRepository userRepository;
+
+	private final UserModuleService userModuleService;
 
 	@Transactional(readOnly = true)
 	public ExistsKakaoResp checkExistsKakao(String token) {
 		KakaoLoginResp.kakaoApiResp.UserInfo kakaoUserInfo = getKakaoUserInfo(token);
 		KakaoLoginResp.kakaoApiResp.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
 
-		Boolean isExists = userRepository.existsByEmail(kakaoAccount.getEmail());
+		Boolean isExists = userModuleService.isEmailExists(kakaoAccount.getEmail());
 		return new ExistsKakaoResp(token, isExists);
 	}
 
@@ -59,16 +56,16 @@ public class UserOauthService {
 		}
 
 		// 회원 정보가 없으면 회원가입
-		if (!userRepository.existsByEmail(kakaoAccount.getEmail())) {
+		if (!userModuleService.isEmailExists(kakaoAccount.getEmail())) {
 			String encodedRandomPassword = passwordEncoder.encode(UUID.randomUUID().toString());
-			User user = User.createSocialUser(kakaoUserInfo.getId(), kakaoAccount.getEmail(), encodedRandomPassword,
-				ProviderType.KAKAO);
+			User user = User.createSocialUser(
+				kakaoUserInfo.getId(), kakaoAccount.getEmail(), encodedRandomPassword, ProviderType.KAKAO
+			);
 
-			userRepository.save(user);
+			userModuleService.save(user);
 		}
 
-		User loginUser = userRepository.findByEmailAndStatus(kakaoAccount.getEmail(), UserStatus.NORMAL)
-			.orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
+		User loginUser = userModuleService.getUser(kakaoAccount.getEmail());
 
 		String accessToken = jwtTokenProvider.createAccessToken(loginUser);
 		String refreshToken = jwtTokenProvider.createRefreshToken();
