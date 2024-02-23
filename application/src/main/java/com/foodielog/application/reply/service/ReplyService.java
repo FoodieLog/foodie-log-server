@@ -1,12 +1,19 @@
 package com.foodielog.application.reply.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.foodielog.application._core.fcm.FcmMessageProvider;
+import com.foodielog.application.feed.service.FeedModuleService;
 import com.foodielog.application.reply.dto.ReplyCreateParam;
 import com.foodielog.application.reply.dto.ReportReplyParam;
 import com.foodielog.application.reply.service.dto.ReplyCreateResp;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
-import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.notification.entity.Notification;
 import com.foodielog.server.notification.repository.NotificationRepository;
@@ -18,90 +25,85 @@ import com.foodielog.server.report.repository.ReportRepository;
 import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class ReplyService {
 
-    private final FeedRepository feedRepository;
-    private final ReplyRepository replyRepository;
-    private final ReportRepository reportRepository;
-    private final NotificationRepository notificationRepository;
+	private final ReplyRepository replyRepository;
+	private final ReportRepository reportRepository;
+	private final NotificationRepository notificationRepository;
 
-    private final FcmMessageProvider fcmMessageProvider;
+	private final FcmMessageProvider fcmMessageProvider;
 
-    @Transactional
-    public ReplyCreateResp createReply(ReplyCreateParam parameter) {
-        Feed feed = getValidatedFeed(parameter.getFeedId());
-        User user = parameter.getUser();
+	private final FeedModuleService feedModuleService;
+	private final ReplyModuleService replyModuleService;
 
-        Reply reply = Reply.createReply(user, feed, parameter.getContent());
-        Reply saveReply = replyRepository.save(reply);
+	@Transactional
+	public ReplyCreateResp createReply(ReplyCreateParam parameter) {
+		Feed feed = feedModuleService.get(parameter.getFeedId());
+		User user = parameter.getUser();
 
-        if (feed.getUser().getNotificationFlag() == Flag.Y) {
-            Notification notification = Notification.createNotification(feed.getUser(), NotificationType.REPLY, saveReply.getId());
-            notificationRepository.save(notification);
+		Reply reply = Reply.createReply(user, feed, parameter.getContent());
+		Reply saveReply = replyRepository.save(reply);
 
-            fcmMessageProvider.sendReplyMessage(feed.getUser().getEmail(), user.getEmail());
-        }
-        return new ReplyCreateResp(saveReply);
-    }
+		if (feed.getUser().getNotificationFlag() == Flag.Y) {
+			Notification notification = Notification.createNotification(feed.getUser(), NotificationType.REPLY,
+				saveReply.getId());
+			notificationRepository.save(notification);
 
-    @Transactional
-    public void deleteReply(User user, Long replyId) {
-        Reply reply = replyRepository.findByIdAndUserIdAndStatus(replyId, user.getId(), ContentStatus.NORMAL)
-                .orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
+			fcmMessageProvider.sendReplyMessage(feed.getUser().getEmail(), user.getEmail());
+		}
+		return new ReplyCreateResp(saveReply);
+	}
 
-        reply.deleteReplyByUser();
-    }
+	@Transactional
+	public void deleteReply(User user, Long replyId) {
+		Reply reply = replyRepository.findByIdAndUserIdAndStatus(replyId, user.getId(), ContentStatus.NORMAL)
+			.orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
 
-    @Transactional(readOnly = true)
-    public ReplyCreateResp.ListDTO getListReply(Long feedId, Long replyId, Pageable pageable) {
-        Feed feed = getValidatedFeed(feedId);
+		reply.deleteReplyByUser();
+	}
 
-        List<Reply> replyList = replyRepository.getReplyList(feedId, replyId, pageable);
+	@Transactional(readOnly = true)
+	public ReplyCreateResp.ListDTO getReplys(Long feedId, Long lastReplyId, Pageable pageable) {
+		Feed feed = feedModuleService.get(feedId);
 
-        List<ReplyCreateResp.ReplyDTO> replyListDTO = replyList.stream()
-                .map(ReplyCreateResp.ReplyDTO::new)
-                .collect(Collectors.toList());
+		List<Reply> replyList = replyModuleService.getFeedReplys(feedId, lastReplyId, pageable);
 
-        return new ReplyCreateResp.ListDTO(feed, replyListDTO);
-    }
+		List<ReplyCreateResp.ReplyDTO> replyListDTO = replyList.stream()
+			.map(ReplyCreateResp.ReplyDTO::new)
+			.collect(Collectors.toList());
 
-    @Transactional
-    public void reportReply(ReportReplyParam parameter) {
-        Reply reply = replyRepository.findByIdAndStatus(parameter.getReplyId(), ContentStatus.NORMAL)
-                .orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
+		return new ReplyCreateResp.ListDTO(feed, replyListDTO);
+	}
 
-        User reported = reply.getUser();
-        User user = parameter.getUser();
+	@Transactional
+	public void reportReply(ReportReplyParam parameter) {
+		Reply reply = replyRepository.findByIdAndStatus(parameter.getReplyId(), ContentStatus.NORMAL)
+			.orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
 
-        if (user.getId().equals(reported.getId())) {
-            throw new Exception404("자신의 댓글은 신고 할 수 없습니다.");
-        }
+		User reported = reply.getUser();
+		User user = parameter.getUser();
 
-        checkReportedReply(user, reply);
+		if (user.getId().equals(reported.getId())) {
+			throw new Exception404("자신의 댓글은 신고 할 수 없습니다.");
+		}
 
-        Report report = Report.createReport(user, reported, ReportType.REPLY, reply.getId(), parameter.getReportReason());
-        reportRepository.save(report);
-    }
+		checkReportedReply(user, reply);
 
-    private Feed getValidatedFeed(Long feedId) {
-        return feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
-                .orElseThrow(() -> new Exception404("해당 피드가 없습니다."));
-    }
+		Report report = Report.createReport(user, reported, ReportType.REPLY, reply.getId(),
+			parameter.getReportReason());
+		reportRepository.save(report);
+	}
 
-    private void checkReportedReply(User user, Reply reply) {
-        boolean isReported = reportRepository.existsByReporterIdAndTypeAndContentId(user, ReportType.REPLY, reply.getId());
-        if (isReported) {
-            throw new Exception404("이미 신고 처리된 댓글입니다.");
-        }
-    }
+	private void checkReportedReply(User user, Reply reply) {
+		boolean isReported = reportRepository.existsByReporterIdAndTypeAndContentId(user, ReportType.REPLY,
+			reply.getId());
+		if (isReported) {
+			throw new Exception404("이미 신고 처리된 댓글입니다.");
+		}
+	}
 }

@@ -2,6 +2,7 @@ package com.foodielog.application.reply.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.foodielog.server.feed.type.ContentStatus;
@@ -22,5 +23,9 @@ public class ReplyModuleService {
 
 	public List<Reply> getUserReplys(User user) {
 		return replyRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
+	}
+
+	public List<Reply> getFeedReplys(Long feedId, Long lastReplyId, Pageable pageable) {
+		return replyRepository.getReplyList(feedId, lastReplyId, pageable);
 	}
 }
