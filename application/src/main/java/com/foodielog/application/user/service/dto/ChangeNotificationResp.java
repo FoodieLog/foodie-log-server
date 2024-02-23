@@ -10,8 +10,8 @@ public class ChangeNotificationResp {
 	private final String nickName;
 	private final Flag flag;
 
-	public ChangeNotificationResp(User user, Flag flag) {
+	public ChangeNotificationResp(User user) {
 		this.nickName = user.getNickName();
-		this.flag = flag;
+		this.flag = user.getNotificationFlag();
 	}
 }

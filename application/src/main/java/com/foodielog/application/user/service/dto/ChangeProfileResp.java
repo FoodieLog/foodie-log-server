@@ -1,5 +1,7 @@
 package com.foodielog.application.user.service.dto;
 
+import com.foodielog.server.user.entity.User;
+
 import lombok.Getter;
 
 @Getter
@@ -8,9 +10,9 @@ public class ChangeProfileResp {
 	private final String profileImageUrl;
 	private final String aboutMe;
 
-	public ChangeProfileResp(String nickName, String profileImageUrl, String aboutMe) {
-		this.nickName = nickName;
-		this.profileImageUrl = profileImageUrl;
-		this.aboutMe = aboutMe;
+	public ChangeProfileResp(User user) {
+		this.nickName = user.getNickName();
+		this.profileImageUrl = user.getProfileImageUrl();
+		this.aboutMe = user.getAboutMe();
 	}
 }
