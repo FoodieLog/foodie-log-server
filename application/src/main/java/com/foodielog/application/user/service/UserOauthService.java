@@ -65,7 +65,7 @@ public class UserOauthService {
 			userModuleService.save(user);
 		}
 
-		User loginUser = userModuleService.getUser(kakaoAccount.getEmail());
+		User loginUser = userModuleService.get(kakaoAccount.getEmail());
 
 		String accessToken = jwtTokenProvider.createAccessToken(loginUser);
 		String refreshToken = jwtTokenProvider.createRefreshToken();

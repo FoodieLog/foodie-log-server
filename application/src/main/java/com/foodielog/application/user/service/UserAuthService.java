@@ -52,7 +52,7 @@ public class UserAuthService {
 		jwtTokenProvider.invalidateToken(accessToken);
 
 		// 재발급
-		User user = userModuleService.getUser(jwtTokenProvider.getEmail(accessToken));
+		User user = userModuleService.get(jwtTokenProvider.getEmail(accessToken));
 		String newAT = jwtTokenProvider.createAccessToken(user);
 		String newRT = jwtTokenProvider.createRefreshToken();
 
@@ -134,7 +134,7 @@ public class UserAuthService {
 	/* 로그인 */
 	@Transactional(readOnly = true)
 	public LoginResp login(LoginParam parameter) {
-		User user = userModuleService.getUser(parameter.getEmail());
+		User user = userModuleService.get(parameter.getEmail());
 
 		if (!passwordEncoder.matches(parameter.getPassword(), user.getPassword())) {
 			throw new Exception400("password", ErrorMessage.PASSWORD_NOT_MATCH);
@@ -160,7 +160,7 @@ public class UserAuthService {
 	/* 비밀번호 변경 */
 	@Transactional
 	public ResetPasswordResp resetPassword(ResetPasswordParam parameter) {
-		User user = userModuleService.getUser(parameter.getEmail());
+		User user = userModuleService.get(parameter.getEmail());
 		user.resetPassword(passwordEncoder.encode(parameter.getPassword()));
 		return new ResetPasswordResp(parameter.getEmail());
 	}

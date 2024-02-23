@@ -17,12 +17,12 @@ import lombok.RequiredArgsConstructor;
 public class UserModuleService {
 	private final UserRepository userRepository;
 
-	public User getUser(String email) {
+	public User get(String email) {
 		return userRepository.findByEmailAndStatus(email, UserStatus.NORMAL)
 			.orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
 	}
 
-	public User getUser(Long id) {
+	public User get(Long id) {
 		return userRepository.findByIdAndStatus(id, UserStatus.NORMAL)
 			.orElseThrow(() -> new Exception400("id", ErrorMessage.USER_NOT_FOUND));
 	}
