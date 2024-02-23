@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.foodielog.application.badgeApply.service.BadgeApplyModuleService;
+import com.foodielog.application.feed.service.FeedModuleService;
+import com.foodielog.application.reply.service.ReplyModuleService;
 import com.foodielog.application.user.controller.dto.ChangeNotificationParam;
 import com.foodielog.application.user.controller.dto.ChangePasswordParam;
 import com.foodielog.application.user.controller.dto.ChangeProfileParam;
@@ -19,22 +22,16 @@ import com.foodielog.application.user.service.dto.CheckBadgeApplyResp;
 import com.foodielog.application.user.service.dto.CreateBadgeApplyResp;
 import com.foodielog.application.user.service.dto.LogoutResp;
 import com.foodielog.application.user.service.dto.WithdrawResp;
+import com.foodielog.application.withdrawUser.service.WithdrawUserModuleService;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
-import com.foodielog.server._core.redis.RedisService;
 import com.foodielog.server._core.s3.S3Uploader;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server.admin.entity.BadgeApply;
 import com.foodielog.server.admin.entity.WithdrawUser;
-import com.foodielog.server.admin.repository.BadgeApplyRepository;
-import com.foodielog.server.admin.repository.WithdrawUserRepository;
 import com.foodielog.server.feed.entity.Feed;
-import com.foodielog.server.feed.repository.FeedRepository;
-import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.entity.Reply;
-import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.user.entity.User;
-import com.foodielog.server.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,37 +40,33 @@ import lombok.RequiredArgsConstructor;
 public class UserSettingService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final RedisService redisService;
 	private final S3Uploader s3Uploader;
 
-	private final UserRepository userRepository;
-	private final FeedRepository feedRepository;
-	private final ReplyRepository replyRepository;
-	private final BadgeApplyRepository badgeApplyRepository;
-	private final WithdrawUserRepository withdrawUserRepository;
+	private final UserModuleService userModuleService;
+	private final BadgeApplyModuleService badgeApplyModuleService;
+	private final FeedModuleService feedModuleService;
+	private final ReplyModuleService replyModuleService;
+	private final WithdrawUserModuleService withdrawUserModuleService;
 
 	@Transactional
 	public ChangeNotificationResp changeNotification(ChangeNotificationParam parameter) {
 		User user = parameter.getUser();
 		user.changeNotificationFlag(parameter.getFlag());
-		userRepository.save(user);
+		user = userModuleService.save(user);
 
-		return new ChangeNotificationResp(user, parameter.getFlag());
+		return new ChangeNotificationResp(user);
 	}
 
 	@Transactional(readOnly = true)
 	public CheckBadgeApplyResp checkBadgeApply(User user) {
-		Timestamp createdAt = badgeApplyRepository.findByUserId(user.getId())
-			.map(BadgeApply::getCreatedAt)
-			.orElseGet(() -> null);
-
+		Timestamp createdAt = badgeApplyModuleService.getCreatedAt(user.getId());
 		return new CheckBadgeApplyResp(user, createdAt);
 	}
 
 	@Transactional
 	public CreateBadgeApplyResp creatBadgeApply(User user) {
 		BadgeApply badgeApply = BadgeApply.createBadgeApply(user);
-		badgeApplyRepository.save(badgeApply);
+		badgeApplyModuleService.save(badgeApply);
 
 		return new CreateBadgeApplyResp(user, badgeApply);
 	}
@@ -87,10 +80,9 @@ public class UserSettingService {
 		}
 
 		user.resetPassword(passwordEncoder.encode(parameter.getNewPassword()));
+		user = userModuleService.save(user);
 
-		userRepository.save(user);
-
-		return new ChangePasswordResp(user.getEmail());
+		return new ChangePasswordResp(user);
 	}
 
 	@Transactional
@@ -103,47 +95,46 @@ public class UserSettingService {
 	@Transactional
 	public WithdrawResp withdraw(WithdrawParam parameter) {
 		User user = parameter.getUser();
-		// 탈퇴 유저 저장
-		Long feedCount = feedRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
-		Long replyCount = replyRepository.countByUserAndStatus(user, ContentStatus.NORMAL);
 
-		WithdrawUser withdrawUser = WithdrawUser.createWithdrawUser(user, feedCount, replyCount,
-			parameter.getWithdrawReason());
-		withdrawUserRepository.save(withdrawUser);
+		// 탈퇴 유저 저장
+		Long feedCount = feedModuleService.getUserCount(user);
+		Long replyCount = replyModuleService.getUserCount(user);
+
+		WithdrawUser withdrawUser = WithdrawUser.createWithdrawUser(
+			user, feedCount, replyCount, parameter.getWithdrawReason()
+		);
+		withdrawUserModuleService.save(withdrawUser);
 
 		// 유저, 피드, 댓글 상태 변경
 		user.withdraw();
-		userRepository.save(user);
+		user = userModuleService.save(user);
 
-		List<Feed> feedList = feedRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
+		List<Feed> feedList = feedModuleService.getUserFeeds(user);
 		feedList.forEach(Feed::deleteFeed);
 
-		List<Reply> replyList = replyRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
+		List<Reply> replyList = replyModuleService.getUserReplys(user);
 		replyList.forEach(Reply::deleteReply);
 
 		// 토큰 무효화
 		jwtTokenProvider.invalidateToken(parameter.getAccessToken());
 
-		return new WithdrawResp(user.getEmail(), Boolean.TRUE);
+		return new WithdrawResp(user, Boolean.TRUE);
 	}
 
 	@Transactional
 	public ChangeProfileResp ChangeProfile(ChangeProfileParam parameter) {
 		User user = parameter.getUser();
 
-		// 기존 닉네임과 일치 하지 않은데 중복이라면 중복! (기존 닉네임과 동일 하다면 닉네임을 변경 하는게 아님)
-		if (!user.getNickName().equals(parameter.getNickName())
-			&& userRepository.existsByNickName(parameter.getNickName())
-		) {
-			throw new Exception400("nickName", "이미 사용 중인 닉네임 입니다");
+		// 닉네임 변경하는 경우 중복체크
+		if (!user.getNickName().equals(parameter.getNickName())) {
+			userModuleService.checkNewNickName(parameter.getNickName());
 		}
 
 		String storedFileUrl = getStoredFileUrl(user.getProfileImageUrl(), parameter.getFile());
 		user.changeProfile(parameter.getNickName(), storedFileUrl, parameter.getAboutMe());
+		user = userModuleService.save(user);
 
-		userRepository.save(user);
-
-		return new ChangeProfileResp(user.getNickName(), user.getProfileImageUrl(), user.getAboutMe());
+		return new ChangeProfileResp(user);
 	}
 
 	private String getStoredFileUrl(String userProfileImageUrl, MultipartFile file) {
