@@ -1,17 +1,15 @@
 package com.foodielog.application.notification.service;
 
+import com.foodielog.application.feedLike.service.FeedLikeModuleService;
+import com.foodielog.application.follow.service.FollowModuleService;
 import com.foodielog.application.notification.dto.NotificationTokenParam;
 import com.foodielog.application.notification.service.dto.NotificationListResp;
+import com.foodielog.application.reply.service.ReplyModuleService;
 import com.foodielog.server._core.redis.RedisService;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
-import com.foodielog.server.feed.repository.FeedLikeRepository;
-import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.notification.entity.Notification;
-import com.foodielog.server.notification.repository.NotificationRepository;
 import com.foodielog.server.notification.type.NotificationType;
-import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.user.entity.User;
-import com.foodielog.server.user.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +21,16 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class NotificationService {
-    private final NotificationRepository notificationRepository;
-    private final ReplyRepository replyRepository;
-    private final FeedLikeRepository feedLikeRepository;
-    private final FollowRepository followRepository;
+    private final NotificationModuleService notificationModuleService;
+    private final ReplyModuleService replyModuleService;
+    private final FeedLikeModuleService feedLikeModuleService;
+    private final FollowModuleService followModuleService;
 
     private final RedisService redisService;
 
     @Transactional
     public NotificationListResp getNotificationList(User user) {
-        List<Notification> notificationList = notificationRepository.findByUserOrderByIdDesc(user);
+        List<Notification> notificationList = notificationModuleService.getNotificationListByUser(user);
 
         List<Object> notificationContent = new ArrayList<>();
 
@@ -56,7 +54,7 @@ public class NotificationService {
     }
 
     private void getReplyNotification(Notification notification, List<Object> notificationContent) {
-        replyRepository.findByIdAndStatus(notification.getContentId(), ContentStatus.NORMAL)
+        replyModuleService.findByIdAndStatusOp(notification.getContentId())
                 .ifPresent(reply -> {
                     NotificationListResp.ContentReply contentReply = new NotificationListResp.ContentReply(reply);
                     NotificationListResp.ReplyNotification replyNotification =
@@ -66,7 +64,7 @@ public class NotificationService {
     }
 
     private void getLikeNotification(Notification notification, List<Object> notificationContent) {
-        feedLikeRepository.findById(notification.getContentId())
+        feedLikeModuleService.getFeedLikeById(notification.getContentId())
                 .ifPresent(feedLike -> {
                     NotificationListResp.ContentFeed contentFeed = new NotificationListResp.ContentFeed(feedLike.getFeed());
                     NotificationListResp.LikeNotification likeNotification =
@@ -76,9 +74,9 @@ public class NotificationService {
     }
 
     private void getFollowNotification(Notification notification, List<Object> notificationContent) {
-        followRepository.findById(notification.getContentId())
+        followModuleService.getFollowById(notification.getContentId())
                 .ifPresent(follow -> {
-                    boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(follow.getFollowedId(), follow.getFollowingId());
+                    boolean isFollowed = followModuleService.existsByFollowingIdAndFollowedId(follow.getFollowedId(), follow.getFollowingId());
                     NotificationListResp.FollowNotification followNotification =
                             new NotificationListResp.FollowNotification(notification, getContentUser(follow.getFollowingId()), isFollowed);
                     notificationContent.add(followNotification);

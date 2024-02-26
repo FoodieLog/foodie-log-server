@@ -1,6 +1,7 @@
 package com.foodielog.application.reply.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.foodielog.server._core.error.exception.Exception404;
 import org.springframework.data.domain.Pageable;
@@ -42,5 +43,9 @@ public class ReplyModuleService {
 	public Reply findByIdAndStatus(Long replyId) {
 		return replyRepository.findByIdAndStatus(replyId, ContentStatus.NORMAL)
 				.orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
+	}
+
+	public Optional<Reply> findByIdAndStatusOp(Long replyId) {
+		return replyRepository.findByIdAndStatus(replyId, ContentStatus.NORMAL);
 	}
 }

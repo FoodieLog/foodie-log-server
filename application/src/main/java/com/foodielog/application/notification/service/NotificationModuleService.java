@@ -2,8 +2,11 @@ package com.foodielog.application.notification.service;
 
 import com.foodielog.server.notification.entity.Notification;
 import com.foodielog.server.notification.repository.NotificationRepository;
+import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -12,5 +15,9 @@ public class NotificationModuleService {
 
     public Notification save(Notification notification) {
         return notificationRepository.save(notification);
+    }
+
+    public List<Notification> getNotificationListByUser(User user) {
+        return notificationRepository.findByUserOrderByIdDesc(user);
     }
 }
