@@ -1,45 +1,39 @@
 package com.foodielog.application.reply.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.foodielog.application._core.fcm.FcmMessageProvider;
 import com.foodielog.application.feed.service.FeedModuleService;
+import com.foodielog.application.notification.service.NotificationModuleService;
 import com.foodielog.application.reply.dto.ReplyCreateParam;
 import com.foodielog.application.reply.dto.ReportReplyParam;
 import com.foodielog.application.reply.service.dto.ReplyCreateResp;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
-import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.notification.entity.Notification;
-import com.foodielog.server.notification.repository.NotificationRepository;
 import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.reply.entity.Reply;
-import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.report.entity.Report;
 import com.foodielog.server.report.repository.ReportRepository;
 import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class ReplyService {
-
-	private final ReplyRepository replyRepository;
 	private final ReportRepository reportRepository;
-	private final NotificationRepository notificationRepository;
 
 	private final FcmMessageProvider fcmMessageProvider;
 
 	private final FeedModuleService feedModuleService;
 	private final ReplyModuleService replyModuleService;
+	private final NotificationModuleService notificationModuleService;
 
 	@Transactional
 	public ReplyCreateResp createReply(ReplyCreateParam parameter) {
@@ -47,12 +41,12 @@ public class ReplyService {
 		User user = parameter.getUser();
 
 		Reply reply = Reply.createReply(user, feed, parameter.getContent());
-		Reply saveReply = replyRepository.save(reply);
+		Reply saveReply = replyModuleService.save(reply);
 
 		if (feed.getUser().getNotificationFlag() == Flag.Y) {
 			Notification notification = Notification.createNotification(feed.getUser(), NotificationType.REPLY,
 				saveReply.getId());
-			notificationRepository.save(notification);
+			notificationModuleService.save(notification);
 
 			fcmMessageProvider.sendReplyMessage(feed.getUser().getEmail(), user.getEmail());
 		}
@@ -61,8 +55,7 @@ public class ReplyService {
 
 	@Transactional
 	public void deleteReply(User user, Long replyId) {
-		Reply reply = replyRepository.findByIdAndUserIdAndStatus(replyId, user.getId(), ContentStatus.NORMAL)
-			.orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
+		Reply reply = replyModuleService.findByIdAndUserIdAndStatus(replyId, user.getId());
 
 		reply.deleteReplyByUser();
 	}
@@ -82,8 +75,7 @@ public class ReplyService {
 
 	@Transactional
 	public void reportReply(ReportReplyParam parameter) {
-		Reply reply = replyRepository.findByIdAndStatus(parameter.getReplyId(), ContentStatus.NORMAL)
-			.orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
+		Reply reply = replyModuleService.findByIdAndStatus(parameter.getReplyId());
 
 		User reported = reply.getUser();
 		User user = parameter.getUser();
