@@ -2,6 +2,7 @@ package com.foodielog.application.reply.service;
 
 import java.util.List;
 
+import com.foodielog.server._core.error.exception.Exception404;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -27,5 +28,19 @@ public class ReplyModuleService {
 
 	public List<Reply> getFeedReplys(Long feedId, Long lastReplyId, Pageable pageable) {
 		return replyRepository.getReplyList(feedId, lastReplyId, pageable);
+	}
+
+	public Reply save(Reply reply) {
+		return replyRepository.save(reply);
+	}
+
+	public Reply findByIdAndUserIdAndStatus(Long replyId, Long userId) {
+		return replyRepository.findByIdAndUserIdAndStatus(replyId, userId, ContentStatus.NORMAL)
+				.orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
+	}
+
+	public Reply findByIdAndStatus(Long replyId) {
+		return replyRepository.findByIdAndStatus(replyId, ContentStatus.NORMAL)
+				.orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
 	}
 }
