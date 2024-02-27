@@ -6,13 +6,13 @@ import com.foodielog.application.notification.service.NotificationModuleService;
 import com.foodielog.application.reply.dto.ReplyCreateParam;
 import com.foodielog.application.reply.dto.ReportReplyParam;
 import com.foodielog.application.reply.service.dto.ReplyCreateResp;
+import com.foodielog.application.report.service.ReportModuleService;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.notification.entity.Notification;
 import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.report.entity.Report;
-import com.foodielog.server.report.repository.ReportRepository;
 import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
@@ -27,13 +27,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class ReplyService {
-	private final ReportRepository reportRepository;
-
-	private final FcmMessageProvider fcmMessageProvider;
-
 	private final FeedModuleService feedModuleService;
 	private final ReplyModuleService replyModuleService;
 	private final NotificationModuleService notificationModuleService;
+	private final ReportModuleService reportModuleService;
+
+	private final FcmMessageProvider fcmMessageProvider;
 
 	@Transactional
 	public ReplyCreateResp createReply(ReplyCreateParam parameter) {
@@ -84,18 +83,11 @@ public class ReplyService {
 			throw new Exception404("자신의 댓글은 신고 할 수 없습니다.");
 		}
 
-		checkReportedReply(user, reply);
+		reportModuleService.existsByReporterIdAndTypeAndContentId(user, ReportType.REPLY, reply.getId());
 
 		Report report = Report.createReport(user, reported, ReportType.REPLY, reply.getId(),
 			parameter.getReportReason());
-		reportRepository.save(report);
+		reportModuleService.save(report);
 	}
 
-	private void checkReportedReply(User user, Reply reply) {
-		boolean isReported = reportRepository.existsByReporterIdAndTypeAndContentId(user, ReportType.REPLY,
-			reply.getId());
-		if (isReported) {
-			throw new Exception404("이미 신고 처리된 댓글입니다.");
-		}
-	}
 }
