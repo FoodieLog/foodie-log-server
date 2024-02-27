@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.foodielog.server._core.error.exception.Exception404;
+import com.foodielog.server.feed.entity.Feed;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -47,5 +48,13 @@ public class ReplyModuleService {
 
 	public Optional<Reply> findByIdAndStatusOp(Long replyId) {
 		return replyRepository.findByIdAndStatus(replyId, ContentStatus.NORMAL);
+	}
+
+	public List<Reply> findByFeedIdAndStatus(Long feedId) {
+		return replyRepository.findByFeedIdAndStatus(feedId, ContentStatus.NORMAL);
+	}
+
+	public Long countByFeedAndStatus(Feed feed) {
+		return replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
 	}
 }
