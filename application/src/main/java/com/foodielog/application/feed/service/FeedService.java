@@ -8,6 +8,14 @@ import com.foodielog.application.feed.dto.UpdateFeedParam;
 import com.foodielog.application.feed.service.dto.FeedDetailResp;
 import com.foodielog.application.feed.service.dto.GetFeedResp;
 import com.foodielog.application.feed.service.dto.MainFeedListResp;
+import com.foodielog.application.feedLike.service.FeedLikeModuleService;
+import com.foodielog.application.follow.service.FollowModuleService;
+import com.foodielog.application.media.service.MediaModuleService;
+import com.foodielog.application.notification.service.NotificationModuleService;
+import com.foodielog.application.reply.service.ReplyModuleService;
+import com.foodielog.application.report.service.ReportModuleService;
+import com.foodielog.application.restaurant.service.RestaurantModuleService;
+import com.foodielog.application.restaurantLike.service.RestaurantLikeModuleService;
 import com.foodielog.server._core.error.exception.Exception403;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server._core.kakaoApi.KakaoApiResponse;
@@ -15,32 +23,22 @@ import com.foodielog.server._core.s3.S3Uploader;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.entity.FeedLike;
 import com.foodielog.server.feed.entity.Media;
-import com.foodielog.server.feed.repository.FeedLikeRepository;
-import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.repository.MediaRepository;
-import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.notification.entity.Notification;
-import com.foodielog.server.notification.repository.NotificationRepository;
 import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.reply.entity.Reply;
-import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.report.entity.Report;
 import com.foodielog.server.report.repository.ReportRepository;
 import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.restaurant.entity.RestaurantLike;
-import com.foodielog.server.restaurant.repository.RestaurantLikeRepository;
-import com.foodielog.server.restaurant.repository.RestaurantRepository;
 import com.foodielog.server.user.entity.User;
-import com.foodielog.server.user.repository.FollowRepository;
 import com.foodielog.server.user.type.Flag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,18 +47,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class FeedService {
-    private final FeedRepository feedRepository;
-    private final RestaurantRepository restaurantRepository;
-    private final MediaRepository mediaRepository;
-    private final RestaurantLikeRepository restaurantLikeRepository;
-    private final S3Uploader s3Uploader;
-    private final FeedLikeRepository feedLikeRepository;
-    private final ReplyRepository replyRepository;
-    private final ReportRepository reportRepository;
-    private final FollowRepository followRepository;
-    private final NotificationRepository notificationRepository;
+    private final ReplyModuleService replyModuleService;
+    private final NotificationModuleService notificationModuleService;
+    private final FollowModuleService followModuleService;
+    private final FeedLikeModuleService feedLikeModuleService;
+    private final FeedModuleService feedModuleService;
+    private final RestaurantModuleService restaurantModuleService;
+    private final RestaurantLikeModuleService restaurantLikeModuleService;
+    private final MediaModuleService mediaModuleService;
+    private final ReportModuleService reportModuleService;
 
     private final FcmMessageProvider fcmMessageProvider;
+    private final S3Uploader s3Uploader;
 
     @Transactional
     public void save(FeedSaveParam parameter) {
@@ -73,16 +71,16 @@ public class FeedService {
         List<String> filesUrl = s3Uploader.saveFiles(parameter.getFiles());
 
         Feed feed = Feed.createFeed(savedRestaurant, user, parameter.getContent(), filesUrl.get(0));
-        feedRepository.save(feed);
+        feedModuleService.save(feed);
 
         for (String fileUrl : filesUrl) {
             Media media = Media.createMedia(feed, fileUrl);
-            mediaRepository.save(media);
+            mediaModuleService.save(media);
         }
     }
 
     private void checkIsLiked(User user, Restaurant restaurant, boolean isLiked) {
-        if (restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant)) {
+        if (restaurantLikeModuleService.existsByUserAndRestaurant(user, restaurant)) {
             return;
         }
 
@@ -91,14 +89,14 @@ public class FeedService {
         }
 
         RestaurantLike restaurantLike = RestaurantLike.createRestaurantLike(restaurant, user);
-        restaurantLikeRepository.save(restaurantLike);
+        restaurantLikeModuleService.save(restaurantLike);
     }
 
     private Restaurant saveRestaurant(Restaurant restaurant) {
         Optional<Restaurant> existingRestaurant =
-                restaurantRepository.findByKakaoPlaceId(restaurant.getKakaoPlaceId());
+                restaurantModuleService.getRestaurantByPlaceId(restaurant.getKakaoPlaceId());
 
-        return existingRestaurant.orElseGet(() -> restaurantRepository.save(restaurant));
+        return existingRestaurant.orElseGet(() -> restaurantModuleService.save(restaurant));
     }
 
     private Restaurant dtoToRestaurant(KakaoApiResponse.SearchPlace searchPlace) {
@@ -123,18 +121,18 @@ public class FeedService {
         User user = parameter.getUser();
         likeRestaurantIfNotExists(user, restaurant);
 
-        boolean isFeedLike = feedLikeRepository.existsByUserAndFeed(user, feed);
+        boolean isFeedLike = feedLikeModuleService.existsByUserAndFeed(user, feed);
 
         if (isFeedLike) {
             throw new Exception404("이미 좋아요 된 피드입니다.");
         }
 
         FeedLike feedLike = FeedLike.createFeedLike(feed, user);
-        feedLikeRepository.save(feedLike);
+        feedLikeModuleService.save(feedLike);
 
         if (feed.getUser().getNotificationFlag() == Flag.Y) {
             Notification notification = Notification.createNotification(feed.getUser(), NotificationType.LIKE, feedLike.getId());
-            notificationRepository.save(notification);
+            notificationModuleService.save(notification);
 
             fcmMessageProvider.sendLikeMessage(feed.getUser().getEmail(), user.getEmail());
         }
@@ -144,23 +142,21 @@ public class FeedService {
     public void unLikeFeed(User user, Long feedId) {
         Feed feed = getFeed(feedId);
 
-        FeedLike feedLike = feedLikeRepository.findByUserAndFeed(user, feed)
-                .orElseThrow(() -> new Exception404("좋아요 되지 않은 피드입니다."));
+        FeedLike feedLike = feedLikeModuleService.getFeedLikeByUserAndFeed(user, feed);
 
-        feedLikeRepository.delete(feedLike);
+        feedLikeModuleService.delete(feedLike);
     }
 
     private Feed getFeed(Long feedId) {
-        return feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
-                .orElseThrow(() -> new Exception404("피드가 없습니다."));
+        return feedModuleService.get(feedId);
     }
 
     private void likeRestaurantIfNotExists(User user, Restaurant restaurant) {
-        boolean isRestaurantLike = restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant);
+        boolean isRestaurantLike = restaurantLikeModuleService.existsByUserAndRestaurant(user, restaurant);
 
         if (!isRestaurantLike) {
             RestaurantLike restaurantLike = RestaurantLike.createRestaurantLike(restaurant, user);
-            restaurantLikeRepository.save(restaurantLike);
+            restaurantLikeModuleService.save(restaurantLike);
         }
     }
 
@@ -169,7 +165,7 @@ public class FeedService {
         Feed feed = getFeed(feedId);
         checkAccess(feed, user);
 
-        List<Reply> replyList = replyRepository.findByFeedIdAndStatus(feedId, ContentStatus.NORMAL);
+        List<Reply> replyList = replyModuleService.findByFeedIdAndStatus(feedId);
         replyList.forEach(Reply::deleteReplyByUser);
 
         feed.deleteFeedByUser();
@@ -202,37 +198,27 @@ public class FeedService {
             throw new Exception404("자신의 피드는 신고할 수 없습니다.");
         }
 
-        checkReportedFeed(user, feed);
+        reportModuleService.existsByReporterIdAndTypeAndContentId(user, ReportType.FEED, feed.getId());
 
         Report report = Report.createReport(user, reported, ReportType.FEED, feed.getId(), parameter.getReportReason());
-        reportRepository.save(report);
-    }
-
-    private void checkReportedFeed(User user, Feed feed) {
-        boolean isReported = reportRepository.existsByReporterIdAndTypeAndContentId(user, ReportType.FEED, feed.getId());
-        if (isReported) {
-            throw new Exception404("이미 신고 처리된 피드입니다.");
-        }
+        reportModuleService.save(report);
     }
 
     @Transactional(readOnly = true)
     public MainFeedListResp getMainFeed(User user, Long feedId, Pageable pageable) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime date = now.minusMonths(1);
-
-        List<Feed> mainFeeds = feedRepository.getMainFeed(user, feedId, 0L, Timestamp.valueOf(date), pageable);
+        List<Feed> mainFeeds = feedModuleService.getMainFeed(user, feedId, pageable);
 
         List<MainFeedListResp.MainFeedsDTO> mainFeedDTOList = new ArrayList<>();
 
         for (Feed mainFeed : mainFeeds) {
-            List<Media> mediaList = mediaRepository.findByFeed(mainFeed);
+            List<Media> mediaList = mediaModuleService.getMediaByFeed(mainFeed);
 
             List<MainFeedListResp.FeedImageDTO> feedImageDTO = getFeedImageDTO(mediaList);
             MainFeedListResp.FeedDTO feedDTO = getFeedDTO(mainFeed, feedImageDTO);
             MainFeedListResp.MainFeedRestaurantDTO mainFeedRestaurantDTO = getUserRestaurantDTO(mainFeed);
 
-            boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, mainFeed.getUser());
-            boolean isLiked = feedLikeRepository.existsByUserAndFeed(user, mainFeed);
+            boolean isFollowed = followModuleService.existsByFollowingIdAndFollowedId(user, mainFeed.getUser());
+            boolean isLiked = feedLikeModuleService.existsByUserAndFeed(user, mainFeed);
 
             mainFeedDTOList.add(new MainFeedListResp.MainFeedsDTO(feedDTO, mainFeedRestaurantDTO, isFollowed, isLiked));
         }
@@ -245,8 +231,8 @@ public class FeedService {
     }
 
     private MainFeedListResp.FeedDTO getFeedDTO(Feed feed, List<MainFeedListResp.FeedImageDTO> feedImages) {
-        Long likeCount = feedLikeRepository.countByFeed(feed);
-        Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
+        Long likeCount = feedLikeModuleService.countByFeed(feed);
+        Long replyCount = replyModuleService.countByFeedAndStatus(feed);
 
         return new MainFeedListResp.FeedDTO(feed, feedImages, likeCount, replyCount);
     }
@@ -259,16 +245,15 @@ public class FeedService {
 
     @Transactional(readOnly = true)
     public FeedDetailResp getFeedDetail(Long feedId) {
-        Feed feed = feedRepository.findByIdAndStatus(feedId, ContentStatus.NORMAL)
-                .orElseThrow(() -> new Exception404("해당 피드를 찾을 수 없습니다."));
+        Feed feed = getFeed(feedId);
 
-        List<Media> mediaList = mediaRepository.findByFeed(feed);
+        List<Media> mediaList = mediaModuleService.getMediaByFeed(feed);
         List<FeedDetailResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
                 .map(FeedDetailResp.FeedImageDTO::new)
                 .collect(Collectors.toList());
 
-        Long likeCount = feedLikeRepository.countByFeed(feed);
-        Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
+        Long likeCount = feedLikeModuleService.countByFeed(feed);
+        Long replyCount = replyModuleService.countByFeedAndStatus(feed);
 
         FeedDetailResp.RestaurantDTO restaurantDTO = new FeedDetailResp.RestaurantDTO(feed.getRestaurant());
 
@@ -279,16 +264,16 @@ public class FeedService {
     public GetFeedResp getSingleFeed(User user, Long feedId) {
         Feed feed = getFeed(feedId);
 
-        List<Media> mediaList = mediaRepository.findByFeed(feed);
+        List<Media> mediaList = mediaModuleService.getMediaByFeed(feed);
         List<GetFeedResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
                 .map(GetFeedResp.FeedImageDTO::new)
                 .collect(Collectors.toList());
 
-        Long likeCount = feedLikeRepository.countByFeed(feed);
-        Long replyCount = replyRepository.countByFeedAndStatus(feed, ContentStatus.NORMAL);
+        Long likeCount = feedLikeModuleService.countByFeed(feed);
+        Long replyCount = replyModuleService.countByFeedAndStatus(feed);
 
-        boolean isFollowed = followRepository.existsByFollowingIdAndFollowedId(user, feed.getUser());
-        boolean isLiked = feedLikeRepository.existsByUserAndFeed(user, feed);
+        boolean isFollowed = followModuleService.existsByFollowingIdAndFollowedId(user, feed.getUser());
+        boolean isLiked = feedLikeModuleService.existsByUserAndFeed(user, feed);
 
         GetFeedResp.FeedDTO feedDTO = new GetFeedResp.FeedDTO(feed, feedImageDTOS, likeCount, replyCount);
 
