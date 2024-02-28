@@ -20,7 +20,7 @@ public class FeedLikeModuleService {
         return feedLikeRepository.findById(id);
     }
 
-    public boolean existsByUserAndFeed(User user, Feed feed) {
+    public boolean exist(User user, Feed feed) {
         return feedLikeRepository.existsByUserAndFeed(user, feed);
     }
 

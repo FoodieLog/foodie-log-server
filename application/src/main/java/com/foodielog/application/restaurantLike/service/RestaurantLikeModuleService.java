@@ -16,7 +16,7 @@ public class RestaurantLikeModuleService {
         return restaurantLikeRepository.save(restaurantLike);
     }
 
-    public boolean existsByUserAndRestaurant(User user, Restaurant restaurant) {
+    public boolean exist(User user, Restaurant restaurant) {
         return restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant);
     }
 }

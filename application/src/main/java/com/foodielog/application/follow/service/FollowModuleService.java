@@ -17,7 +17,7 @@ public class FollowModuleService {
         return followRepository.findById(id);
     }
 
-    public boolean existsByFollowingIdAndFollowedId(User followingId, User followedId) {
+    public boolean isFollow(User followingId, User followedId) {
         return followRepository.existsByFollowingIdAndFollowedId(followingId, followedId);
     }
 }

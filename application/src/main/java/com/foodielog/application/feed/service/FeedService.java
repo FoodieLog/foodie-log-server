@@ -78,7 +78,7 @@ public class FeedService {
     }
 
     private void checkIsLiked(User user, Restaurant restaurant, boolean isLiked) {
-        if (restaurantLikeModuleService.existsByUserAndRestaurant(user, restaurant)) {
+        if (restaurantLikeModuleService.exist(user, restaurant)) {
             return;
         }
 
@@ -92,7 +92,7 @@ public class FeedService {
 
     private Restaurant saveRestaurant(Restaurant restaurant) {
         Optional<Restaurant> existingRestaurant =
-                restaurantModuleService.getRestaurantByPlaceId(restaurant.getKakaoPlaceId());
+                restaurantModuleService.getRestaurant(restaurant.getKakaoPlaceId());
 
         return existingRestaurant.orElseGet(() -> restaurantModuleService.save(restaurant));
     }
@@ -119,7 +119,7 @@ public class FeedService {
         User user = parameter.getUser();
         likeRestaurantIfNotExists(user, restaurant);
 
-        boolean isFeedLike = feedLikeModuleService.existsByUserAndFeed(user, feed);
+        boolean isFeedLike = feedLikeModuleService.exist(user, feed);
 
         if (isFeedLike) {
             throw new Exception404("이미 좋아요 된 피드입니다.");
@@ -150,7 +150,7 @@ public class FeedService {
     }
 
     private void likeRestaurantIfNotExists(User user, Restaurant restaurant) {
-        boolean isRestaurantLike = restaurantLikeModuleService.existsByUserAndRestaurant(user, restaurant);
+        boolean isRestaurantLike = restaurantLikeModuleService.exist(user, restaurant);
 
         if (!isRestaurantLike) {
             RestaurantLike restaurantLike = RestaurantLike.createRestaurantLike(restaurant, user);
@@ -196,7 +196,7 @@ public class FeedService {
             throw new Exception404("자신의 피드는 신고할 수 없습니다.");
         }
 
-        reportModuleService.existsByReporterIdAndTypeAndContentId(user, ReportType.FEED, feed.getId());
+        reportModuleService.hasReportedByType(user, ReportType.FEED, feed.getId());
 
         Report report = Report.createReport(user, reported, ReportType.FEED, feed.getId(), parameter.getReportReason());
         reportModuleService.save(report);
@@ -204,7 +204,7 @@ public class FeedService {
 
     @Transactional(readOnly = true)
     public MainFeedListResp getMainFeed(User user, Long feedId, Pageable pageable) {
-        List<Feed> mainFeeds = feedModuleService.getMainFeed(user, feedId, pageable);
+        List<Feed> mainFeeds = feedModuleService.getMainFeeds(user, feedId, pageable);
 
         List<MainFeedListResp.MainFeedsDTO> mainFeedDTOList = new ArrayList<>();
 
@@ -215,8 +215,8 @@ public class FeedService {
             MainFeedListResp.FeedDTO feedDTO = getFeedDTO(mainFeed, feedImageDTO);
             MainFeedListResp.MainFeedRestaurantDTO mainFeedRestaurantDTO = getUserRestaurantDTO(mainFeed);
 
-            boolean isFollowed = followModuleService.existsByFollowingIdAndFollowedId(user, mainFeed.getUser());
-            boolean isLiked = feedLikeModuleService.existsByUserAndFeed(user, mainFeed);
+            boolean isFollowed = followModuleService.isFollow(user, mainFeed.getUser());
+            boolean isLiked = feedLikeModuleService.exist(user, mainFeed);
 
             mainFeedDTOList.add(new MainFeedListResp.MainFeedsDTO(feedDTO, mainFeedRestaurantDTO, isFollowed, isLiked));
         }
@@ -270,8 +270,8 @@ public class FeedService {
         Long likeCount = feedLikeModuleService.countByFeed(feed);
         Long replyCount = replyModuleService.countByFeedAndStatus(feed);
 
-        boolean isFollowed = followModuleService.existsByFollowingIdAndFollowedId(user, feed.getUser());
-        boolean isLiked = feedLikeModuleService.existsByUserAndFeed(user, feed);
+        boolean isFollowed = followModuleService.isFollow(user, feed.getUser());
+        boolean isLiked = feedLikeModuleService.exist(user, feed);
 
         GetFeedResp.FeedDTO feedDTO = new GetFeedResp.FeedDTO(feed, feedImageDTOS, likeCount, replyCount);
 
