@@ -7,6 +7,8 @@ import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class RestaurantLikeModuleService {
@@ -18,5 +20,17 @@ public class RestaurantLikeModuleService {
 
     public boolean exist(User user, Restaurant restaurant) {
         return restaurantLikeRepository.existsByUserAndRestaurant(user, restaurant);
+    }
+
+    public void delete(RestaurantLike restaurantLike) {
+        restaurantLikeRepository.delete(restaurantLike);
+    }
+
+    public List<RestaurantLike> getRestaurantLikes(User user) {
+        return restaurantLikeRepository.findByUser(user);
+    }
+
+    public RestaurantLike get(User user, Restaurant restaurant) {
+        return restaurantLikeRepository.findByUserIdAndRestaurantId(user.getId(), restaurant.getId());
     }
 }

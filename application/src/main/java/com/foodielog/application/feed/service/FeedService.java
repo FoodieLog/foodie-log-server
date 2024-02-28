@@ -92,7 +92,7 @@ public class FeedService {
 
     private Restaurant saveRestaurant(Restaurant restaurant) {
         Optional<Restaurant> existingRestaurant =
-                restaurantModuleService.getRestaurant(restaurant.getKakaoPlaceId());
+                restaurantModuleService.getByPlaceId(restaurant.getKakaoPlaceId());
 
         return existingRestaurant.orElseGet(() -> restaurantModuleService.save(restaurant));
     }
