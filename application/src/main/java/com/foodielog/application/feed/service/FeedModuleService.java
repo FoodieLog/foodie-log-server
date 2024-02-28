@@ -4,8 +4,10 @@ import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.type.ContentStatus;
+import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,10 @@ public class FeedModuleService {
 		return feedRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
 	}
 
+	public List<Feed> getRestaurantFeeds(Restaurant restaurant) {
+		return feedRepository.findAllByRestaurantIdAndStatus(restaurant.getId(), ContentStatus.NORMAL);
+	}
+
 	public Feed save(Feed feed) {
 		return feedRepository.save(feed);
 	}
@@ -39,5 +45,10 @@ public class FeedModuleService {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime date = now.minusMonths(1);
 		return feedRepository.getMainFeed(user, feedId, 0L, Timestamp.valueOf(date), pageable);
+	}
+
+	public List<Feed> getTopThree(Restaurant restaurant) {
+		Pageable pageable = PageRequest.of(0, 3);
+		return feedRepository.findTop3ByRestaurantId(restaurant.getId(), pageable);
 	}
 }
