@@ -35,7 +35,7 @@ public class FeedModuleService {
 		return feedRepository.save(feed);
 	}
 
-	public List<Feed> getMainFeed(User user, Long feedId, Pageable pageable) {
+	public List<Feed> getMainFeeds(User user, Long feedId, Pageable pageable) {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime date = now.minusMonths(1);
 		return feedRepository.getMainFeed(user, feedId, 0L, Timestamp.valueOf(date), pageable);

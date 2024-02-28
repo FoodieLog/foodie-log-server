@@ -83,7 +83,7 @@ public class ReplyService {
 			throw new Exception404("자신의 댓글은 신고 할 수 없습니다.");
 		}
 
-		reportModuleService.existsByReporterIdAndTypeAndContentId(user, ReportType.REPLY, reply.getId());
+		reportModuleService.hasReportedByType(user, ReportType.REPLY, reply.getId());
 
 		Report report = Report.createReport(user, reported, ReportType.REPLY, reply.getId(),
 			parameter.getReportReason());

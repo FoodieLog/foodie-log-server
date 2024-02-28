@@ -17,7 +17,7 @@ public class ReportModuleService {
         return reportRepository.save(report);
     }
 
-    public void existsByReporterIdAndTypeAndContentId(User user, ReportType type, Long contentId) {
+    public void hasReportedByType(User user, ReportType type, Long contentId) {
         boolean isReported = reportRepository.existsByReporterIdAndTypeAndContentId(user, type, contentId);
         if (isReported) {
             throw new Exception404("이미 신고 처리된 컨텐츠입니다.");

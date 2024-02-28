@@ -76,7 +76,7 @@ public class NotificationService {
     private void getFollowNotification(Notification notification, List<Object> notificationContent) {
         followModuleService.getFollowById(notification.getContentId())
                 .ifPresent(follow -> {
-                    boolean isFollowed = followModuleService.existsByFollowingIdAndFollowedId(follow.getFollowedId(), follow.getFollowingId());
+                    boolean isFollowed = followModuleService.isFollow(follow.getFollowedId(), follow.getFollowingId());
                     NotificationListResp.FollowNotification followNotification =
                             new NotificationListResp.FollowNotification(notification, getContentUser(follow.getFollowingId()), isFollowed);
                     notificationContent.add(followNotification);

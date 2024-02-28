@@ -16,7 +16,7 @@ public class RestaurantModuleService {
         return restaurantRepository.save(restaurant);
     }
 
-    public Optional<Restaurant> getRestaurantByPlaceId(String id) {
-        return restaurantRepository.findByKakaoPlaceId(id);
+    public Optional<Restaurant> getRestaurant(String placeId) {
+        return restaurantRepository.findByKakaoPlaceId(placeId);
     }
 }
