@@ -35,3 +35,17 @@ out/
 
 ### VS Code ###
 .vscode/
+/application/src/main/resources/application.yml
+/application/src/test/resources/application.yml
+/management/src/main/resources/application.yml
+/management/src/test/resources/application.yml
+/application/src/main/resources/application-api.yml
+/application/src/test/resources/application-api.yml
+/management/src/main/resources/application-api.yml
+/management/src/test/resources/application-api.yml
+/application/src/main/resources/env.yml
+/application/src/test/resources/env.yml
+/management/src/main/resources/env.yml
+/management/src/test/resources/env.yml
+/application/src/main/resources/foodie.json
+/application/src/test/resources/foodie.json
