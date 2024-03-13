@@ -90,7 +90,7 @@ public class RestaurantService {
 
 	@Transactional(readOnly = true)
 	public RecommendedRestaurantResp getRecommendedRestaurant(String address) {
-		List<Restaurant> restaurants = restaurantModuleService.getByAddress(address);
+		List<Restaurant> restaurants = restaurantModuleService.getRestaurants(address);
 
 		List<RecommendedRestaurantResp.RestaurantsDTO> restaurantsDTOList = restaurants.stream()
 			.map(this::createRestaurantsDTO)
@@ -100,7 +100,7 @@ public class RestaurantService {
 	}
 
 	private Restaurant validRestaurant(Long restaurantId) {
-		return restaurantModuleService.getById(restaurantId);
+		return restaurantModuleService.getRestaurant(restaurantId);
 	}
 
 	private LikedRestaurantResp.RestaurantListDTO getRestaurantListDTO(RestaurantLike restaurantLike) {
@@ -132,7 +132,7 @@ public class RestaurantService {
 		List<Feed> feeds = feedModuleService.getRestaurantFeeds(restaurant);
 
 		for (Feed feed : feeds) {
-			List<Media> mediaList = mediaModuleService.getMediaByFeed(feed);
+			List<Media> mediaList = mediaModuleService.getMediaList(feed);
 			List<RestaurantFeedListResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
 				.map(RestaurantFeedListResp.FeedImageDTO::new)
 				.collect(Collectors.toList());
