@@ -10,6 +10,58 @@ repositories {
 
 bootJar.enabled = false
 
+task copySecret(type: Copy) {
+    // application
+    copy {
+        from './server-setting/env'
+        include "env.yml"
+        into './application/src/main/resources'
+    }
+
+    copy {
+        from './server-setting/env'
+        include "env.yml"
+        into './application/src/test/resources'
+    }
+
+    copy {
+        from './server-setting/resources/application/main'
+        include "*.yml", "*.json"
+        into './application/src/main/resources'
+    }
+
+    copy {
+        from './server-setting/resources/application/test'
+        include "*.yml", "*.json"
+        into './application/src/test/resources'
+    }
+
+    //management
+    copy {
+        from './server-setting/env'
+        include "env.yml"
+        into './management/src/main/resources'
+    }
+
+    copy {
+        from './server-setting/env'
+        include "env.yml"
+        into './management/src/test/resources'
+    }
+
+    copy {
+        from './server-setting/resources/management/main'
+        include "*.yml"
+        into './management/src/main/resources'
+    }
+
+    copy {
+        from './server-setting/resources/management/test'
+        include "*.yml"
+        into './management/src/test/resources'
+    }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
