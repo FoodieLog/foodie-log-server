@@ -1,0 +1,3 @@
+[submodule "server-setting"]
+	path = server-setting
+	url = https://github.com/FoodieLog/server-submodule.git
