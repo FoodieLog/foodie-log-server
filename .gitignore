@@ -49,3 +49,8 @@ out/
 /management/src/test/resources/env.yml
 /application/src/main/resources/foodie.json
 /application/src/test/resources/foodie.json
+/docker/application.Dockerfile
+/docker/docker-compose.yml
+/docker/management.Dockerfile
+/docker/mysql.Dockerfile
+/docker/redis.Dockerfile
