@@ -30,7 +30,7 @@ public class NotificationService {
 
     @Transactional
     public NotificationListResp getNotificationList(User user) {
-        List<Notification> notificationList = notificationModuleService.getNotificationListByUser(user);
+        List<Notification> notificationList = notificationModuleService.getNotifications(user);
 
         List<Object> notificationContent = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class NotificationService {
     }
 
     private void getLikeNotification(Notification notification, List<Object> notificationContent) {
-        feedLikeModuleService.getFeedLikeById(notification.getContentId())
+        feedLikeModuleService.getOptionalFeedLike(notification.getContentId())
                 .ifPresent(feedLike -> {
                     NotificationListResp.ContentFeed contentFeed = new NotificationListResp.ContentFeed(feedLike.getFeed());
                     NotificationListResp.LikeNotification likeNotification =
@@ -74,7 +74,7 @@ public class NotificationService {
     }
 
     private void getFollowNotification(Notification notification, List<Object> notificationContent) {
-        followModuleService.getFollowById(notification.getContentId())
+        followModuleService.getOptionalFollow(notification.getContentId())
                 .ifPresent(follow -> {
                     boolean isFollowed = followModuleService.isFollow(follow.getFollowedId(), follow.getFollowingId());
                     NotificationListResp.FollowNotification followNotification =

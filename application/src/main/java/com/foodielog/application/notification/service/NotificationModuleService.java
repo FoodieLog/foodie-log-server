@@ -17,7 +17,7 @@ public class NotificationModuleService {
         return notificationRepository.save(notification);
     }
 
-    public List<Notification> getNotificationListByUser(User user) {
+    public List<Notification> getNotifications(User user) {
         return notificationRepository.findByUserOrderByIdDesc(user);
     }
 }

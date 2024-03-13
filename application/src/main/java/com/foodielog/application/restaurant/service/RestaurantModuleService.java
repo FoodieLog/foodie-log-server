@@ -18,15 +18,15 @@ public class RestaurantModuleService {
         return restaurantRepository.save(restaurant);
     }
 
-    public Optional<Restaurant> getByPlaceId(String placeId) {
+    public Optional<Restaurant> getOptionalRestaurant(String placeId) {
         return restaurantRepository.findByKakaoPlaceId(placeId);
     }
 
-    public List<Restaurant> getByAddress(String address) {
+    public List<Restaurant> getRestaurants(String address) {
         return restaurantRepository.findByRoadAddressContaining(address);
     }
 
-    public Restaurant getById(Long id) {
+    public Restaurant getRestaurant(Long id) {
         return restaurantRepository.findById(id)
                 .orElseThrow(() -> new Exception404("식당을 찾을 수 없습니다."));
     }

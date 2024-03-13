@@ -13,7 +13,7 @@ import java.util.Optional;
 public class FollowModuleService {
     private final FollowRepository followRepository;
 
-    public Optional<Follow> getFollowById(Long id) {
+    public Optional<Follow> getOptionalFollow(Long id) {
         return followRepository.findById(id);
     }
 

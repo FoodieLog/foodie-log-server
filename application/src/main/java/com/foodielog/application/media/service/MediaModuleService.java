@@ -17,7 +17,7 @@ public class MediaModuleService {
         return mediaRepository.save(media);
     }
 
-    public List<Media> getMediaByFeed(Feed feed) {
+    public List<Media> getMediaList(Feed feed) {
         return mediaRepository.findByFeed(feed);
     }
 }

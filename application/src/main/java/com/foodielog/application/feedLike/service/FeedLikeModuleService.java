@@ -16,7 +16,7 @@ public class FeedLikeModuleService {
     private final FeedLikeRepository feedLikeRepository;
 
 
-    public Optional<FeedLike> getFeedLikeById(Long id) {
+    public Optional<FeedLike> getOptionalFeedLike(Long id) {
         return feedLikeRepository.findById(id);
     }
 
@@ -24,7 +24,7 @@ public class FeedLikeModuleService {
         return feedLikeRepository.existsByUserAndFeed(user, feed);
     }
 
-    public FeedLike getFeedLikeByUserAndFeed(User user, Feed feed) {
+    public FeedLike getFeedLike(User user, Feed feed) {
         return feedLikeRepository.findByUserAndFeed(user, feed)
                 .orElseThrow(() -> new Exception404("좋아요 되지 않은 피드입니다."));
     }

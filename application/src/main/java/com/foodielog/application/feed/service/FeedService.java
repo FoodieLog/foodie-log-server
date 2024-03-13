@@ -92,7 +92,7 @@ public class FeedService {
 
     private Restaurant saveRestaurant(Restaurant restaurant) {
         Optional<Restaurant> existingRestaurant =
-                restaurantModuleService.getByPlaceId(restaurant.getKakaoPlaceId());
+                restaurantModuleService.getOptionalRestaurant(restaurant.getKakaoPlaceId());
 
         return existingRestaurant.orElseGet(() -> restaurantModuleService.save(restaurant));
     }
@@ -140,7 +140,7 @@ public class FeedService {
     public void unLikeFeed(User user, Long feedId) {
         Feed feed = getFeed(feedId);
 
-        FeedLike feedLike = feedLikeModuleService.getFeedLikeByUserAndFeed(user, feed);
+        FeedLike feedLike = feedLikeModuleService.getFeedLike(user, feed);
 
         feedLikeModuleService.delete(feedLike);
     }
@@ -209,7 +209,7 @@ public class FeedService {
         List<MainFeedListResp.MainFeedsDTO> mainFeedDTOList = new ArrayList<>();
 
         for (Feed mainFeed : mainFeeds) {
-            List<Media> mediaList = mediaModuleService.getMediaByFeed(mainFeed);
+            List<Media> mediaList = mediaModuleService.getMediaList(mainFeed);
 
             List<MainFeedListResp.FeedImageDTO> feedImageDTO = getFeedImageDTO(mediaList);
             MainFeedListResp.FeedDTO feedDTO = getFeedDTO(mainFeed, feedImageDTO);
@@ -245,7 +245,7 @@ public class FeedService {
     public FeedDetailResp getFeedDetail(Long feedId) {
         Feed feed = getFeed(feedId);
 
-        List<Media> mediaList = mediaModuleService.getMediaByFeed(feed);
+        List<Media> mediaList = mediaModuleService.getMediaList(feed);
         List<FeedDetailResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
                 .map(FeedDetailResp.FeedImageDTO::new)
                 .collect(Collectors.toList());
@@ -262,7 +262,7 @@ public class FeedService {
     public GetFeedResp getSingleFeed(User user, Long feedId) {
         Feed feed = getFeed(feedId);
 
-        List<Media> mediaList = mediaModuleService.getMediaByFeed(feed);
+        List<Media> mediaList = mediaModuleService.getMediaList(feed);
         List<GetFeedResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
                 .map(GetFeedResp.FeedImageDTO::new)
                 .collect(Collectors.toList());
