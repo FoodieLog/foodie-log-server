@@ -60,6 +60,13 @@ task copySecret(type: Copy) {
         include "*.yml"
         into './management/src/test/resources'
     }
+
+    //docker
+    copy {
+        from './server-setting/docker'
+        include "*.Dockerfile", "*.yml"
+        into './docker'
+    }
 }
 
 subprojects {
