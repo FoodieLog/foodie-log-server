@@ -29,6 +29,7 @@ import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.report.entity.Report;
 import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.restaurant.entity.Restaurant;
+import com.foodielog.server.restaurant.entity.RestaurantCategory;
 import com.foodielog.server.restaurant.entity.RestaurantLike;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
@@ -98,10 +99,12 @@ public class FeedService {
     }
 
     private Restaurant dtoToRestaurant(KakaoApiResponse.SearchPlace searchPlace) {
+        RestaurantCategory parsedCategory = RestaurantCategory.parseCategory(searchPlace.getCategory_name());
         return Restaurant.createRestaurant(
                 searchPlace.getPlace_name(),
                 searchPlace.getId(),
                 searchPlace.getPhone(),
+                parsedCategory,
                 searchPlace.getCategory_name(),
                 searchPlace.getPlace_url(),
                 searchPlace.getX(),

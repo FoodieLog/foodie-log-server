@@ -24,8 +24,12 @@ public class Restaurant {
     @Column(nullable = false)
     private String phone;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String category;
+    private RestaurantCategory category;
+
+    @Column(nullable = false)
+    private String kakaoCategory;
 
     @Column(nullable = false)
     private String link;
@@ -42,13 +46,14 @@ public class Restaurant {
     @Column(nullable = false)
     private String roadAddress;
 
-    public static Restaurant createRestaurant(String name, String kakaoPlaceId, String phone, String category
-            , String link, String mapX, String mapY, String address, String roadAddress) {
+    public static Restaurant createRestaurant(String name, String kakaoPlaceId, String phone, RestaurantCategory category,
+                                              String kakaoCategory, String link, String mapX, String mapY, String address, String roadAddress) {
         Restaurant restaurant = new Restaurant();
         restaurant.name = name;
         restaurant.kakaoPlaceId = kakaoPlaceId;
         restaurant.phone = phone;
         restaurant.category = category;
+        restaurant.kakaoCategory = kakaoCategory;
         restaurant.link = link;
         restaurant.mapX = mapX;
         restaurant.mapY = mapY;
