@@ -78,7 +78,7 @@ public class MainFeedListResp {
         public MainFeedRestaurantDTO(Restaurant restaurant) {
             this.id = restaurant.getId();
             this.name = restaurant.getName();
-            this.category = restaurant.getCategory();
+            this.category = restaurant.getCategory().getLabel();
             this.link = restaurant.getLink();
             this.roadAddress = restaurant.getRoadAddress();
         }

@@ -27,7 +27,7 @@ public class RecommendedRestaurantResp {
 			this.restaurantId = restaurant.getId();
 			this.name = restaurant.getName();
 			this.roadAddress = restaurant.getRoadAddress();
-			this.category = restaurant.getCategory();
+			this.category = restaurant.getCategory().getLabel();
 			this.feedList = feedList;
 		}
 	}
