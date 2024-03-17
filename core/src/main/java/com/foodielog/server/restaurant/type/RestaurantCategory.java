@@ -2,9 +2,9 @@ package com.foodielog.server.restaurant.type;
 
 import java.util.Arrays;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.Getter;
 
-@Slf4j
+@Getter
 public enum RestaurantCategory {
 	KOREAN("한식"),
 	CAFE("카페"),
@@ -24,14 +24,11 @@ public enum RestaurantCategory {
 	}
 
 	public static RestaurantCategory parseCategory(String categoryStr) {
-		log.info("categoryStr: " + categoryStr);
 		if (categoryStr == null || categoryStr.isEmpty()) {
 			return ETC;
 		}
 
 		String[] categories = categoryStr.replaceAll("\\s+", "").split(">");
-		log.info("categories[1]: " + categories[1]);
-
 		if (!categories[0].equals("음식점") || categories.length < 2) {
 			return ETC;
 		}
