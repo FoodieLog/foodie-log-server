@@ -74,10 +74,10 @@ public class ReplyService {
     }
 
     @Transactional(readOnly = true)
-    public ReplyCreateResp.ListDTO getReplys(Long feedId, Long lastReplyId, Pageable pageable) {
+    public ReplyCreateResp.ListDTO getReplys(Long feedId, Pageable pageable) {
         Feed feed = feedModuleService.get(feedId);
 
-        List<Reply> replyList = replyModuleService.getFeedReplyPage(feedId, lastReplyId, pageable);
+        List<Reply> replyList = replyModuleService.getFeedReplyPage(feedId, pageable);
 
         List<ReplyCreateResp.ReplyDTO> replyListDTO = replyList.stream()
             .map(ReplyCreateResp.ReplyDTO::new)
