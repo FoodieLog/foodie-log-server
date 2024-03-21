@@ -18,6 +18,7 @@ import com.foodielog.server.report.entity.Report;
 import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -83,7 +84,7 @@ public class ReplyService {
         List<ReplyListResp.ReplyDTO> replyListDTO = replyList.stream()
             .map((Reply reply) -> {
                 List<ReplyListResp.ReplyDTO> children = reply.getChildren().stream()
-                    .map((Reply child) -> new ReplyListResp.ReplyDTO(child, null))
+                    .map((Reply child) -> new ReplyListResp.ReplyDTO(child, new ArrayList<>()))
                     .collect(Collectors.toList());
                 return new ReplyListResp.ReplyDTO(reply, children);
             })
