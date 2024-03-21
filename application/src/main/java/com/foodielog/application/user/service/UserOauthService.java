@@ -1,16 +1,5 @@
 package com.foodielog.application.user.service;
 
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.foodielog.application.user.service.dto.ExistsKakaoResp;
 import com.foodielog.application.user.service.dto.KakaoLoginResp;
 import com.foodielog.server._core.error.exception.Exception401;
@@ -21,70 +10,85 @@ import com.foodielog.server._core.util.ExternalUtil;
 import com.foodielog.server._core.util.JsonConverter;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.ProviderType;
-
+import com.foodielog.server.user.type.UserStatus;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class UserOauthService {
-	@Value("${kakao.login.user-info-uri}")
-	private String KAKAO_USER_INFO_URI;
 
-	private final PasswordEncoder passwordEncoder;
-	private final JwtTokenProvider jwtTokenProvider;
-	private final RedisService redisService;
-	private final JsonConverter jsonConverter;
+    @Value("${kakao.login.user-info-uri}")
+    private String KAKAO_USER_INFO_URI;
 
-	private final UserModuleService userModuleService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
+    private final JsonConverter jsonConverter;
 
-	@Transactional(readOnly = true)
-	public ExistsKakaoResp checkExistsKakao(String token) {
-		KakaoLoginResp.kakaoApiResp.UserInfo kakaoUserInfo = getKakaoUserInfo(token);
-		KakaoLoginResp.kakaoApiResp.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
+    private final UserModuleService userModuleService;
 
-		Boolean isExists = userModuleService.isEmailExists(kakaoAccount.getEmail());
-		return new ExistsKakaoResp(token, isExists);
-	}
+    @Transactional(readOnly = true)
+    public ExistsKakaoResp checkExistsKakao(String token) {
+        KakaoLoginResp.kakaoApiResp.UserInfo kakaoUserInfo = getKakaoUserInfo(token);
+        KakaoLoginResp.kakaoApiResp.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
 
-	@Transactional
-	public KakaoLoginResp kakaoLogin(String token) {
-		KakaoLoginResp.kakaoApiResp.UserInfo kakaoUserInfo = getKakaoUserInfo(token);
-		KakaoLoginResp.kakaoApiResp.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
+        Boolean isExists = userModuleService.isEmailExists(kakaoAccount.getEmail());
+        UserStatus userStatus = userModuleService.getStatus(kakaoAccount.getEmail());
+        return new ExistsKakaoResp(token, isExists, userStatus);
+    }
 
-		if (!kakaoAccount.getIsEmailValid()) {
-			throw new Exception401("로그인 불가: 카카오 계정에 연결된 이메일이 유효하지 않습니다.");
-		}
+    @Transactional
+    public KakaoLoginResp kakaoLogin(String token) {
+        KakaoLoginResp.kakaoApiResp.UserInfo kakaoUserInfo = getKakaoUserInfo(token);
+        KakaoLoginResp.kakaoApiResp.KakaoAccount kakaoAccount = kakaoUserInfo.getKakaoAccount();
 
-		// 회원 정보가 없으면 회원가입
-		if (!userModuleService.isEmailExists(kakaoAccount.getEmail())) {
-			String encodedRandomPassword = passwordEncoder.encode(UUID.randomUUID().toString());
-			User user = User.createSocialUser(
-				kakaoUserInfo.getId(), kakaoAccount.getEmail(), encodedRandomPassword, ProviderType.KAKAO
-			);
+        if (!kakaoAccount.getIsEmailValid()) {
+            throw new Exception401("로그인 불가: 카카오 계정에 연결된 이메일이 유효하지 않습니다.");
+        }
 
-			userModuleService.save(user);
-		}
+        // 회원 정보가 없으면 회원가입
+        if (!userModuleService.isEmailExists(kakaoAccount.getEmail())) {
+            String encodedRandomPassword = passwordEncoder.encode(UUID.randomUUID().toString());
+            User user = User.createSocialUser(
+                kakaoUserInfo.getId(), kakaoAccount.getEmail(), encodedRandomPassword,
+                ProviderType.KAKAO
+            );
 
-		User loginUser = userModuleService.get(kakaoAccount.getEmail());
+            userModuleService.save(user);
+        }
 
-		String accessToken = jwtTokenProvider.createAccessToken(loginUser);
-		String refreshToken = jwtTokenProvider.createRefreshToken();
+        User loginUser = userModuleService.get(kakaoAccount.getEmail());
 
-		// 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
-		redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + loginUser.getEmail(), refreshToken,
-			JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
+        String accessToken = jwtTokenProvider.createAccessToken(loginUser);
+        String refreshToken = jwtTokenProvider.createRefreshToken();
 
-		return new KakaoLoginResp(loginUser, accessToken, refreshToken, token);
-	}
+        // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
+        redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + loginUser.getEmail(),
+            refreshToken,
+            JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
-	private KakaoLoginResp.kakaoApiResp.UserInfo getKakaoUserInfo(String token) {
-		ResponseEntity<String> userInfoResponse = ExternalUtil.kakaoUserInfoRequest(KAKAO_USER_INFO_URI,
-			HttpMethod.POST, token);
+        return new KakaoLoginResp(loginUser, accessToken, refreshToken, token);
+    }
 
-		if (!userInfoResponse.getStatusCode().equals(HttpStatus.OK)) {
-			throw new Exception500("카카오 로그인: " + userInfoResponse.getBody());
-		}
+    private KakaoLoginResp.kakaoApiResp.UserInfo getKakaoUserInfo(String token) {
+        ResponseEntity<String> userInfoResponse = ExternalUtil.kakaoUserInfoRequest(
+            KAKAO_USER_INFO_URI,
+            HttpMethod.POST, token);
 
-		return jsonConverter.jsonToObject(userInfoResponse.getBody(), KakaoLoginResp.kakaoApiResp.UserInfo.class);
-	}
+        if (!userInfoResponse.getStatusCode().equals(HttpStatus.OK)) {
+            throw new Exception500("카카오 로그인: " + userInfoResponse.getBody());
+        }
+
+        return jsonConverter.jsonToObject(userInfoResponse.getBody(),
+            KakaoLoginResp.kakaoApiResp.UserInfo.class);
+    }
 }

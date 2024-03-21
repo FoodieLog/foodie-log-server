@@ -1,11 +1,5 @@
 package com.foodielog.application.user.service;
 
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.foodielog.application.user.controller.dto.LoginParam;
 import com.foodielog.application.user.controller.dto.ResetPasswordParam;
 import com.foodielog.application.user.controller.dto.SignUpParam;
@@ -25,143 +19,154 @@ import com.foodielog.server._core.s3.S3Uploader;
 import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server._core.smtp.MailService;
 import com.foodielog.server.user.entity.User;
-
+import com.foodielog.server.user.type.UserStatus;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class UserAuthService {
-	private final PasswordEncoder passwordEncoder;
-	private final JwtTokenProvider jwtTokenProvider;
-	private final MailService mailService;
-	private final RedisService redisService;
-	private final S3Uploader s3Uploader;
 
-	private final UserModuleService userModuleService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MailService mailService;
+    private final RedisService redisService;
+    private final S3Uploader s3Uploader;
 
-	/* 토큰 재발급 */
-	@Transactional(readOnly = true)
-	public ReissueResp reissue(String accessToken, String refreshToken) {
-		// Refresh Token 유효성 검사
-		jwtTokenProvider.isTokenValid(refreshToken);
+    private final UserModuleService userModuleService;
 
-		// Access - Refresh 쌍 검증
-		jwtTokenProvider.checkPair(accessToken, refreshToken);
+    /* 토큰 재발급 */
+    @Transactional(readOnly = true)
+    public ReissueResp reissue(String accessToken, String refreshToken) {
+        // Refresh Token 유효성 검사
+        jwtTokenProvider.isTokenValid(refreshToken);
 
-		// 기존 토큰 무효화
-		jwtTokenProvider.invalidateToken(accessToken);
+        // Access - Refresh 쌍 검증
+        jwtTokenProvider.checkPair(accessToken, refreshToken);
 
-		// 재발급
-		User user = userModuleService.get(jwtTokenProvider.getEmail(accessToken));
-		String newAT = jwtTokenProvider.createAccessToken(user);
-		String newRT = jwtTokenProvider.createRefreshToken();
+        // 기존 토큰 무효화
+        jwtTokenProvider.invalidateToken(accessToken);
 
-		// 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
-		redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), newRT,
-			JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
+        // 재발급
+        User user = userModuleService.get(jwtTokenProvider.getEmail(accessToken));
+        String newAT = jwtTokenProvider.createAccessToken(user);
+        String newRT = jwtTokenProvider.createRefreshToken();
 
-		return new ReissueResp(newAT, newRT);
-	}
+        // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
+        redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), newRT,
+            JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
-	/* 회원 가입 */
-	@Transactional(readOnly = true)
-	public ExistsEmailResp checkExistsEmail(String email) {
-		Boolean isExists = userModuleService.isEmailExists(email);
-		return new ExistsEmailResp(email, isExists);
-	}
+        return new ReissueResp(newAT, newRT);
+    }
 
-	@Transactional
-	public SignUpResp signUp(SignUpParam parameter) {
-		userModuleService.checkNewEmail(parameter.getEmail());
-		userModuleService.checkNewNickName(parameter.getNickName());
+    @Transactional(readOnly = true)
+    public ExistsEmailResp checkExistsEmail(String email) {
+        Boolean isExists = userModuleService.isEmailExists(email);
+        UserStatus userStatus = userModuleService.getStatus(email);
+        return new ExistsEmailResp(email, isExists, userStatus);
+    }
 
-		String encodedPassword = passwordEncoder.encode(parameter.getPassword());
-		String storedFileUrl = (parameter.getFile() == null) ? null : s3Uploader.saveFile(parameter.getFile());
-		User user = User.createUser(
-			parameter.getEmail(), encodedPassword, parameter.getNickName(), storedFileUrl, parameter.getAboutMe()
-		);
+    /* 회원 가입 */
+    @Transactional
+    public SignUpResp signUp(SignUpParam parameter) {
+        userModuleService.checkNewEmail(parameter.getEmail());
+        userModuleService.checkNewNickName(parameter.getNickName());
 
-		user = userModuleService.save(user);
+        String encodedPassword = passwordEncoder.encode(parameter.getPassword());
+        String storedFileUrl =
+            (parameter.getFile() == null) ? null : s3Uploader.saveFile(parameter.getFile());
+        User user = User.createUser(
+            parameter.getEmail(), encodedPassword, parameter.getNickName(), storedFileUrl,
+            parameter.getAboutMe()
+        );
 
-		return new SignUpResp(user.getEmail(), user.getNickName(), user.getProfileImageUrl());
-	}
+        user = userModuleService.save(user);
 
-	/* 이메일 인증 */
-	@Transactional
-	public SendCodeForSignupResp sendCodeForSignUp(String email) {
-		userModuleService.checkNewEmail(email);
+        return new SignUpResp(user.getEmail(), user.getNickName(), user.getProfileImageUrl());
+    }
 
-		// 이메일 전송
-		String title = "[FoodieLog] 회원 가입 이메일 인증 번호";
-		String verificationCode = mailService.createVerificationCode();
-		mailService.sendEmail(email, title, verificationCode);
+    /* 이메일 인증 */
+    @Transactional
+    public SendCodeForSignupResp sendCodeForSignUp(String email) {
+        userModuleService.checkNewEmail(email);
 
-		// 이메일 인증 번호 Redis에 저장 ( key = "VerificationCode " + Email / value = VerificationCode )
-		redisService.setObjectByKey(
-			RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L, TimeUnit.MINUTES
-		);
+        // 이메일 전송
+        String title = "[FoodieLog] 회원 가입 이메일 인증 번호";
+        String verificationCode = mailService.createVerificationCode();
+        mailService.sendEmail(email, title, verificationCode);
 
-		return new SendCodeForSignupResp(email);
-	}
+        // 이메일 인증 번호 Redis에 저장 ( key = "VerificationCode " + Email / value = VerificationCode )
+        redisService.setObjectByKey(
+            RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L,
+            TimeUnit.MINUTES
+        );
 
-	@Transactional
-	public SendCodeForPasswordResp sendCodeForPassword(String email) {
-		userModuleService.checkEmailExists(email);
+        return new SendCodeForSignupResp(email);
+    }
 
-		// 이메일 전송
-		String title = "[FoodieLog] 비밀번호 찾기 이메일 인증 번호";
-		String verificationCode = mailService.createVerificationCode();
-		mailService.sendEmail(email, title, verificationCode);
+    @Transactional
+    public SendCodeForPasswordResp sendCodeForPassword(String email) {
+        userModuleService.checkEmailExists(email);
 
-		// 이메일 인증 번호 Redis에 저장 ( key = "VerificationCode " + Email / value = VerificationCode )
-		redisService.setObjectByKey(
-			RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L, TimeUnit.MINUTES
-		);
+        // 이메일 전송
+        String title = "[FoodieLog] 비밀번호 찾기 이메일 인증 번호";
+        String verificationCode = mailService.createVerificationCode();
+        mailService.sendEmail(email, title, verificationCode);
 
-		return new SendCodeForPasswordResp(email);
-	}
+        // 이메일 인증 번호 Redis에 저장 ( key = "VerificationCode " + Email / value = VerificationCode )
+        redisService.setObjectByKey(
+            RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L,
+            TimeUnit.MINUTES
+        );
 
-	@Transactional(readOnly = true)
-	public VerifiedCodeResp verifiedCode(String email, String code) {
-		String redisValue = redisService.getObjectByKey(
-			RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, String.class
-		);
-		Boolean isVerified = redisValue.equals(code);
+        return new SendCodeForPasswordResp(email);
+    }
 
-		return new VerifiedCodeResp(email, code, isVerified);
-	}
+    @Transactional(readOnly = true)
+    public VerifiedCodeResp verifiedCode(String email, String code) {
+        String redisValue = redisService.getObjectByKey(
+            RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, String.class
+        );
+        Boolean isVerified = redisValue.equals(code);
 
-	/* 로그인 */
-	@Transactional(readOnly = true)
-	public LoginResp login(LoginParam parameter) {
-		User user = userModuleService.get(parameter.getEmail());
+        return new VerifiedCodeResp(email, code, isVerified);
+    }
 
-		if (!passwordEncoder.matches(parameter.getPassword(), user.getPassword())) {
-			throw new Exception400("password", ErrorMessage.PASSWORD_NOT_MATCH);
-		}
+    /* 로그인 */
+    @Transactional(readOnly = true)
+    public LoginResp login(LoginParam parameter) {
+        User user = userModuleService.get(parameter.getEmail());
 
-		String accessToken = jwtTokenProvider.createAccessToken(user);
-		String refreshToken = jwtTokenProvider.createRefreshToken();
+        if (!passwordEncoder.matches(parameter.getPassword(), user.getPassword())) {
+            throw new Exception400("password", ErrorMessage.PASSWORD_NOT_MATCH);
+        }
 
-		// 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
-		redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), refreshToken,
-			JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
+        String accessToken = jwtTokenProvider.createAccessToken(user);
+        String refreshToken = jwtTokenProvider.createRefreshToken();
 
-		return new LoginResp(user, accessToken, refreshToken);
-	}
+        // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
+        redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(),
+            refreshToken,
+            JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
-	/* 프로필 설정 */
-	@Transactional(readOnly = true)
-	public ExistsNickNameResp checkExistsNickName(String nickName) {
-		Boolean isExists = userModuleService.isNickNameExists(nickName);
-		return new ExistsNickNameResp(nickName, isExists);
-	}
+        return new LoginResp(user, accessToken, refreshToken);
+    }
 
-	/* 비밀번호 변경 */
-	@Transactional
-	public ResetPasswordResp resetPassword(ResetPasswordParam parameter) {
-		User user = userModuleService.get(parameter.getEmail());
-		user.resetPassword(passwordEncoder.encode(parameter.getPassword()));
-		return new ResetPasswordResp(parameter.getEmail());
-	}
+    /* 프로필 설정 */
+    @Transactional(readOnly = true)
+    public ExistsNickNameResp checkExistsNickName(String nickName) {
+        Boolean isExists = userModuleService.isNickNameExists(nickName);
+        return new ExistsNickNameResp(nickName, isExists);
+    }
+
+    /* 비밀번호 변경 */
+    @Transactional
+    public ResetPasswordResp resetPassword(ResetPasswordParam parameter) {
+        User user = userModuleService.get(parameter.getEmail());
+        user.resetPassword(passwordEncoder.encode(parameter.getPassword()));
+        return new ResetPasswordResp(parameter.getEmail());
+    }
 }
