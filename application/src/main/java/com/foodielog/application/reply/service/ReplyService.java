@@ -6,6 +6,7 @@ import com.foodielog.application.notification.service.NotificationModuleService;
 import com.foodielog.application.reply.dto.ReplyCreateParam;
 import com.foodielog.application.reply.dto.ReportReplyParam;
 import com.foodielog.application.reply.service.dto.ReplyCreateResp;
+import com.foodielog.application.reply.service.dto.ReplyListResp;
 import com.foodielog.application.report.service.ReportModuleService;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception404;
@@ -74,16 +75,21 @@ public class ReplyService {
     }
 
     @Transactional(readOnly = true)
-    public ReplyCreateResp.ListDTO getReplys(Long feedId, Pageable pageable) {
+    public ReplyListResp.ListDTO getReplys(Long feedId, Pageable pageable) {
         Feed feed = feedModuleService.get(feedId);
 
         List<Reply> replyList = replyModuleService.getFeedReplyPage(feedId, pageable);
 
-        List<ReplyCreateResp.ReplyDTO> replyListDTO = replyList.stream()
-            .map(ReplyCreateResp.ReplyDTO::new)
+        List<ReplyListResp.ReplyDTO> replyListDTO = replyList.stream()
+            .map((Reply reply) -> {
+                List<ReplyListResp.ReplyDTO> children = reply.getChildren().stream()
+                    .map((Reply child) -> new ReplyListResp.ReplyDTO(child, null))
+                    .collect(Collectors.toList());
+                return new ReplyListResp.ReplyDTO(reply, children);
+            })
             .collect(Collectors.toList());
 
-        return new ReplyCreateResp.ListDTO(feed, replyListDTO);
+        return new ReplyListResp.ListDTO(feed, replyListDTO);
     }
 
     @Transactional

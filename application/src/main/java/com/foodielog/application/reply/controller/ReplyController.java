@@ -4,6 +4,7 @@ import com.foodielog.application.reply.dto.ReplyCreateReq;
 import com.foodielog.application.reply.dto.ReportReplyReq;
 import com.foodielog.application.reply.service.ReplyService;
 import com.foodielog.application.reply.service.dto.ReplyCreateResp;
+import com.foodielog.application.reply.service.dto.ReplyListResp;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server.user.entity.User;
@@ -53,11 +54,11 @@ public class ReplyController {
     }
 
     @GetMapping("/{feedId}")
-    public ResponseEntity<ApiUtils.ApiResult<ReplyCreateResp.ListDTO>> getReplyList(
+    public ResponseEntity<ApiUtils.ApiResult<ReplyListResp.ListDTO>> getReplyList(
         @PathVariable Long feedId,
         @PageableDefault(size = 15) Pageable pageable
     ) {
-        ReplyCreateResp.ListDTO response = replyService.getReplys(feedId, pageable);
+        ReplyListResp.ListDTO response = replyService.getReplys(feedId, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
