@@ -33,19 +33,19 @@ import com.foodielog.server.restaurant.entity.RestaurantLike;
 import com.foodielog.server.restaurant.type.RestaurantCategory;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 @Service
 public class FeedService {
+
     private final ReplyModuleService replyModuleService;
     private final NotificationModuleService notificationModuleService;
     private final FollowModuleService followModuleService;
@@ -93,24 +93,25 @@ public class FeedService {
 
     private Restaurant saveRestaurant(Restaurant restaurant) {
         Optional<Restaurant> existingRestaurant =
-                restaurantModuleService.getOptionalRestaurant(restaurant.getKakaoPlaceId());
+            restaurantModuleService.getOptionalRestaurant(restaurant.getKakaoPlaceId());
 
         return existingRestaurant.orElseGet(() -> restaurantModuleService.save(restaurant));
     }
 
     private Restaurant dtoToRestaurant(KakaoApiResponse.SearchPlace searchPlace) {
-        RestaurantCategory parsedCategory = RestaurantCategory.parseCategory(searchPlace.getCategory_name());
+        RestaurantCategory parsedCategory = RestaurantCategory.parseCategory(
+            searchPlace.getCategory_name());
         return Restaurant.createRestaurant(
-                searchPlace.getPlace_name(),
-                searchPlace.getId(),
-                searchPlace.getPhone(),
-                parsedCategory,
-                searchPlace.getCategory_name(),
-                searchPlace.getPlace_url(),
-                searchPlace.getX(),
-                searchPlace.getY(),
-                searchPlace.getAddress_name(),
-                searchPlace.getRoad_address_name()
+            searchPlace.getPlace_name(),
+            searchPlace.getId(),
+            searchPlace.getPhone(),
+            parsedCategory,
+            searchPlace.getCategory_name(),
+            searchPlace.getPlace_url(),
+            searchPlace.getX(),
+            searchPlace.getY(),
+            searchPlace.getAddress_name(),
+            searchPlace.getRoad_address_name()
         );
     }
 
@@ -132,7 +133,8 @@ public class FeedService {
         feedLikeModuleService.save(feedLike);
 
         if (feed.getUser().getNotificationFlag() == Flag.Y) {
-            Notification notification = Notification.createNotification(feed.getUser(), NotificationType.LIKE, feedLike.getId());
+            Notification notification = Notification.createNotification(feed.getUser(),
+                NotificationType.LIKE, feedLike.getId());
             notificationModuleService.save(notification);
 
             fcmMessageProvider.sendLikeMessage(feed.getUser().getEmail(), user.getEmail());
@@ -166,7 +168,7 @@ public class FeedService {
         Feed feed = getFeed(feedId);
         checkAccess(feed, user);
 
-        List<Reply> replyList = replyModuleService.findByFeedIdAndStatus(feedId);
+        List<Reply> replyList = replyModuleService.getNormalReplys(feedId);
         replyList.forEach(Reply::deleteReplyByUser);
 
         feed.deleteFeedByUser();
@@ -201,7 +203,8 @@ public class FeedService {
 
         reportModuleService.hasReportedByType(user, ReportType.FEED, feed.getId());
 
-        Report report = Report.createReport(user, reported, ReportType.FEED, feed.getId(), parameter.getReportReason());
+        Report report = Report.createReport(user, reported, ReportType.FEED, feed.getId(),
+            parameter.getReportReason());
         reportModuleService.save(report);
     }
 
@@ -216,12 +219,15 @@ public class FeedService {
 
             List<MainFeedListResp.FeedImageDTO> feedImageDTO = getFeedImageDTO(mediaList);
             MainFeedListResp.FeedDTO feedDTO = getFeedDTO(mainFeed, feedImageDTO);
-            MainFeedListResp.MainFeedRestaurantDTO mainFeedRestaurantDTO = getUserRestaurantDTO(mainFeed);
+            MainFeedListResp.MainFeedRestaurantDTO mainFeedRestaurantDTO = getUserRestaurantDTO(
+                mainFeed);
 
             boolean isFollowed = followModuleService.isFollow(user, mainFeed.getUser());
             boolean isLiked = feedLikeModuleService.exist(user, mainFeed);
 
-            mainFeedDTOList.add(new MainFeedListResp.MainFeedsDTO(feedDTO, mainFeedRestaurantDTO, isFollowed, isLiked));
+            mainFeedDTOList.add(
+                new MainFeedListResp.MainFeedsDTO(feedDTO, mainFeedRestaurantDTO, isFollowed,
+                    isLiked));
         }
         return new MainFeedListResp(mainFeedDTOList);
     }
@@ -231,17 +237,18 @@ public class FeedService {
         return new MainFeedListResp.MainFeedRestaurantDTO(restaurant);
     }
 
-    private MainFeedListResp.FeedDTO getFeedDTO(Feed feed, List<MainFeedListResp.FeedImageDTO> feedImages) {
+    private MainFeedListResp.FeedDTO getFeedDTO(Feed feed,
+        List<MainFeedListResp.FeedImageDTO> feedImages) {
         Long likeCount = feedLikeModuleService.countByFeed(feed);
-        Long replyCount = replyModuleService.countByFeedAndStatus(feed);
+        Long replyCount = replyModuleService.countReply(feed);
 
         return new MainFeedListResp.FeedDTO(feed, feedImages, likeCount, replyCount);
     }
 
     private List<MainFeedListResp.FeedImageDTO> getFeedImageDTO(List<Media> mediaList) {
         return mediaList.stream()
-                .map(MainFeedListResp.FeedImageDTO::new)
-                .collect(Collectors.toList());
+            .map(MainFeedListResp.FeedImageDTO::new)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -250,13 +257,14 @@ public class FeedService {
 
         List<Media> mediaList = mediaModuleService.getMediaList(feed);
         List<FeedDetailResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
-                .map(FeedDetailResp.FeedImageDTO::new)
-                .collect(Collectors.toList());
+            .map(FeedDetailResp.FeedImageDTO::new)
+            .collect(Collectors.toList());
 
         Long likeCount = feedLikeModuleService.countByFeed(feed);
-        Long replyCount = replyModuleService.countByFeedAndStatus(feed);
+        Long replyCount = replyModuleService.countReply(feed);
 
-        FeedDetailResp.RestaurantDTO restaurantDTO = new FeedDetailResp.RestaurantDTO(feed.getRestaurant());
+        FeedDetailResp.RestaurantDTO restaurantDTO = new FeedDetailResp.RestaurantDTO(
+            feed.getRestaurant());
 
         return new FeedDetailResp(feed, feedImageDTOS, restaurantDTO, likeCount, replyCount);
     }
@@ -267,19 +275,22 @@ public class FeedService {
 
         List<Media> mediaList = mediaModuleService.getMediaList(feed);
         List<GetFeedResp.FeedImageDTO> feedImageDTOS = mediaList.stream()
-                .map(GetFeedResp.FeedImageDTO::new)
-                .collect(Collectors.toList());
+            .map(GetFeedResp.FeedImageDTO::new)
+            .collect(Collectors.toList());
 
         Long likeCount = feedLikeModuleService.countByFeed(feed);
-        Long replyCount = replyModuleService.countByFeedAndStatus(feed);
+        Long replyCount = replyModuleService.countReply(feed);
 
         boolean isFollowed = followModuleService.isFollow(user, feed.getUser());
         boolean isLiked = feedLikeModuleService.exist(user, feed);
 
-        GetFeedResp.FeedDTO feedDTO = new GetFeedResp.FeedDTO(feed, feedImageDTOS, likeCount, replyCount);
+        GetFeedResp.FeedDTO feedDTO = new GetFeedResp.FeedDTO(feed, feedImageDTOS, likeCount,
+            replyCount);
 
-        GetFeedResp.RestaurantDTO restaurantDTO = new GetFeedResp.RestaurantDTO(feed.getRestaurant());
-        GetFeedResp.GetFeedDTO getFeedDTO = new GetFeedResp.GetFeedDTO(feedDTO, restaurantDTO, isFollowed, isLiked);
+        GetFeedResp.RestaurantDTO restaurantDTO = new GetFeedResp.RestaurantDTO(
+            feed.getRestaurant());
+        GetFeedResp.GetFeedDTO getFeedDTO = new GetFeedResp.GetFeedDTO(feedDTO, restaurantDTO,
+            isFollowed, isLiked);
 
         return new GetFeedResp(getFeedDTO);
     }
