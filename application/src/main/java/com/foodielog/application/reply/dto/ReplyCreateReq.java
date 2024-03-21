@@ -1,10 +1,11 @@
 package com.foodielog.application.reply.dto;
 
 import com.foodielog.server.user.entity.User;
+import lombok.Getter;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
-import lombok.Getter;
 
 @Getter
 public class ReplyCreateReq {
@@ -18,10 +19,10 @@ public class ReplyCreateReq {
 
     public ReplyCreateParam toParamWith(User user, Long feedId) {
         return ReplyCreateParam.builder()
-            .user(user)
-            .feedId(feedId)
-            .content(content)
-            .parentId(parentId)
-            .build();
+                .user(user)
+                .feedId(feedId)
+                .content(content)
+                .parentId(parentId)
+                .build();
     }
 }

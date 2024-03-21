@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class BlockProcessedParam {
 
-	private Long userId;
+    private Long userId;
 
-	private String reason;
+    private String reason;
 }

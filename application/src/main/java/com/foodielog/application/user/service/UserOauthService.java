@@ -11,8 +11,6 @@ import com.foodielog.server._core.util.JsonConverter;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.ProviderType;
 import com.foodielog.server.user.type.UserStatus;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -21,6 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -59,8 +60,8 @@ public class UserOauthService {
         if (!userModuleService.isEmailExists(kakaoAccount.getEmail())) {
             String encodedRandomPassword = passwordEncoder.encode(UUID.randomUUID().toString());
             User user = User.createSocialUser(
-                kakaoUserInfo.getId(), kakaoAccount.getEmail(), encodedRandomPassword,
-                ProviderType.KAKAO
+                    kakaoUserInfo.getId(), kakaoAccount.getEmail(), encodedRandomPassword,
+                    ProviderType.KAKAO
             );
 
             userModuleService.save(user);
@@ -73,22 +74,22 @@ public class UserOauthService {
 
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + loginUser.getEmail(),
-            refreshToken,
-            JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
+                refreshToken,
+                JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
         return new KakaoLoginResp(loginUser, accessToken, refreshToken, token);
     }
 
     private KakaoLoginResp.kakaoApiResp.UserInfo getKakaoUserInfo(String token) {
         ResponseEntity<String> userInfoResponse = ExternalUtil.kakaoUserInfoRequest(
-            KAKAO_USER_INFO_URI,
-            HttpMethod.POST, token);
+                KAKAO_USER_INFO_URI,
+                HttpMethod.POST, token);
 
         if (!userInfoResponse.getStatusCode().equals(HttpStatus.OK)) {
             throw new Exception500("카카오 로그인: " + userInfoResponse.getBody());
         }
 
         return jsonConverter.jsonToObject(userInfoResponse.getBody(),
-            KakaoLoginResp.kakaoApiResp.UserInfo.class);
+                KakaoLoginResp.kakaoApiResp.UserInfo.class);
     }
 }

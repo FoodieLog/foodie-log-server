@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class SendCodeForPasswordResp {
-	private final String email;
+    private final String email;
 
-	public SendCodeForPasswordResp(String email) {
-		this.email = email;
-	}
+    public SendCodeForPasswordResp(String email) {
+        this.email = email;
+    }
 }

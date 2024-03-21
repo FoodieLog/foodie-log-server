@@ -1,8 +1,8 @@
 package com.foodielog.application.notification.controller;
 
 import com.foodielog.application.notification.dto.NotificationTokenReq;
-import com.foodielog.application.notification.service.dto.NotificationListResp;
 import com.foodielog.application.notification.service.NotificationService;
+import com.foodielog.application.notification.service.dto.NotificationListResp;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server.user.entity.User;

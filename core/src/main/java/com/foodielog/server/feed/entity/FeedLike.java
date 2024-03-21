@@ -1,7 +1,5 @@
 package com.foodielog.server.feed.entity;
 
-import com.foodielog.server.feed.type.ContentStatus;
-import com.foodielog.server.restaurant.entity.Restaurant;
 import com.foodielog.server.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;

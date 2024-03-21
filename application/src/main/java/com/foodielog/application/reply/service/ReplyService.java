@@ -18,13 +18,14 @@ import com.foodielog.server.report.entity.Report;
 import com.foodielog.server.report.type.ReportType;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -59,8 +60,8 @@ public class ReplyService {
 
         if (feed.getUser().getNotificationFlag() == Flag.Y) {
             Notification notification = Notification.createNotification(feed.getUser(),
-                NotificationType.REPLY,
-                saveReply.getId());
+                    NotificationType.REPLY,
+                    saveReply.getId());
             notificationModuleService.save(notification);
 
             fcmMessageProvider.sendReplyMessage(feed.getUser().getEmail(), user.getEmail());
@@ -82,13 +83,13 @@ public class ReplyService {
         List<Reply> replyList = replyModuleService.getFeedReplyPage(feedId, last, pageable);
 
         List<ReplyListResp.ReplyDTO> replyListDTO = replyList.stream()
-            .map((Reply reply) -> {
-                List<ReplyListResp.ReplyDTO> children = reply.getChildren().stream()
-                    .map((Reply child) -> new ReplyListResp.ReplyDTO(child, new ArrayList<>()))
-                    .collect(Collectors.toList());
-                return new ReplyListResp.ReplyDTO(reply, children);
-            })
-            .collect(Collectors.toList());
+                .map((Reply reply) -> {
+                    List<ReplyListResp.ReplyDTO> children = reply.getChildren().stream()
+                            .map((Reply child) -> new ReplyListResp.ReplyDTO(child, new ArrayList<>()))
+                            .collect(Collectors.toList());
+                    return new ReplyListResp.ReplyDTO(reply, children);
+                })
+                .collect(Collectors.toList());
 
         return new ReplyListResp.ListDTO(feed, replyListDTO);
     }
@@ -107,7 +108,7 @@ public class ReplyService {
         reportModuleService.hasReportedByType(user, ReportType.REPLY, reply.getId());
 
         Report report = Report.createReport(user, reported, ReportType.REPLY, reply.getId(),
-            parameter.getReportReason());
+                parameter.getReportReason());
         reportModuleService.save(report);
     }
 

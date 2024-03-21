@@ -3,15 +3,7 @@ package com.foodielog.application.user.service;
 import com.foodielog.application.user.controller.dto.LoginParam;
 import com.foodielog.application.user.controller.dto.ResetPasswordParam;
 import com.foodielog.application.user.controller.dto.SignUpParam;
-import com.foodielog.application.user.service.dto.ExistsEmailResp;
-import com.foodielog.application.user.service.dto.ExistsNickNameResp;
-import com.foodielog.application.user.service.dto.LoginResp;
-import com.foodielog.application.user.service.dto.ReissueResp;
-import com.foodielog.application.user.service.dto.ResetPasswordResp;
-import com.foodielog.application.user.service.dto.SendCodeForPasswordResp;
-import com.foodielog.application.user.service.dto.SendCodeForSignupResp;
-import com.foodielog.application.user.service.dto.SignUpResp;
-import com.foodielog.application.user.service.dto.VerifiedCodeResp;
+import com.foodielog.application.user.service.dto.*;
 import com.foodielog.server._core.error.ErrorMessage;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.redis.RedisService;
@@ -20,11 +12,12 @@ import com.foodielog.server._core.security.jwt.JwtTokenProvider;
 import com.foodielog.server._core.smtp.MailService;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.UserStatus;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -57,7 +50,7 @@ public class UserAuthService {
 
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(), newRT,
-            JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
+                JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
         return new ReissueResp(newAT, newRT);
     }
@@ -77,10 +70,10 @@ public class UserAuthService {
 
         String encodedPassword = passwordEncoder.encode(parameter.getPassword());
         String storedFileUrl =
-            (parameter.getFile() == null) ? null : s3Uploader.saveFile(parameter.getFile());
+                (parameter.getFile() == null) ? null : s3Uploader.saveFile(parameter.getFile());
         User user = User.createUser(
-            parameter.getEmail(), encodedPassword, parameter.getNickName(), storedFileUrl,
-            parameter.getAboutMe()
+                parameter.getEmail(), encodedPassword, parameter.getNickName(), storedFileUrl,
+                parameter.getAboutMe()
         );
 
         user = userModuleService.save(user);
@@ -100,8 +93,8 @@ public class UserAuthService {
 
         // 이메일 인증 번호 Redis에 저장 ( key = "VerificationCode " + Email / value = VerificationCode )
         redisService.setObjectByKey(
-            RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L,
-            TimeUnit.MINUTES
+                RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L,
+                TimeUnit.MINUTES
         );
 
         return new SendCodeForSignupResp(email);
@@ -118,8 +111,8 @@ public class UserAuthService {
 
         // 이메일 인증 번호 Redis에 저장 ( key = "VerificationCode " + Email / value = VerificationCode )
         redisService.setObjectByKey(
-            RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L,
-            TimeUnit.MINUTES
+                RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, verificationCode, 3L,
+                TimeUnit.MINUTES
         );
 
         return new SendCodeForPasswordResp(email);
@@ -128,7 +121,7 @@ public class UserAuthService {
     @Transactional(readOnly = true)
     public VerifiedCodeResp verifiedCode(String email, String code) {
         String redisValue = redisService.getObjectByKey(
-            RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, String.class
+                RedisService.EMAIL_VERIFICATION_CODE_PREFIX + email, String.class
         );
         Boolean isVerified = redisValue.equals(code);
 
@@ -149,8 +142,8 @@ public class UserAuthService {
 
         // 리프레시 토큰  Redis에 저장 ( key = "RT " + Email / value = refreshToken )
         redisService.setObjectByKey(RedisService.REFRESH_TOKEN_PREFIX + user.getEmail(),
-            refreshToken,
-            JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
+                refreshToken,
+                JwtTokenProvider.EXP_REFRESH, TimeUnit.MILLISECONDS);
 
         return new LoginResp(user, accessToken, refreshToken);
     }

@@ -26,7 +26,7 @@ public class RedisConfig {
         redisConfig.setPassword(redisPassword);
         return new LettuceConnectionFactory(redisConfig);
     }
-    
+
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();

@@ -5,9 +5,10 @@ import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.repository.UserRepository;
 import com.foodielog.server.user.type.UserStatus;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -17,12 +18,12 @@ public class UserModuleService {
 
     public User get(String email) {
         return userRepository.findByEmailAndStatus(email, UserStatus.NORMAL)
-            .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
+                .orElseThrow(() -> new Exception400("email", ErrorMessage.USER_NOT_FOUND));
     }
 
     public User get(Long id) {
         return userRepository.findByIdAndStatus(id, UserStatus.NORMAL)
-            .orElseThrow(() -> new Exception400("id", ErrorMessage.USER_NOT_FOUND));
+                .orElseThrow(() -> new Exception400("id", ErrorMessage.USER_NOT_FOUND));
     }
 
     public UserStatus getStatus(String email) {

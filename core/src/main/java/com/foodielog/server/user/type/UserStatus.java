@@ -1,7 +1,7 @@
 package com.foodielog.server.user.type;
 
 public enum UserStatus {
-	NORMAL,
-	WITHDRAW,
-	BLOCK;
+    NORMAL,
+    WITHDRAW,
+    BLOCK;
 }
