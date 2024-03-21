@@ -23,9 +23,10 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
         "JOIN FETCH r.user " +
         "LEFT JOIN FETCH r.children c " +
         "LEFT JOIN FETCH c.user cu " +
-        "WHERE r.feed.id = :feedId and r.parent = NULL and r.status = 'NORMAL'" +
+        "WHERE r.feed.id = :feedId AND r.parent = NULL AND r.status = 'NORMAL' AND r.id > :last " +
         "ORDER BY r.id ASC, c.id ASC")
-    List<Reply> getReplyList(@Param("feedId") Long feedId, Pageable pageable);
+    List<Reply> getReplyList(@Param("feedId") Long feedId, @Param("last") Long last,
+        Pageable pageable);
 
     Long countByFeedAndStatus(Feed feed, ContentStatus status);
 

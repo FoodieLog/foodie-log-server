@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -56,9 +57,10 @@ public class ReplyController {
     @GetMapping("/{feedId}")
     public ResponseEntity<ApiUtils.ApiResult<ReplyListResp.ListDTO>> getReplyList(
         @PathVariable Long feedId,
+        @RequestParam Long last,
         @PageableDefault(size = 15) Pageable pageable
     ) {
-        ReplyListResp.ListDTO response = replyService.getReplys(feedId, pageable);
+        ReplyListResp.ListDTO response = replyService.getReplys(feedId, last, pageable);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
