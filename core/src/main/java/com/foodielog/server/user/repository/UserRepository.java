@@ -38,5 +38,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
         @Param("badgeFlag") Flag badgeFlag,
         @Param("status") UserStatus status, Pageable pageable);
 
+    @Query("SELECT u.status FROM User u " +
+        "WHERE u.email = :email"
+    )
     UserStatus findStatusByEmail(String email);
 }
