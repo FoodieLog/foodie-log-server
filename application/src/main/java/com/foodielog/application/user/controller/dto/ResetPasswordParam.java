@@ -6,7 +6,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class ResetPasswordParam {
-	private String email;
+    private String email;
 
-	private String password;
+    private String password;
 }

@@ -1,22 +1,19 @@
 package com.foodielog.server._core.security.jwt;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.foodielog.server._core.redis.RedisService;
+import io.jsonwebtoken.JwtException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.foodielog.server._core.redis.RedisService;
-
-import io.jsonwebtoken.JwtException;
-import lombok.RequiredArgsConstructor;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /*
  * 1. JwtAuthenticationFilter 인증 처리 필터
@@ -34,32 +31,32 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-	private final JwtTokenProvider jwtTokenProvider;
-	private final RedisService redisService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-		if (request.getHeader(HttpHeaders.AUTHORIZATION) == null || request.getRequestURI().equals("/api/auth/reissue")
-			|| request.getRequestURI().equals("/admin/auth/reissue")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+        if (request.getHeader(HttpHeaders.AUTHORIZATION) == null || request.getRequestURI().equals("/api/auth/reissue")
+                || request.getRequestURI().equals("/admin/auth/reissue")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-		String token = jwtTokenProvider.resolveToken(request.getHeader(JwtTokenProvider.HEADER));
+        String token = jwtTokenProvider.resolveToken(request.getHeader(JwtTokenProvider.HEADER));
 
-		if (jwtTokenProvider.isTokenValid(token)) {
-			if (redisService.hasKey(token)) {
-				throw new JwtException("Already logged out User");
-			}
+        if (jwtTokenProvider.isTokenValid(token)) {
+            if (redisService.hasKey(token)) {
+                throw new JwtException("Already logged out User");
+            }
 
-			// 토큰으로부터 유저 정보 받아오기
-			Authentication authentication = jwtTokenProvider.getAuthentication(token);
-			// SecurityContext 에 Authentication 객체 저장
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-		}
+            // 토큰으로부터 유저 정보 받아오기
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            // SecurityContext 에 Authentication 객체 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
 
-		filterChain.doFilter(request, response);
-	}
+        filterChain.doFilter(request, response);
+    }
 }

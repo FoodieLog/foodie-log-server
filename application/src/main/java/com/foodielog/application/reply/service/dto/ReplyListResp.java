@@ -2,9 +2,10 @@ package com.foodielog.application.reply.service.dto;
 
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.reply.entity.Reply;
+import lombok.Getter;
+
 import java.sql.Timestamp;
 import java.util.List;
-import lombok.Getter;
 
 @Getter
 public class ReplyListResp {

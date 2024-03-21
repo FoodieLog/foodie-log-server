@@ -6,11 +6,12 @@ import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.reply.entity.Reply;
 import com.foodielog.server.reply.repository.ReplyRepository;
 import com.foodielog.server.user.entity.User;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -36,12 +37,12 @@ public class ReplyModuleService {
 
     public Reply getUserReply(Long replyId, Long userId) {
         return replyRepository.findByIdAndUserIdAndStatus(replyId, userId, ContentStatus.NORMAL)
-            .orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
+                .orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
     }
 
     public Reply getNormal(Long replyId) {
         return replyRepository.findByIdAndStatus(replyId, ContentStatus.NORMAL)
-            .orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
+                .orElseThrow(() -> new Exception404("해당 댓글이 없습니다."));
     }
 
     public Optional<Reply> getNormalOptional(Long replyId) {
