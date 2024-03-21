@@ -26,8 +26,8 @@ public class ReplyModuleService {
         return replyRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
     }
 
-    public List<Reply> getFeedReplyPage(Long feedId, Pageable pageable) {
-        return replyRepository.getReplyList(feedId, pageable);
+    public List<Reply> getFeedReplyPage(Long feedId, Long last, Pageable pageable) {
+        return replyRepository.getReplyList(feedId, last, pageable);
     }
 
     public Reply save(Reply reply) {
