@@ -210,8 +210,8 @@ public class FeedService {
     }
 
     @Transactional(readOnly = true)
-    public MainFeedListResp getMainFeed(User user, Long feedId, String category) {
-        List<Feed> mainFeeds = feedModuleService.getMainFeeds(user, feedId, RestaurantCategory.parseParamCategory(category));
+    public MainFeedListResp getMainFeed(User user, Long lastFeed, String category) {
+        List<Feed> mainFeeds = feedModuleService.getMainFeeds(user, lastFeed, RestaurantCategory.parseParamCategory(category));
 
         List<MainFeedListResp.MainFeedsDTO> mainFeedDTOList = new ArrayList<>();
 

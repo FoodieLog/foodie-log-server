@@ -44,11 +44,11 @@ public class FeedModuleService {
         return feedRepository.save(feed);
     }
 
-    public List<Feed> getMainFeeds(User user, Long feedId, RestaurantCategory category) {
+    public List<Feed> getMainFeeds(User user, Long lastFeed, RestaurantCategory category) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime date = now.minusMonths(1);
         Pageable pageable = PageRequest.of(0, 15, Sort.by(Sort.Direction.DESC, "id"));
-        return feedRepository.getMainFeed(user, feedId, category, 0L, Timestamp.valueOf(date), pageable);
+        return feedRepository.getMainFeed(user, lastFeed, category, 0L, Timestamp.valueOf(date), pageable);
     }
 
     public List<Feed> getTopThree(Restaurant restaurant) {

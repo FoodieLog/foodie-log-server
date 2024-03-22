@@ -120,10 +120,10 @@ public class FeedController {
     @GetMapping("/list")
     public ResponseEntity<ApiUtils.ApiResult<MainFeedListResp>> list(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(required = false) @Positive Long feedId,
+            @RequestParam(required = false) @Positive Long last,
             @RequestParam(required = false) String category
     ) {
-        MainFeedListResp response = feedService.getMainFeed(principalDetails.getUser(), feedId, category);
+        MainFeedListResp response = feedService.getMainFeed(principalDetails.getUser(), last, category);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 
