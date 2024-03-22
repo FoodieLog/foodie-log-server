@@ -38,4 +38,11 @@ public enum RestaurantCategory {
                 .findFirst()
                 .orElse(ETC);
     }
+
+    public static RestaurantCategory parseParamCategory(String paramCategory) {
+        return Arrays.stream(RestaurantCategory.values())
+                .filter(category -> String.valueOf(category).equalsIgnoreCase(paramCategory))
+                .findFirst()
+                .orElse(null);
+    }
 }

@@ -121,9 +121,9 @@ public class FeedController {
     public ResponseEntity<ApiUtils.ApiResult<MainFeedListResp>> list(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam(required = false) @Positive Long feedId,
-            @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+            @RequestParam(required = false) String category
     ) {
-        MainFeedListResp response = feedService.getMainFeed(principalDetails.getUser(), feedId, pageable);
+        MainFeedListResp response = feedService.getMainFeed(principalDetails.getUser(), feedId, category);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 

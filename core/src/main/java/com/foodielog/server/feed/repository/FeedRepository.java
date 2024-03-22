@@ -2,6 +2,7 @@ package com.foodielog.server.feed.repository;
 
 import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.type.ContentStatus;
+import com.foodielog.server.restaurant.type.RestaurantCategory;
 import com.foodielog.server.user.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,7 +39,9 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             "LEFT JOIN Follow fo ON f.user = fo.followedId AND fo.followingId = :user " +
             "WHERE (fo.followedId IS NOT NULL " +
             "OR f.id IN ((SELECT f2.id FROM Feed f2 LEFT JOIN FeedLike li ON f2 = li.feed GROUP BY f2 HAVING COUNT(f2) >= :likeCount))) " +
-            "AND f.status = 'NORMAL' AND f.createdAt >= :date AND f.user != :user AND (:feedId IS NULL OR f.id < :feedId)")
-    List<Feed> getMainFeed(@Param("user") User user, @Param("feedId") Long feedId,
+            "AND f.status = 'NORMAL' AND f.createdAt >= :date AND f.user != :user " +
+            "AND (:feedId IS NULL OR f.id < :feedId) " +
+            "AND (:category IS NULL OR f.restaurant.category = :category)")
+    List<Feed> getMainFeed(@Param("user") User user, @Param("feedId") Long feedId, @Param("category") RestaurantCategory category,
                            @Param("likeCount") Long likeCount, @Param("date") Timestamp date, Pageable pageable);
 }
