@@ -5,10 +5,13 @@ import com.foodielog.server.feed.entity.Feed;
 import com.foodielog.server.feed.repository.FeedRepository;
 import com.foodielog.server.feed.type.ContentStatus;
 import com.foodielog.server.restaurant.entity.Restaurant;
+import com.foodielog.server.restaurant.type.RestaurantCategory;
 import com.foodielog.server.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -41,10 +44,11 @@ public class FeedModuleService {
         return feedRepository.save(feed);
     }
 
-    public List<Feed> getMainFeeds(User user, Long feedId, Pageable pageable) {
+    public List<Feed> getMainFeeds(User user, Long feedId, RestaurantCategory category) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime date = now.minusMonths(1);
-        return feedRepository.getMainFeed(user, feedId, 0L, Timestamp.valueOf(date), pageable);
+        Pageable pageable = PageRequest.of(0, 15, Sort.by(Sort.Direction.DESC, "id"));
+        return feedRepository.getMainFeed(user, feedId, category, 0L, Timestamp.valueOf(date), pageable);
     }
 
     public List<Feed> getTopThree(Restaurant restaurant) {
