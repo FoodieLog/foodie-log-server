@@ -6,7 +6,8 @@ import lombok.AllArgsConstructor;
 public enum NotificationType {
     REPLY("댓글"),
     LIKE("좋아요"),
-    FOLLOW("팔로우");
+    FOLLOW("팔로우"),
+    MENTION("멘션");
 
     private final String label;
 }
