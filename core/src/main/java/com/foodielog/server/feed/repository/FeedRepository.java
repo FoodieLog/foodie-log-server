@@ -22,7 +22,16 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             "WHERE f.user = :user AND (:feedId IS NULL OR f.id < :feedId) AND f.status = :status")
     List<Feed> getFeeds(@Param("user") User user, @Param("feedId") Long feedId, @Param("status") ContentStatus status, Pageable pageable);
 
-    List<Feed> findAllByRestaurantIdAndStatus(Long restaurantId, ContentStatus status);
+    List<Feed> findAllByRestaurantIdAndStatusOrderByIdDesc(Long restaurantId, ContentStatus status);
+
+    @Query("SELECT f, COUNT(fl) AS likeCount " +
+            "FROM Feed f " +
+            "LEFT JOIN FeedLike fl ON f.id = fl.feed.id " +
+            "WHERE f.restaurant.id = :restaurantId " +
+            "AND f.status = 'NORMAL' " +
+            "GROUP BY f.id " +
+            "ORDER BY likeCount DESC, f.id DESC")
+    List<Feed> findPopularFeed(@Param("restaurantId") Long restaurantId);
 
     @Query("SELECT f, COUNT(fl) AS likeCount " +
             "FROM Feed f " +

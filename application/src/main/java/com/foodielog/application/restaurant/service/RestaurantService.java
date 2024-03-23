@@ -56,14 +56,13 @@ public class RestaurantService {
     }
 
     @Transactional(readOnly = true)
-    public RestaurantFeedListResp getRestaurantDetail(User user, Long restaurantId) {
+    public RestaurantFeedListResp getRestaurantDetail(User user, Long restaurantId, String sort) {
         Restaurant restaurant = validRestaurant(restaurantId);
 
         RestaurantFeedListResp.RestaurantInfoDTO restaurantInfoDTO = createRestaurantInfoDTO(
                 restaurant, user);
         List<RestaurantFeedListResp.RestaurantFeedsDTO> restaurantFeedsDTOList = createRestaurantFeedsDTO(
-                restaurant,
-                user);
+                restaurant, user, sort);
 
         return new RestaurantFeedListResp(restaurantInfoDTO, restaurantFeedsDTOList);
     }
@@ -134,12 +133,19 @@ public class RestaurantService {
     }
 
     private List<RestaurantFeedListResp.RestaurantFeedsDTO> createRestaurantFeedsDTO(
-            Restaurant restaurant, User user) {
+            Restaurant restaurant, User user, String sort) {
         RestaurantFeedListResp.FeedRestaurantDTO feedRestaurantDTO =
                 new RestaurantFeedListResp.FeedRestaurantDTO(restaurant);
 
         List<RestaurantFeedListResp.RestaurantFeedsDTO> restaurantFeedsDTOList = new ArrayList<>();
-        List<Feed> feeds = feedModuleService.getRestaurantFeeds(restaurant);
+        List<Feed> feeds = new ArrayList<>();
+
+        if (sort.equalsIgnoreCase("latest")) {
+            feeds = feedModuleService.getRestaurantLatestFeeds(restaurant);
+        }
+        if (sort.equalsIgnoreCase("popular")) {
+            feeds = feedModuleService.getRestaurantPopularFeeds(restaurant);
+        }
 
         for (Feed feed : feeds) {
             List<Media> mediaList = mediaModuleService.getMediaList(feed);
