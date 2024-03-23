@@ -4,6 +4,7 @@ import com.foodielog.application.restaurant.service.RestaurantService;
 import com.foodielog.application.restaurant.service.dto.LikedRestaurantResp;
 import com.foodielog.application.restaurant.service.dto.RecommendedRestaurantResp;
 import com.foodielog.application.restaurant.service.dto.RestaurantFeedListResp;
+import com.foodielog.server._core.customValid.valid.ValidSortParam;
 import com.foodielog.server._core.security.auth.PrincipalDetails;
 import com.foodielog.server._core.util.ApiUtils;
 import com.foodielog.server.user.entity.User;
@@ -36,10 +37,11 @@ public class RestaurantController {
     @GetMapping("/{restaurantId}")
     public ResponseEntity<ApiUtils.ApiResult<RestaurantFeedListResp>> getRestaurantDetail(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @PathVariable Long restaurantId
+            @PathVariable Long restaurantId,
+            @RequestParam @ValidSortParam String sort
     ) {
         User user = principalDetails.getUser();
-        RestaurantFeedListResp response = restaurantService.getRestaurantDetail(user, restaurantId);
+        RestaurantFeedListResp response = restaurantService.getRestaurantDetail(user, restaurantId, sort);
         return new ResponseEntity<>(ApiUtils.success(response, HttpStatus.OK), HttpStatus.OK);
     }
 

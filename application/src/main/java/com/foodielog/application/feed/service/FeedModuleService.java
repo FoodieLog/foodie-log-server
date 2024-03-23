@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -36,8 +35,12 @@ public class FeedModuleService {
         return feedRepository.findByUserIdAndStatus(user.getId(), ContentStatus.NORMAL);
     }
 
-    public List<Feed> getRestaurantFeeds(Restaurant restaurant) {
-        return feedRepository.findAllByRestaurantIdAndStatus(restaurant.getId(), ContentStatus.NORMAL);
+    public List<Feed> getRestaurantLatestFeeds(Restaurant restaurant) {
+        return feedRepository.findAllByRestaurantIdAndStatusOrderByIdDesc(restaurant.getId(), ContentStatus.NORMAL);
+    }
+
+    public List<Feed> getRestaurantPopularFeeds(Restaurant restaurant) {
+        return feedRepository.findPopularFeed(restaurant.getId());
     }
 
     public Feed save(Feed feed) {
