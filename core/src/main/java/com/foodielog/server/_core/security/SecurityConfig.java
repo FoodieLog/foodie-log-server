@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -96,6 +97,7 @@ public class SecurityConfig {
                 "https://admin-foodie-log.vercel.app"));
         config.setAllowCredentials(true); // 클라이언트에서 쿠키 요청 허용
         config.addExposedHeader("Authorization");
+        config.addExposedHeader(HttpHeaders.SET_COOKIE);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config); // 모든 url에 대해서 설정을 적용한다
         return source;
