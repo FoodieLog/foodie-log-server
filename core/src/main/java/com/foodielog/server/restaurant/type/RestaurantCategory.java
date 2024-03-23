@@ -39,7 +39,7 @@ public enum RestaurantCategory {
                 .orElse(ETC);
     }
 
-    public static RestaurantCategory parseParamCategory(String paramCategory) {
+    public static RestaurantCategory findValue(String paramCategory) {
         return Arrays.stream(RestaurantCategory.values())
                 .filter(category -> String.valueOf(category).equalsIgnoreCase(paramCategory))
                 .findFirst()
