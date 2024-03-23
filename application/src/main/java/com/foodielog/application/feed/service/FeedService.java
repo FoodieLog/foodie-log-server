@@ -34,7 +34,6 @@ import com.foodielog.server.restaurant.type.RestaurantCategory;
 import com.foodielog.server.user.entity.User;
 import com.foodielog.server.user.type.Flag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -211,7 +210,7 @@ public class FeedService {
 
     @Transactional(readOnly = true)
     public MainFeedListResp getMainFeed(User user, Long lastFeed, String category) {
-        List<Feed> mainFeeds = feedModuleService.getMainFeeds(user, lastFeed, RestaurantCategory.parseParamCategory(category));
+        List<Feed> mainFeeds = feedModuleService.getMainFeeds(user, lastFeed, RestaurantCategory.findValue(category));
 
         List<MainFeedListResp.MainFeedsDTO> mainFeedDTOList = new ArrayList<>();
 
