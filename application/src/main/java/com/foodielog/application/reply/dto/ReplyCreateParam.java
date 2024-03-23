@@ -4,6 +4,8 @@ import com.foodielog.server.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Builder
 @Getter
 public class ReplyCreateParam {
@@ -15,4 +17,6 @@ public class ReplyCreateParam {
     private String content;
 
     private Long parentId;
+
+    private List<Long> mentionedIds;
 }

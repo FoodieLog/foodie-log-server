@@ -2,15 +2,18 @@ package com.foodielog.application.reply.service;
 
 import com.foodielog.application._core.fcm.FcmMessageProvider;
 import com.foodielog.application.feed.service.FeedModuleService;
+import com.foodielog.application.mention.service.MentionModuleService;
 import com.foodielog.application.notification.service.NotificationModuleService;
 import com.foodielog.application.reply.dto.ReplyCreateParam;
 import com.foodielog.application.reply.dto.ReportReplyParam;
 import com.foodielog.application.reply.service.dto.ReplyCreateResp;
 import com.foodielog.application.reply.service.dto.ReplyListResp;
 import com.foodielog.application.report.service.ReportModuleService;
+import com.foodielog.application.user.service.UserModuleService;
 import com.foodielog.server._core.error.exception.Exception400;
 import com.foodielog.server._core.error.exception.Exception404;
 import com.foodielog.server.feed.entity.Feed;
+import com.foodielog.server.mention.entity.Mention;
 import com.foodielog.server.notification.entity.Notification;
 import com.foodielog.server.notification.type.NotificationType;
 import com.foodielog.server.reply.entity.Reply;
@@ -31,9 +34,11 @@ import java.util.stream.Collectors;
 @Service
 public class ReplyService {
 
+    private final UserModuleService userModuleService;
     private final FeedModuleService feedModuleService;
     private final ReplyModuleService replyModuleService;
     private final NotificationModuleService notificationModuleService;
+    private final MentionModuleService mentionModuleService;
     private final ReportModuleService reportModuleService;
 
     private final FcmMessageProvider fcmMessageProvider;
@@ -42,6 +47,24 @@ public class ReplyService {
     public ReplyCreateResp createReply(ReplyCreateParam parameter) {
         Feed feed = feedModuleService.get(parameter.getFeedId());
         User user = parameter.getUser();
+        Reply savedReply = saveReply(parameter, user, feed);
+
+        // 알림 처리
+        Notification notification = Notification.createNotification(feed.getUser(),
+                NotificationType.REPLY, savedReply.getId());
+        notificationModuleService.save(notification);
+
+        if (feed.getUser().getNotificationFlag() == Flag.Y) {
+            fcmMessageProvider.sendReplyMessage(feed.getUser().getEmail(), user.getEmail());
+        }
+
+        // 멘션 있으면 멘션 처리
+        saveMention(parameter.getMentionedIds(), savedReply);
+
+        return new ReplyCreateResp(savedReply);
+    }
+
+    private Reply saveReply(ReplyCreateParam parameter, User user, Feed feed) {
         Reply reply = Reply.createReply(user, feed, parameter.getContent());
 
         // 자식 댓글인 경우 부모 update
@@ -56,17 +79,23 @@ public class ReplyService {
             reply.updateParent(parent);
         }
 
-        Reply saveReply = replyModuleService.save(reply);
+        return replyModuleService.save(reply);
+    }
 
-        if (feed.getUser().getNotificationFlag() == Flag.Y) {
-            Notification notification = Notification.createNotification(feed.getUser(),
-                    NotificationType.REPLY,
-                    saveReply.getId());
-            notificationModuleService.save(notification);
+    private void saveMention(List<Long> mentionedIds, Reply saveReply) {
+        if (mentionedIds != null) {
+            for (Long mentionedId : mentionedIds) {
+                // 멘션 저장
+                User mentionedUser = userModuleService.get(mentionedId);
+                Mention mention = Mention.createMention(saveReply, mentionedUser);
+                mentionModuleService.save(mention);
 
-            fcmMessageProvider.sendReplyMessage(feed.getUser().getEmail(), user.getEmail());
+                // 알림 저장
+                Notification notification = Notification.createNotification(
+                        mentionedUser, NotificationType.MENTION, saveReply.getId());
+                notificationModuleService.save(notification);
+            }
         }
-        return new ReplyCreateResp(saveReply);
     }
 
     @Transactional

@@ -36,7 +36,7 @@ public class Mention {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    public Mention createMention(Reply reply, User mentionedUser) {
+    public static Mention createMention(Reply reply, User mentionedUser) {
         Mention mention = new Mention();
         mention.reply = reply;
         mention.mentionedUser = mentionedUser;

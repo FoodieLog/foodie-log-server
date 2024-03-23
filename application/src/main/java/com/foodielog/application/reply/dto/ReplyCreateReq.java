@@ -6,6 +6,7 @@ import lombok.Getter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 public class ReplyCreateReq {
@@ -17,12 +18,15 @@ public class ReplyCreateReq {
     @Positive
     private Long parentId;
 
+    private List<Long> mentionedIds;
+
     public ReplyCreateParam toParamWith(User user, Long feedId) {
         return ReplyCreateParam.builder()
                 .user(user)
                 .feedId(feedId)
                 .content(content)
                 .parentId(parentId)
+                .mentionedIds(mentionedIds)
                 .build();
     }
 }
