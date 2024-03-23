@@ -26,7 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,18 +108,26 @@ public class ReplyService {
     public ReplyListResp.ListDTO getReplys(Long feedId, Long last, Pageable pageable) {
         Feed feed = feedModuleService.get(feedId);
 
-        List<Reply> replyList = replyModuleService.getFeedReplyPage(feedId, last, pageable);
+        List<Reply> replys = replyModuleService.getFeedReplyPage(feedId, last, pageable);
 
-        List<ReplyListResp.ReplyDTO> replyListDTO = replyList.stream()
-                .map((Reply reply) -> {
-                    List<ReplyListResp.ReplyDTO> children = reply.getChildren().stream()
-                            .map((Reply child) -> new ReplyListResp.ReplyDTO(child, new ArrayList<>()))
-                            .collect(Collectors.toList());
-                    return new ReplyListResp.ReplyDTO(reply, children);
-                })
-                .collect(Collectors.toList());
+        List<ReplyListResp.ReplyDTO> replyListDTO = getReplyDTOS(replys);
 
         return new ReplyListResp.ListDTO(feed, replyListDTO);
+    }
+
+    private List<ReplyListResp.ReplyDTO> getReplyDTOS(List<Reply> replys) {
+        return replys.stream()
+                .map((Reply reply) -> {
+                    List<Mention> mentions = mentionModuleService.getAll(reply);
+                    List<ReplyListResp.MentionDTO> mentionDTOs = mentions.stream()
+                            .map((Mention mention) -> new ReplyListResp.MentionDTO(
+                                    mention.getMentionedUser().getId(), mention.getMentionedUser().getNickName()))
+                            .collect(Collectors.toList());
+
+                    List<Reply> children = reply.getChildren();
+                    return new ReplyListResp.ReplyDTO(reply, getReplyDTOS(children), mentionDTOs);
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional

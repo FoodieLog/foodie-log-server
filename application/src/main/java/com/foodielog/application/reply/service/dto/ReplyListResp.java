@@ -34,13 +34,13 @@ public class ReplyListResp {
         private final Timestamp createdAt;
         private final List<ReplyDTO> replyList;
 
-        public ListDTO(Feed feed, List<ReplyDTO> replyListDTO) {
+        public ListDTO(Feed feed, List<ReplyDTO> replyDTOList) {
             this.userId = feed.getUser().getId();
             this.nickName = feed.getUser().getNickName();
             this.profileImageUrl = feed.getUser().getProfileImageUrl();
             this.content = feed.getContent();
             this.createdAt = feed.getCreatedAt();
-            this.replyList = replyListDTO;
+            this.replyList = replyDTOList;
         }
     }
 
@@ -54,8 +54,9 @@ public class ReplyListResp {
         private final String content;
         private final Timestamp createdAt;
         private final List<ReplyDTO> childList;
+        private final List<MentionDTO> mentionList;
 
-        public ReplyDTO(Reply reply, List<ReplyDTO> childList) {
+        public ReplyDTO(Reply reply, List<ReplyDTO> childList, List<MentionDTO> mentionList) {
             this.id = reply.getId();
             this.userId = reply.getUser().getId();
             this.nickName = reply.getUser().getNickName();
@@ -63,6 +64,18 @@ public class ReplyListResp {
             this.content = reply.getContent();
             this.createdAt = reply.getCreatedAt();
             this.childList = childList;
+            this.mentionList = mentionList;
+        }
+    }
+
+    @Getter
+    public static class MentionDTO {
+        private final Long userId;
+        private final String nickName;
+
+        public MentionDTO(Long userId, String nickName) {
+            this.userId = userId;
+            this.nickName = nickName;
         }
     }
 }
