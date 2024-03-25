@@ -27,8 +27,12 @@ public class Mention {
     private Reply reply;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mentioner_id")
+    private User mentioner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mentioned_id")
-    private User mentionedUser;
+    private User mentioned;
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -36,10 +40,11 @@ public class Mention {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    public static Mention createMention(Reply reply, User mentionedUser) {
+    public static Mention createMention(Reply reply, User mentioner, User mentioned) {
         Mention mention = new Mention();
         mention.reply = reply;
-        mention.mentionedUser = mentionedUser;
+        mention.mentioner = mentioner;
+        mention.mentioned = mentioned;
         return mention;
     }
 }
