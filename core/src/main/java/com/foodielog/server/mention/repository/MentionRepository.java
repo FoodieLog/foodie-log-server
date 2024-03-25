@@ -10,7 +10,7 @@ import java.util.List;
 public interface MentionRepository extends JpaRepository<Mention, Long> {
 
     @Query("SELECT m FROM Mention m " +
-            "JOIN FETCH m.mentionedUser " +
+            "JOIN FETCH m.mentioned " +
             "WHERE m.reply = :reply ")
     List<Mention> findByReply(Reply reply);
 }

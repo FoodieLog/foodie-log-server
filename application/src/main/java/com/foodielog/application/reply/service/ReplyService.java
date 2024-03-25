@@ -85,13 +85,13 @@ public class ReplyService {
         if (mentionedIds != null) {
             for (Long mentionedId : mentionedIds) {
                 // 멘션 저장
-                User mentionedUser = userModuleService.get(mentionedId);
-                Mention mention = Mention.createMention(saveReply, mentionedUser);
+                User mentioned = userModuleService.get(mentionedId);
+                Mention mention = Mention.createMention(saveReply, saveReply.getUser(), mentioned);
                 mentionModuleService.save(mention);
 
                 // 알림 저장
                 Notification notification = Notification.createNotification(
-                        mentionedUser, NotificationType.MENTION, saveReply.getId());
+                        mentioned, NotificationType.MENTION, saveReply.getId());
                 notificationModuleService.save(notification);
             }
         }
@@ -121,7 +121,7 @@ public class ReplyService {
                     List<Mention> mentions = mentionModuleService.getAll(reply);
                     List<ReplyListResp.MentionDTO> mentionDTOs = mentions.stream()
                             .map((Mention mention) -> new ReplyListResp.MentionDTO(
-                                    mention.getMentionedUser().getId(), mention.getMentionedUser().getNickName()))
+                                    mention.getMentioned().getId(), mention.getMentioned().getNickName()))
                             .collect(Collectors.toList());
 
                     List<Reply> children = reply.getChildren();
