@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -43,6 +44,7 @@ public class Reply {
     private Reply parent;
 
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @Where(clause = "status = 'NORMAL'")
     private List<Reply> children = new ArrayList<>();
 
     @CreationTimestamp
