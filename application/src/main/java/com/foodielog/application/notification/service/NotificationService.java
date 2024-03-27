@@ -2,6 +2,7 @@ package com.foodielog.application.notification.service;
 
 import com.foodielog.application.feedLike.service.FeedLikeModuleService;
 import com.foodielog.application.follow.service.FollowModuleService;
+import com.foodielog.application.mention.service.MentionModuleService;
 import com.foodielog.application.notification.dto.NotificationTokenParam;
 import com.foodielog.application.notification.service.dto.NotificationListResp;
 import com.foodielog.application.reply.service.ReplyModuleService;
@@ -26,6 +27,7 @@ public class NotificationService {
     private final ReplyModuleService replyModuleService;
     private final FeedLikeModuleService feedLikeModuleService;
     private final FollowModuleService followModuleService;
+    private final MentionModuleService mentionModuleService;
 
     private final RedisService redisService;
 
@@ -48,6 +50,9 @@ public class NotificationService {
                 case FOLLOW:
                     getFollowNotification(notification, notificationContent);
                     break;
+                case MENTION:
+                    getMentionNotification(notification, notificationContent);
+                    break;
                 default:
             }
         }
@@ -57,10 +62,10 @@ public class NotificationService {
     private void getReplyNotification(Notification notification, List<Object> notificationContent) {
         replyModuleService.getNormalOptional(notification.getContentId())
                 .ifPresent(reply -> {
-                    NotificationListResp.ContentReply contentReply = new NotificationListResp.ContentReply(
+                    NotificationListResp.ContentReplyDTO contentReply = new NotificationListResp.ContentReplyDTO(
                             reply);
-                    NotificationListResp.ReplyNotification replyNotification =
-                            new NotificationListResp.ReplyNotification(notification,
+                    NotificationListResp.ReplyNotificationDTO replyNotification =
+                            new NotificationListResp.ReplyNotificationDTO(notification,
                                     getContentUser(reply.getUser()), contentReply);
                     notificationContent.add(replyNotification);
                 });
@@ -69,30 +74,41 @@ public class NotificationService {
     private void getLikeNotification(Notification notification, List<Object> notificationContent) {
         feedLikeModuleService.getOptionalFeedLike(notification.getContentId())
                 .ifPresent(feedLike -> {
-                    NotificationListResp.ContentFeed contentFeed = new NotificationListResp.ContentFeed(
+                    NotificationListResp.ContentFeedDTO contentFeed = new NotificationListResp.ContentFeedDTO(
                             feedLike.getFeed());
-                    NotificationListResp.LikeNotification likeNotification =
-                            new NotificationListResp.LikeNotification(notification,
+                    NotificationListResp.LikeNotificationDTO likeNotification =
+                            new NotificationListResp.LikeNotificationDTO(notification,
                                     getContentUser(feedLike.getUser()), contentFeed);
                     notificationContent.add(likeNotification);
                 });
     }
 
-    private void getFollowNotification(Notification notification,
-                                       List<Object> notificationContent) {
+    private void getFollowNotification(Notification notification, List<Object> notificationContent) {
         followModuleService.getOptionalFollow(notification.getContentId())
                 .ifPresent(follow -> {
                     boolean isFollowed = followModuleService.isFollow(follow.getFollowedId(),
                             follow.getFollowingId());
-                    NotificationListResp.FollowNotification followNotification =
-                            new NotificationListResp.FollowNotification(notification,
+                    NotificationListResp.FollowNotificationDTO followNotification =
+                            new NotificationListResp.FollowNotificationDTO(notification,
                                     getContentUser(follow.getFollowingId()), isFollowed);
                     notificationContent.add(followNotification);
                 });
     }
 
-    private NotificationListResp.ContentUser getContentUser(User user) {
-        return new NotificationListResp.ContentUser(user);
+    private void getMentionNotification(Notification notification, List<Object> notificationContent) {
+        mentionModuleService.getOptionalMention(notification.getContentId())
+                .ifPresent(mention -> {
+                    NotificationListResp.ContentReplyDTO contentReply = new NotificationListResp.ContentReplyDTO(
+                            mention.getReply());
+                    NotificationListResp.MentionNotificationDTO mentionNotification =
+                            new NotificationListResp.MentionNotificationDTO(notification,
+                                    getContentUser(mention.getMentioner()), contentReply);
+                    notificationContent.add(mentionNotification);
+                });
+    }
+
+    private NotificationListResp.ContentUserDTO getContentUser(User user) {
+        return new NotificationListResp.ContentUserDTO(user);
     }
 
     public void registerFcmToken(NotificationTokenParam parameter) {
