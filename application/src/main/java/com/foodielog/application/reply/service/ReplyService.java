@@ -53,7 +53,7 @@ public class ReplyService {
                 NotificationType.REPLY, savedReply.getId());
         notificationModuleService.save(notification);
 
-        if (feed.getUser().getNotificationFlag() == Flag.Y) {
+        if (feed.getUser().getReplyFlag() == Flag.Y) {
             fcmMessageProvider.sendReplyMessage(feed.getUser().getEmail(), user.getEmail());
         }
 
@@ -93,6 +93,10 @@ public class ReplyService {
                 Notification notification = Notification.createNotification(
                         mentioned, NotificationType.MENTION, saveReply.getId());
                 notificationModuleService.save(notification);
+
+                if (mentioned.getReplyFlag() == Flag.Y) {
+                    fcmMessageProvider.sendMentionMessage(mentioned.getEmail(), saveReply.getUser().getNickName());
+                }
             }
         }
     }

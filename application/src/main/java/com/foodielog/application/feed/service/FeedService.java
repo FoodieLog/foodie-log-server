@@ -132,13 +132,13 @@ public class FeedService {
         FeedLike feedLike = FeedLike.createFeedLike(feed, user);
         feedLikeModuleService.save(feedLike);
 
-        if (feed.getUser().getNotificationFlag() == Flag.Y) {
-            Notification notification = Notification.createNotification(feed.getUser(),
-                    NotificationType.LIKE, feedLike.getId());
-            notificationModuleService.save(notification);
-
+        if (feed.getUser().getLikeFlag() == Flag.Y) {
             fcmMessageProvider.sendLikeMessage(feed.getUser().getEmail(), user.getEmail());
         }
+
+        Notification notification = Notification.createNotification(feed.getUser(),
+                NotificationType.LIKE, feedLike.getId());
+        notificationModuleService.save(notification);
     }
 
     @Transactional

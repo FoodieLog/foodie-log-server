@@ -10,12 +10,20 @@ import lombok.Getter;
 @Getter
 public class ChangeNotificationReq {
     @ValidEnum(enumClass = Flag.class)
-    private Flag flag;
+    private Flag replyFlag;
+
+    @ValidEnum(enumClass = Flag.class)
+    private Flag likeFlag;
+
+    @ValidEnum(enumClass = Flag.class)
+    private Flag followFlag;
 
     public ChangeNotificationParam toParamWith(User user) {
         return ChangeNotificationParam.builder()
                 .user(user)
-                .flag(flag)
+                .replyFlag(replyFlag)
+                .likeFlag(likeFlag)
+                .followFlag(followFlag)
                 .build();
     }
 }

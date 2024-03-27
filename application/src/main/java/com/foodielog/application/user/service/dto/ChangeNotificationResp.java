@@ -7,10 +7,14 @@ import lombok.Getter;
 @Getter
 public class ChangeNotificationResp {
     private final String nickName;
-    private final Flag flag;
+    private final Flag replyFlag;
+    private final Flag followFlag;
+    private final Flag likeFlag;
 
     public ChangeNotificationResp(User user) {
         this.nickName = user.getNickName();
-        this.flag = user.getNotificationFlag();
+        this.replyFlag = user.getReplyFlag();
+        this.followFlag = user.getFollowFlag();
+        this.likeFlag = user.getLikeFlag();
     }
 }

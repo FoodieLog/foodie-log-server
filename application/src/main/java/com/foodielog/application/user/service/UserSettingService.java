@@ -43,7 +43,7 @@ public class UserSettingService {
     @Transactional
     public ChangeNotificationResp changeNotification(ChangeNotificationParam parameter) {
         User user = parameter.getUser();
-        user.changeNotificationFlag(parameter.getFlag());
+        user.changeNotificationFlag(parameter.getReplyFlag(), parameter.getLikeFlag(), parameter.getFollowFlag());
         user = userModuleService.save(user);
 
         return new ChangeNotificationResp(user);
