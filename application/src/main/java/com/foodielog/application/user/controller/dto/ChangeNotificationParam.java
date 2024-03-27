@@ -10,5 +10,9 @@ import lombok.Getter;
 public class ChangeNotificationParam {
     private User user;
 
-    private Flag flag;
+    private Flag replyFlag;
+
+    private Flag likeFlag;
+
+    private Flag followFlag;
 }

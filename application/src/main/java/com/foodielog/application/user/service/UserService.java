@@ -144,13 +144,13 @@ public class UserService {
         Follow follow = Follow.createFollow(following, followed);
         followRepository.save(follow);
 
-        if (followed.getNotificationFlag() == Flag.Y) {
-            Notification notification = Notification.createNotification(followed, NotificationType.FOLLOW,
-                    follow.getId());
-            notificationRepository.save(notification);
-
+        if (followed.getFollowFlag() == Flag.Y) {
             fcmMessageProvider.sendFollowMessage(followed.getEmail(), following.getEmail());
         }
+
+        Notification notification = Notification.createNotification(followed, NotificationType.FOLLOW,
+                follow.getId());
+        notificationRepository.save(notification);
     }
 
     @Transactional

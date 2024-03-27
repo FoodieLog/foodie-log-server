@@ -53,7 +53,17 @@ public class User {
     @Column(nullable = false, length = 1)
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'Y'")
-    private Flag notificationFlag;
+    private Flag replyFlag;
+
+    @Column(nullable = false, length = 1)
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'Y'")
+    private Flag likeFlag;
+
+    @Column(nullable = false, length = 1)
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'Y'")
+    private Flag followFlag;
 
     @Column(nullable = false, length = 1)
     @Enumerated(EnumType.STRING)
@@ -90,8 +100,10 @@ public class User {
         return user;
     }
 
-    public void changeNotificationFlag(Flag flag) {
-        this.notificationFlag = flag;
+    public void changeNotificationFlag(Flag replyFlag, Flag likeFlag, Flag followFlag) {
+        this.replyFlag = replyFlag;
+        this.likeFlag = likeFlag;
+        this.followFlag = followFlag;
     }
 
     public void resetPassword(String password) {

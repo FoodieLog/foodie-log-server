@@ -62,6 +62,23 @@ public class FcmMessageProvider {
         send(message);
     }
 
+    public void sendMentionMessage(String email, String replyUser) {
+        String key = getKey(email);
+
+        if (!hasKey(key)) {
+            return;
+        }
+
+        String token = getToken(key);
+        Message message = Message.builder()
+                .putData("title", "멘션 알림")
+                .putData("content", replyUser + "님이 댓글에서 회원님을 멘션했습니다. 확인해볼까요?")
+                .setToken(token)
+                .build();
+
+        send(message);
+    }
+
     public void send(Message message) {
         FirebaseMessaging.getInstance().sendAsync(message);
     }
