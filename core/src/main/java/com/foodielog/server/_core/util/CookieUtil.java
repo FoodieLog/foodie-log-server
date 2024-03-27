@@ -7,13 +7,9 @@ import org.springframework.http.ResponseCookie;
 public class CookieUtil {
     public static final String NAME_REFRESH_TOKEN = "refreshToken";
 
-    // @Todo 개발 완료 시 localhost domain 제거
     public static ResponseCookie getRefreshTokenCookie(String refreshToken) {
         return ResponseCookie.from(NAME_REFRESH_TOKEN, refreshToken)
                 .maxAge(JwtTokenProvider.EXP_REFRESH)
-                .domain("www.foodielog.shop")
-                .domain("api.foodielog-server.monster")
-                .domain("localhost")
                 .path("/")
                 .secure(true) // https 환경에서만 쿠키가 발동
                 .sameSite(Cookie.SameSite.NONE.attributeValue()) // 크로스 사이트에도 전송 가능
