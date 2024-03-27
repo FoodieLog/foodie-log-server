@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -19,5 +20,9 @@ public class MentionModuleService {
 
     public List<Mention> getAll(Reply reply) {
         return mentionRepository.findByReply(reply);
+    }
+
+    public Optional<Mention> getOptionalMention(Long id) {
+        return mentionRepository.findById(id);
     }
 }

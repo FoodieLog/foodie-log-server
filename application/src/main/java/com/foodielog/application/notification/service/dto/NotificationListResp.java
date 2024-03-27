@@ -20,15 +20,15 @@ public class NotificationListResp {
     }
 
     @Getter
-    public static class ReplyNotification {
+    public static class ReplyNotificationDTO {
         private final Long id;
         private final NotificationType type;
         private final Flag checkFlag;
-        private final ContentUser user;
-        private final ContentReply reply;
+        private final ContentUserDTO user;
+        private final ContentReplyDTO reply;
         private final Timestamp createdAt;
 
-        public ReplyNotification(Notification notification, ContentUser user, ContentReply reply) {
+        public ReplyNotificationDTO(Notification notification, ContentUserDTO user, ContentReplyDTO reply) {
             this.id = notification.getId();
             this.type = notification.getType();
             this.checkFlag = notification.getCheckFlag();
@@ -39,15 +39,15 @@ public class NotificationListResp {
     }
 
     @Getter
-    public static class LikeNotification {
+    public static class LikeNotificationDTO {
         private final Long id;
         private final NotificationType type;
         private final Flag checkFlag;
-        private final ContentUser user;
-        private final ContentFeed feed;
+        private final ContentUserDTO user;
+        private final ContentFeedDTO feed;
         private final Timestamp createdAt;
 
-        public LikeNotification(Notification notification, ContentUser user, ContentFeed feed) {
+        public LikeNotificationDTO(Notification notification, ContentUserDTO user, ContentFeedDTO feed) {
             this.id = notification.getId();
             this.type = notification.getType();
             this.checkFlag = notification.getCheckFlag();
@@ -58,15 +58,15 @@ public class NotificationListResp {
     }
 
     @Getter
-    public static class FollowNotification {
+    public static class FollowNotificationDTO {
         private final Long id;
         private final NotificationType type;
         private final Flag checkFlag;
-        private final ContentUser user;
+        private final ContentUserDTO user;
         private final Boolean isFollowed;
         private final Timestamp createdAt;
 
-        public FollowNotification(Notification notification, ContentUser user, Boolean isFollowed) {
+        public FollowNotificationDTO(Notification notification, ContentUserDTO user, Boolean isFollowed) {
             this.id = notification.getId();
             this.type = notification.getType();
             this.checkFlag = notification.getCheckFlag();
@@ -77,12 +77,31 @@ public class NotificationListResp {
     }
 
     @Getter
-    public static class ContentUser {
+    public static class MentionNotificationDTO {
+        private final Long id;
+        private final NotificationType type;
+        private final Flag checkFlag;
+        private final ContentUserDTO user;
+        private final ContentReplyDTO reply;
+        private final Timestamp createdAt;
+
+        public MentionNotificationDTO(Notification notification, ContentUserDTO user, ContentReplyDTO reply) {
+            this.id = notification.getId();
+            this.type = notification.getType();
+            this.checkFlag = notification.getCheckFlag();
+            this.user = user;
+            this.reply = reply;
+            this.createdAt = notification.getCreatedAt();
+        }
+    }
+
+    @Getter
+    public static class ContentUserDTO {
         private final Long id;
         private final String nickName;
         private final String profileImgUrl;
 
-        public ContentUser(User user) {
+        public ContentUserDTO(User user) {
             this.id = user.getId();
             this.nickName = user.getNickName();
             this.profileImgUrl = user.getProfileImageUrl();
@@ -90,24 +109,24 @@ public class NotificationListResp {
     }
 
     @Getter
-    public static class ContentFeed {
+    public static class ContentFeedDTO {
         private final Long id;
         private final String thumbnail;
 
-        public ContentFeed(Feed feed) {
+        public ContentFeedDTO(Feed feed) {
             this.id = feed.getId();
             this.thumbnail = feed.getThumbnailUrl();
         }
     }
 
     @Getter
-    public static class ContentReply {
+    public static class ContentReplyDTO {
         private final Long id;
         private final String content;
         private final Long feedId;
         private final String thumbnail;
 
-        public ContentReply(Reply reply) {
+        public ContentReplyDTO(Reply reply) {
             this.id = reply.getId();
             this.content = reply.getContent();
             this.feedId = reply.getFeed().getId();
