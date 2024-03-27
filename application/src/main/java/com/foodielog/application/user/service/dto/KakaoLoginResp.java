@@ -11,7 +11,9 @@ public class KakaoLoginResp {
     private final String email;
     private final String nickName;
     private final String profileImageUrl;
-    private final Flag notificationFlag;
+    private final Flag replyFlag;
+    private final Flag followFlag;
+    private final Flag likeFlag;
     private final String accessToken;
     private final String kakaoAccessToken;
 
@@ -23,7 +25,9 @@ public class KakaoLoginResp {
         this.email = user.getEmail();
         this.nickName = user.getNickName();
         this.profileImageUrl = user.getProfileImageUrl();
-        this.notificationFlag = user.getNotificationFlag();
+        this.replyFlag = user.getReplyFlag();
+        this.followFlag = user.getFollowFlag();
+        this.likeFlag = user.getLikeFlag();
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.kakaoAccessToken = kakaoAccessToken;
