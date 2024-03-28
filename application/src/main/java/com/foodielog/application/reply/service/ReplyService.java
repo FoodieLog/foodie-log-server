@@ -106,6 +106,7 @@ public class ReplyService {
         Reply reply = replyModuleService.getUserReply(replyId, user.getId());
 
         reply.deleteReplyByUser();
+        reply.getChildren().forEach(Reply::deleteReplyByUser);
     }
 
     @Transactional(readOnly = true)
